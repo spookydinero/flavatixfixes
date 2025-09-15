@@ -1,0 +1,126 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#1F5D4C',
+          hover: '#2E7D32',
+        },
+        secondary: {
+          DEFAULT: '#D4AF37',
+          hover: '#E6C84A',
+        },
+        accent: {
+          DEFAULT: '#C65A2E',
+          hover: '#D6743A',
+        },
+        background: {
+          app: '#FEF3E7',
+          surface: '#FFFFFF',
+          'surface-secondary': '#F7F3EA',
+          muted: '#F4E3CC',
+          dark: '#161614',
+        },
+        text: {
+          primary: '#2C1810',
+          secondary: '#5C5C5C',
+          muted: '#8B8B8B',
+          inverse: '#FFFFFF',
+        },
+        border: {
+          subtle: 'rgba(0,0,0,0.08)',
+          DEFAULT: 'rgba(0,0,0,0.12)',
+          strong: 'rgba(0,0,0,0.20)',
+          focus: '#1F5D4C',
+        },
+        semantic: {
+          success: '#22C55E',
+          warning: '#F59E0B',
+          error: '#EF4444',
+          info: '#3B82F6',
+        },
+        flavor: {
+          fruity: '#E4572E',
+          floral: '#E9A2AD',
+          vegetal: '#57A773',
+          smoky: '#6B5B95',
+          sweet: '#DFAF2B',
+          spicy: '#B53F3F',
+          bitter: '#2F4858',
+          sour: '#3B9ED8',
+          roasted: '#8C5A3A',
+          nutty: '#C29F6D',
+          mineral: '#7A8A8C',
+          earthy: '#6D7F4B',
+        },
+      },
+      fontFamily: {
+        heading: ['Crimson Text Variable', 'ui-serif', 'Georgia', 'serif'],
+        body: ['Inter Variable', 'system-ui', '-apple-system', 'sans-serif'],
+      },
+      fontSize: {
+        'h1': 'clamp(22px, 5vw, 28px)',
+        'h2': 'clamp(18px, 4vw, 24px)',
+        'h3': 'clamp(16px, 3.5vw, 20px)',
+        'body': '16px',
+        'small': 'clamp(14px, 2.5vw, 15px)',
+        'caption': 'clamp(12px, 2vw, 13px)',
+      },
+      lineHeight: {
+        'heading': '1.3',
+        'body': '1.6',
+        'snug': '1.4',
+      },
+      spacing: {
+        '1': '4px',
+        '2': '8px',
+        '3': '12px',
+        '4': '16px',
+        '5': '20px',
+        '6': '24px',
+        '8': '32px',
+        '10': '40px',
+        '12': '48px',
+        '16': '64px',
+      },
+      borderRadius: {
+        'button': '12px',
+        'card': '16px',
+        'input': '12px',
+      },
+      boxShadow: {
+        'xs': '0 1px 2px rgba(0,0,0,0.05)',
+        'sm': '0 1px 3px rgba(0,0,0,0.1)',
+        'md': '0 4px 6px rgba(0,0,0,0.1)',
+        'lg': '0 10px 15px rgba(0,0,0,0.15)',
+        'xl': '0 20px 25px rgba(0,0,0,0.2)',
+        'primary': '0 2px 8px rgba(31, 93, 76, 0.25)',
+        'primary-hover': '0 4px 16px rgba(31, 93, 76, 0.35)',
+        'tasting': '0 2px 8px rgba(31, 93, 76, 0.08)',
+        'tasting-hover': '0 8px 24px rgba(31, 93, 76, 0.15)',
+      },
+      backgroundImage: {
+        'gradient-primary': 'linear-gradient(135deg, #1F5D4C 0%, #2E7D32 100%)',
+        'gradient-accent': 'linear-gradient(135deg, #C65A2E 0%, #D6743A 100%)',
+        'gradient-subtle': 'radial-gradient(90% 120% at 0% 0%, #FDF4E6 0%, #F7E9D6 60%, #F4E3CC 100%)',
+        'gradient-tasting': 'linear-gradient(135deg, #FEF3E7 0%, #F7F3EA 100%)',
+      },
+      minHeight: {
+        'touch': '44px',
+      },
+      screens: {
+        'mobile': '0px',
+        'tablet': '640px',
+        'desktop': '1024px',
+        'wide': '1280px',
+      },
+    },
+  },
+  plugins: [],
+}
