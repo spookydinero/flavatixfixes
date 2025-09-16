@@ -1,35 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { createClient } from '@supabase/supabase-js';
 import { toast } from 'react-toastify';
+import { useAuth } from '../contexts/AuthContext';
 import ProfileService, { UserProfile } from '../lib/profileService';
 import ProfileDisplay from '../components/profile/ProfileDisplay';
 import ProfileEditForm from '../components/profile/ProfileEditForm';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
-
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading, signOut } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeTab, setActiveTab] = useState<'profile' | 'edit'>('profile');
   const router = useRouter();
 
   useEffect(() => {
-    initializeDashboard();
-  }, [router]);
+    if (!loading && !user) {
+      router.push('/auth');
+      return;
+    }
+    
+    if (user) {
+      initializeDashboard();
+    }
+  }, [user, loading, router]);
 
   const initializeDashboard = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/auth');
-        return;
-      }
-      setUser(user);
+      if (!user) return;
       
       // Fetch user profile
       const userProfile = await ProfileService.getProfile(user.id);
@@ -38,18 +34,16 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error initializing dashboard:', error);
       toast.error('Error loading dashboard');
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error('Error logging out');
-    } else {
+    try {
+      await signOut();
       toast.success('Logged out successfully');
       router.push('/auth');
+    } catch (error) {
+      toast.error('Error logging out');
     }
   };
 
@@ -131,7 +125,10 @@ export default function Dashboard() {
             Quick Actions
           </h3>
           <div className="grid grid-cols-2 gap-3">
-            <button className="bg-gradient-to-br from-[#FEF3E7] to-[#F7F3EA] border border-[#1F5D4C]/10 rounded-xl p-4 text-left hover:shadow-md transition-all hover:-translate-y-0.5">
+            <button 
+              onClick={() => router.push('/quick-tasting')}
+              className="bg-gradient-to-br from-[#FEF3E7] to-[#F7F3EA] border border-[#1F5D4C]/10 rounded-xl p-4 text-left hover:shadow-md transition-all hover:-translate-y-0.5"
+            >
               <div className="text-[#1F5D4C] font-semibold text-sm mb-1">Quick Tasting</div>
               <div className="text-[#5C5C5C] text-xs">Start a new tasting session</div>
             </button>

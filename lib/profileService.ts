@@ -1,10 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import { toast } from 'react-toastify';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
+import { getSupabaseClient } from './supabase';
 
 export interface UserProfile {
   user_id: string;
@@ -38,6 +33,7 @@ class ProfileService {
    */
   static async getProfile(userId: string): Promise<UserProfile | null> {
     try {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -64,6 +60,8 @@ class ProfileService {
     updates: ProfileUpdateData
   ): Promise<boolean> {
     try {
+      const supabase = getSupabaseClient();
+      
       // Validate bio length
       if (updates.bio && updates.bio.length > 200) {
         toast.error('Bio must be 200 characters or less');
@@ -120,6 +118,7 @@ class ProfileService {
    */
   static async isUsernameAvailable(username: string, currentUserId?: string): Promise<boolean> {
     try {
+      const supabase = getSupabaseClient();
       let query = supabase
         .from('profiles')
         .select('user_id')
@@ -148,6 +147,7 @@ class ProfileService {
    */
   static async getCurrentUser() {
     try {
+      const supabase = getSupabaseClient();
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) {
         console.error('Error getting current user:', error);

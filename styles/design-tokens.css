@@ -1,0 +1,395 @@
+/* Design Tokens - CSS Custom Properties */
+/* This file defines the design system tokens as CSS variables for theming and dark mode support */
+
+:root {
+  /* === COLOR TOKENS === */
+  
+  /* Primary Colors */
+  --color-primary-50: #F0F9F6;
+  --color-primary-100: #DBF0E8;
+  --color-primary-200: #B9E2D2;
+  --color-primary-300: #8CCEB5;
+  --color-primary-400: #5AB394;
+  --color-primary-500: #1F5D4C;
+  --color-primary-600: #1A4A3E;
+  --color-primary-700: #163A31;
+  --color-primary-800: #122B25;
+  --color-primary-900: #0E1F1B;
+  --color-primary-950: #0A1512;
+  --color-primary: var(--color-primary-500);
+  --color-primary-hover: var(--color-primary-600);
+  
+  /* Accent Colors */
+  --color-accent-50: #FEF3E7;
+  --color-accent-100: #FCE4C8;
+  --color-accent-200: #F8C794;
+  --color-accent-300: #F3A55F;
+  --color-accent-400: #E8823A;
+  --color-accent-500: #C65A2E;
+  --color-accent-600: #B85027;
+  --color-accent-700: #9A4221;
+  --color-accent-800: #7C341A;
+  --color-accent-900: #5E2814;
+  --color-accent-950: #3F1B0D;
+  --color-accent: var(--color-accent-500);
+  --color-accent-hover: var(--color-accent-600);
+  
+  /* Neutral Colors */
+  --color-neutral-50: #FAFAFA;
+  --color-neutral-100: #F5F5F5;
+  --color-neutral-200: #E5E5E5;
+  --color-neutral-300: #D4D4D4;
+  --color-neutral-400: #A3A3A3;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+  --color-neutral-950: #0A0A0A;
+  
+  /* Background Colors */
+  --color-background-app: #FEF3E7;
+  --color-background-surface: #FFFFFF;
+  --color-background-surface-secondary: #F7F3EA;
+  --color-background-muted: #F4E3CC;
+  
+  /* Text Colors */
+  --color-text-primary: #2C1810;
+  --color-text-secondary: #5C5C5C;
+  --color-text-muted: #8B8B8B;
+  --color-text-inverse: #FFFFFF;
+  
+  /* Border Colors */
+  --color-border-subtle: rgba(0, 0, 0, 0.08);
+  --color-border-default: rgba(0, 0, 0, 0.12);
+  --color-border-strong: rgba(0, 0, 0, 0.20);
+  --color-border-focus: var(--color-primary-500);
+  
+  /* Semantic Colors */
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+  
+  /* Brand Colors */
+  --color-brand-agave: #1F5D4C;
+  --color-brand-earth: #C65A2E;
+  --color-brand-gold: #D4AF37;
+  
+  /* === TYPOGRAPHY TOKENS === */
+  
+  /* Font Families */
+  --font-heading: 'Playfair Display Variable', ui-serif, Georgia, serif;
+  --font-body: 'Inter Variable', system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-heading);
+  --font-sans: var(--font-body);
+  
+  /* Font Sizes (Responsive with clamp) */
+  --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --font-size-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --font-size-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --font-size-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --font-size-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --font-size-2xl: clamp(1.5rem, 1.3rem + 1vw, 1.875rem);
+  --font-size-3xl: clamp(1.875rem, 1.6rem + 1.375vw, 2.25rem);
+  --font-size-4xl: clamp(2.25rem, 1.9rem + 1.75vw, 3rem);
+  --font-size-5xl: clamp(3rem, 2.5rem + 2.5vw, 3.75rem);
+  --font-size-6xl: clamp(3.75rem, 3rem + 3.75vw, 4.5rem);
+  
+  /* Heading Sizes */
+  --font-size-h1: clamp(2.25rem, 1.9rem + 1.75vw, 3rem);
+  --font-size-h2: clamp(1.875rem, 1.6rem + 1.375vw, 2.25rem);
+  --font-size-h3: clamp(1.5rem, 1.3rem + 1vw, 1.875rem);
+  --font-size-h4: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --font-size-h5: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --font-size-h6: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  
+  /* Line Heights */
+  --line-height-none: 1;
+  --line-height-tight: 1.1;
+  --line-height-snug: 1.2;
+  --line-height-normal: 1.3;
+  --line-height-relaxed: 1.4;
+  --line-height-loose: 1.5;
+  --line-height-extra-loose: 1.6;
+  --line-height-heading: 1.3;
+  --line-height-body: 1.6;
+  
+  /* Font Weights */
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+  
+  /* Letter Spacing */
+  --letter-spacing-tighter: -0.05em;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+  
+  /* === SPACING TOKENS === */
+  
+  /* Fixed Spacing */
+  --spacing-px: 1px;
+  --spacing-0: 0px;
+  --spacing-0-5: 2px;
+  --spacing-1: 4px;
+  --spacing-1-5: 6px;
+  --spacing-2: 8px;
+  --spacing-2-5: 10px;
+  --spacing-3: 12px;
+  --spacing-3-5: 14px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+  
+  /* Responsive Spacing */
+  --spacing-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.375rem);
+  --spacing-sm: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);
+  --spacing-md: clamp(0.75rem, 0.6rem + 0.75vw, 1.125rem);
+  --spacing-lg: clamp(1rem, 0.8rem + 1vw, 1.5rem);
+  --spacing-xl: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
+  --spacing-2xl: clamp(2rem, 1.6rem + 2vw, 3rem);
+  --spacing-3xl: clamp(2.5rem, 2rem + 2.5vw, 3.75rem);
+  --spacing-4xl: clamp(3rem, 2.4rem + 3vw, 4.5rem);
+  
+  /* === BORDER RADIUS TOKENS === */
+  
+  --border-radius-none: 0px;
+  --border-radius-sm: 0.125rem;
+  --border-radius-default: 0.25rem;
+  --border-radius-md: 0.375rem;
+  --border-radius-lg: 0.5rem;
+  --border-radius-xl: 0.75rem;
+  --border-radius-2xl: 1rem;
+  --border-radius-3xl: 1.5rem;
+  --border-radius-full: 9999px;
+  
+  /* Component-specific */
+  --border-radius-button: 12px;
+  --border-radius-card: 16px;
+  --border-radius-input: 12px;
+  
+  /* Tier system */
+  --border-radius-small: 8px;
+  --border-radius-medium: 12px;
+  --border-radius-large: 16px;
+  
+  /* === SHADOW TOKENS === */
+  
+  /* Standard shadows */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  
+  /* Brand-specific shadows */
+  --shadow-primary: 0 2px 8px rgba(31, 93, 76, 0.25);
+  --shadow-primary-hover: 0 4px 16px rgba(31, 93, 76, 0.35);
+  --shadow-primary-focus: 0 0 0 3px rgba(31, 93, 76, 0.1);
+  --shadow-accent: 0 2px 8px rgba(198, 90, 46, 0.25);
+  --shadow-accent-hover: 0 4px 16px rgba(198, 90, 46, 0.35);
+  
+  /* Neumorphic shadows */
+  --shadow-neumorphic: inset 0 2px 4px rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-neumorphic-inset: inset 0 2px 4px rgba(0,0,0,0.1), inset 0 -2px 4px rgba(255,255,255,0.5);
+  --shadow-neumorphic-pressed: inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.3);
+  
+  /* === ANIMATION TOKENS === */
+  
+  /* Durations */
+  --duration-75: 75ms;
+  --duration-100: 100ms;
+  --duration-150: 150ms;
+  --duration-200: 200ms;
+  --duration-300: 300ms;
+  --duration-500: 500ms;
+  --duration-700: 700ms;
+  --duration-1000: 1000ms;
+  
+  /* Timing Functions */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* === COMPONENT TOKENS === */
+  
+  /* Touch Targets */
+  --min-touch-target: 44px;
+  --min-touch-target-large: 48px;
+  
+  /* Focus Ring */
+  --focus-ring-width: 2px;
+  --focus-ring-color: var(--color-primary-500);
+  --focus-ring-offset: 2px;
+  
+  /* Container Widths */
+  --container-xs: 20rem;
+  --container-sm: 24rem;
+  --container-md: 28rem;
+  --container-lg: 32rem;
+  --container-xl: 36rem;
+  --container-2xl: 42rem;
+  --container-3xl: 48rem;
+  --container-4xl: 56rem;
+  --container-5xl: 64rem;
+  --container-6xl: 72rem;
+  --container-7xl: 80rem;
+}
+
+/* === DARK MODE TOKENS === */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Background Colors */
+    --color-background-app: #121212;
+    --color-background-surface: #1E1E1E;
+    --color-background-surface-secondary: #2A2A2A;
+    --color-background-muted: #363636;
+    
+    /* Text Colors */
+    --color-text-primary: #FFFFFF;
+    --color-text-secondary: #B3B3B3;
+    --color-text-muted: #737373;
+    --color-text-inverse: #2C1810;
+    
+    /* Border Colors */
+    --color-border-subtle: rgba(255, 255, 255, 0.08);
+    --color-border-default: rgba(255, 255, 255, 0.12);
+    --color-border-strong: rgba(255, 255, 255, 0.20);
+  }
+}
+
+/* === DARK MODE CLASS-BASED === */
+
+.dark {
+  /* Background Colors */
+  --color-background-app: #121212;
+  --color-background-surface: #1E1E1E;
+  --color-background-surface-secondary: #2A2A2A;
+  --color-background-muted: #363636;
+  
+  /* Text Colors */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #B3B3B3;
+  --color-text-muted: #737373;
+  --color-text-inverse: #2C1810;
+  
+  /* Border Colors */
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-default: rgba(255, 255, 255, 0.12);
+  --color-border-strong: rgba(255, 255, 255, 0.20);
+}
+
+/* === REDUCED MOTION === */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-75: 0ms;
+    --duration-100: 0ms;
+    --duration-150: 0ms;
+    --duration-200: 0ms;
+    --duration-300: 0ms;
+    --duration-500: 0ms;
+    --duration-700: 0ms;
+    --duration-1000: 0ms;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* === UTILITY CLASSES === */
+
+/* Focus Ring Utility */
+.focus-ring {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Touch Target Utility */
+.touch-target {
+  min-height: var(--min-touch-target);
+  min-width: var(--min-touch-target);
+}
+
+.touch-target-large {
+  min-height: var(--min-touch-target-large);
+  min-width: var(--min-touch-target-large);
+}
+
+/* Text Utilities */
+.text-responsive {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-body);
+}
+
+.heading-responsive {
+  font-family: var(--font-heading);
+  line-height: var(--line-height-heading);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Component Base Styles */
+.btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--min-touch-target);
+  padding: var(--spacing-3) var(--spacing-5);
+  border-radius: var(--border-radius-button);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--duration-150) var(--ease-in-out);
+  cursor: pointer;
+  user-select: none;
+}
+
+.card-base {
+  background: var(--color-background-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-card);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-4);
+  transition: all var(--duration-150) var(--ease-in-out);
+}
+
+.input-base {
+  background: var(--color-background-surface);
+  border: 2px solid var(--color-border-default);
+  border-radius: var(--border-radius-input);
+  padding: var(--spacing-3) var(--spacing-3-5);
+  font-size: var(--font-size-base);
+  min-height: var(--min-touch-target);
+  transition: all var(--duration-150) var(--ease-in-out);
+}
+
+.input-base:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-primary-focus);
+  outline: none;
+}
