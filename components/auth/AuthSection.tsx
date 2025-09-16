@@ -75,47 +75,55 @@ const AuthSection = () => {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-[#FEF3E7] p-4 flex items-center justify-center">
-        <div className="text-[#2C1810] text-lg">Loading...</div>
+      <div className="min-h-screen bg-background-app p-4 flex items-center justify-center">
+        <div className="text-text-primary text-body font-body">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FEF3E7] p-4">
-      <div className="max-w-md mx-auto">
-        <h1 className="text-[#2C1810] text-[clamp(22px,5vw,28px)] font-[Inter Variable] mb-8 text-center">
-          FlavorWheel
-        </h1>
+    <div className="min-h-screen bg-background-app p-4">
+      <div className="max-w-md mx-auto pt-8">
+        {/* Brand Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-text-primary text-h1 font-heading font-bold mb-2">
+            FlavorWheel
+          </h1>
+          <p className="text-text-secondary text-small font-body">
+            Discover your perfect coffee profile
+          </p>
+        </div>
         
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex mb-6">
+        <div className="bg-background-surface rounded-card shadow-md p-6 border border-border-subtle">
+          {/* Mode Toggle */}
+          <div className="flex mb-6 bg-background-muted rounded-button p-1">
             <button
               onClick={() => setMode('login')}
-              className={`flex-1 py-2 px-4 rounded-l-lg font-medium transition-colors ${
+              className={`flex-1 py-3 px-4 rounded-button font-body font-semibold transition-all duration-200 min-h-[44px] ${
                 mode === 'login'
-                  ? 'bg-[#1F5D4C] text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? 'bg-primary text-text-inverse shadow-primary'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-background-surface'
               }`}
             >
               Login
             </button>
             <button
               onClick={() => setMode('register')}
-              className={`flex-1 py-2 px-4 rounded-r-lg font-medium transition-colors ${
+              className={`flex-1 py-3 px-4 rounded-button font-body font-semibold transition-all duration-200 min-h-[44px] ${
                 mode === 'register'
-                  ? 'bg-[#1F5D4C] text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? 'bg-primary text-text-inverse shadow-primary'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-background-surface'
               }`}
             >
               Register
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Auth Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
             {mode === 'register' && (
-              <div>
-                <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="space-y-2">
+                <label htmlFor="full_name" className="block text-small font-body font-medium text-text-primary">
                   Full Name
                 </label>
                 <input
@@ -124,16 +132,16 @@ const AuthSection = () => {
                   name="full_name"
                   value={formData.full_name || ''}
                   onChange={handleChange}
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg text-base min-h-[44px] focus:border-[#1F5D4C] focus:outline-none transition-colors"
+                  className="w-full px-3 py-3 border-2 border-border-default rounded-input text-body font-body min-h-[44px] bg-background-surface text-text-primary placeholder:text-text-muted focus:border-border-focus focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                   placeholder="Enter your full name"
                   required
                 />
               </div>
             )}
             
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-small font-body font-medium text-text-primary">
+                Email Address
               </label>
               <input
                 type="email"
@@ -141,14 +149,14 @@ const AuthSection = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full p-3 border-2 border-gray-300 rounded-lg text-base min-h-[44px] focus:border-[#1F5D4C] focus:outline-none transition-colors"
-                placeholder="Enter your email"
+                className="w-full px-3 py-3 border-2 border-border-default rounded-input text-body font-body min-h-[44px] bg-background-surface text-text-primary placeholder:text-text-muted focus:border-border-focus focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                placeholder="Enter your email address"
                 required
               />
             </div>
             
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-small font-body font-medium text-text-primary">
                 Password
               </label>
               <input
@@ -157,20 +165,48 @@ const AuthSection = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full p-3 border-2 border-gray-300 rounded-lg text-base min-h-[44px] focus:border-[#1F5D4C] focus:outline-none transition-colors"
+                className="w-full px-3 py-3 border-2 border-border-default rounded-input text-body font-body min-h-[44px] bg-background-surface text-text-primary placeholder:text-text-muted focus:border-border-focus focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 placeholder="Enter your password"
                 required
               />
+              {mode === 'register' && (
+                <p className="text-caption text-text-muted font-body mt-1">
+                  Minimum 8 characters required
+                </p>
+              )}
             </div>
             
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[#1F5D4C] text-white p-3 rounded-lg min-h-[44px] font-semibold hover:bg-[#164A3C] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {loading ? 'Processing...' : mode === 'login' ? 'Login' : 'Register'}
-            </button>
+            {/* Submit Button */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-primary text-text-inverse px-4 py-3 rounded-button min-h-[44px] font-body font-semibold shadow-primary hover:bg-primary-hover hover:shadow-primary-hover focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary disabled:hover:shadow-primary transition-all duration-200"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </span>
+                ) : (
+                  mode === 'login' ? 'Sign In to FlavorWheel' : 'Create Your Account'
+                )}
+              </button>
+            </div>
           </form>
+          
+          {/* Additional Info */}
+          <div className="mt-6 pt-4 border-t border-border-subtle">
+            <p className="text-center text-caption text-text-muted font-body">
+              {mode === 'login' 
+                ? 'New to FlavorWheel? Switch to Register above' 
+                : 'Already have an account? Switch to Login above'
+              }
+            </p>
+          </div>
         </div>
       </div>
     </div>
