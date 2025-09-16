@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ProfileService, { UserProfile, ProfileUpdateData } from '../../lib/profileService';
 import { toast } from 'react-toastify';
+import AvatarUpload from '../AvatarUpload';
 
 interface ProfileEditFormProps {
   profile: UserProfile | null;
@@ -69,6 +70,14 @@ export default function ProfileEditForm({ profile, onProfileUpdate }: ProfileEdi
       }, 500);
       return () => clearTimeout(timeoutId);
     }
+  };
+
+  const handleAvatarUpload = (avatarUrl: string) => {
+    setFormData(prev => ({ ...prev, avatar_url: avatarUrl }));
+  };
+
+  const handleAvatarError = (error: string) => {
+    toast.error(`Avatar upload failed: ${error}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -210,17 +219,16 @@ export default function ProfileEditForm({ profile, onProfileUpdate }: ProfileEdi
           </select>
         </div>
 
-        {/* Avatar URL */}
+        {/* Avatar Upload */}
         <div>
           <label className="block text-sm font-medium text-[#5C5C5C] mb-2">
-            Avatar URL
+            Profile Picture
           </label>
-          <input
-            type="url"
-            value={formData.avatar_url}
-            onChange={(e) => handleInputChange('avatar_url', e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#C65A2E] focus:ring-0 focus:outline-none transition-colors min-h-[44px] text-[#2C1810]"
-            placeholder="https://example.com/avatar.jpg"
+          <AvatarUpload
+            userId={profile?.user_id || ''}
+            currentAvatarUrl={formData.avatar_url}
+            onUploadSuccess={handleAvatarUpload}
+            onUploadError={handleAvatarError}
           />
         </div>
 

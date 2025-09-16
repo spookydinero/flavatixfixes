@@ -129,11 +129,17 @@ class ProfileService {
         query = query.neq('user_id', currentUserId);
       }
 
-      const { data } = await query.single();
-      return !data; // Available if no data found
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error('Error checking username availability:', error);
+        return false; // Assume unavailable on error for safety
+      }
+      
+      return !data || data.length === 0; // Available if no data found
     } catch (error) {
-      // If no user found, username is available
-      return true;
+      console.error('Unexpected error checking username:', error);
+      return false; // Assume unavailable on error for safety
     }
   }
 

@@ -54,21 +54,29 @@ export default function ProfileDisplay({ profile, authEmail }: ProfileDisplayPro
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
       {/* Header with Avatar and Basic Info */}
       <div className="flex items-start space-x-4 mb-6">
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 relative">
           {profile.avatar_url ? (
-            <img
-              src={profile.avatar_url}
-              alt={profile.full_name || 'Profile'}
-              className="w-16 h-16 rounded-full object-cover border-2 border-[#F4E3CC]"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.nextElementSibling?.classList.remove('hidden');
-              }}
-            />
-          ) : null}
-          <div className={`w-16 h-16 rounded-full bg-gradient-to-br from-[#1F5D4C] to-[#2E7D32] flex items-center justify-center text-white font-semibold text-lg ${profile.avatar_url ? 'hidden' : ''}`}>
-            {getInitials(profile.full_name)}
-          </div>
+            <>
+              <img
+                src={profile.avatar_url}
+                alt={profile.full_name || 'Profile'}
+                className="w-16 h-16 rounded-full object-cover border-2 border-[#F4E3CC]"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = target.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.classList.remove('hidden');
+                }}
+              />
+              <div className="hidden w-16 h-16 rounded-full bg-gradient-to-br from-[#1F5D4C] to-[#2E7D32] flex items-center justify-center text-white font-semibold text-lg">
+                {getInitials(profile.full_name)}
+              </div>
+            </>
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1F5D4C] to-[#2E7D32] flex items-center justify-center text-white font-semibold text-lg">
+              {getInitials(profile.full_name)}
+            </div>
+          )}
         </div>
         
         <div className="flex-1 min-w-0">
