@@ -1,328 +1,153 @@
 {
-  "prompt": {
-    "app_name": "FlavorWheel",
-    "description": "Create the file structure and landing page for the FlavorWheel mobile app based on the following details. The app is built using Node.js for development, TypeScript for type safety, and Next.js for the frontend, targeting a mobile-first approach. The landing page serves as the starting point for building the app, with no functionalities implemented yet—just the structure and static UI layout optimized for mobile screens (e.g., 375x667px for iPhone SE). Use the provided MVP JSON, CSS design system, and attached PDF snippets (Quick Tasting, Create Tasting) as the foundation. The design should reflect a Mexican-inspired aesthetic with warm colors and fluid typography, ensuring a seamless mobile experience.",
-    "mvp_context": {
-      "app_name": "FlavorWheel",
-      "overview": "FlavorWheel is the world's most pivotal tasting app for coffee and drinks, with a goal of becoming the most user-friendly tasting app the world has ever seen. It serves as a versatile tool for conducting tastings and reviews of anything with flavor or aroma, blending ease for casual users with powerful customization for industry experts. At its core, it leverages user-generated data to create dynamic flavor wheels that visualize perceptions of aroma and flavor, fostering a community-driven database of sensory insights.",
-      "key_objectives": [
-        "Empower users to easily log, analyze, and share tasting experiences across industries like wine, beer, spirits, coffee, olive oil, and perfume.",
-        "Generate valuable data visualizations through flavor wheels, turning subjective notes into actionable, shareable insights.",
-        "Support both informal study sessions and formal competitions, with options for blind tastings and rankings."
-      ],
-      "core_features": {
-        "user_profile_and_social": "Users create profiles with usernames, photos, bios, and track posts, followers, and activity. Features include a feed for shared content, messaging, and search functionality to build a social tasting community.",
-        "quick_tasting": "A streamlined mode for on-the-fly solo tastings: Add items with names, photos, aroma, flavor, other notes, and an overall score (0-100 slider). No pre-setup required, focusing on subjective inputs for simplicity.",
-        "create_tasting": "Customizable tastings in Study Mode (quick setup for informal groups) or Competition Mode (preloaded items for accuracy ranking). Define participants, items, characteristics (e.g., variety, region), and assessment methods (exact answer, multiple choice, sliding scale, subjective). Includes blind/not blind options and ranking for participants or items.",
-        "review_system": "Quick Reviews with structured categories (aroma intensity, salt, umami, etc., via sliders and notes) or Prose Reviews (free-text with AI extraction of descriptors). Core inputs include item name, picture, batch ID, category dropdown, and production date.",
-        "flavor_wheels": "AI-generated visualizations from user data: Aroma, Flavor, Combined, and Metaphor wheels (e.g., moods, textures). Available at personal or universal levels, with filters by item, category, user demographics. Includes molecule info for deeper insights.",
-        "additional_tools": "Tasting history with PDF exports, blind tasting scores, join tastings via codes, and templates based on industry standards (e.g., CMS Wine Grid, SCA Coffee)."
-      },
-      "target_audience": "Casual enthusiasts tasting coffee or drinks at home, industry professionals conducting blind tastings or competitions, and groups studying flavors collaboratively. Designed to be intuitive for all, with scalability for experts.",
-      "unique_value": "By combining social networking, customizable tastings, and AI-driven visualizations, FlavorWheel transforms tasting into an effortless, insightful experience—making every sip a step toward the ultimate user-friendly sensory adventure.",
-      "technical_highlights": "Built on a database that parses user inputs for wheels, with AI handling descriptor extraction and metaphor categorization. Fully cross-industry adaptable, emphasizing data privacy and seamless mobile integration."
-    },
-    "css_design_system": {
-      "metadata": {
-        "name": "FlavorWheel Design System",
-        "version": "1.0.0",
-        "description": "Mexican-inspired design system with warm colors, fluid typography, and mobile-first approach",
-        "created": "2025-09-15",
-        "inspiration": "Mexican heritage, mezcal tradition, warm desert landscapes"
-      },
+  "task": "generate_code",
+  "component": "auth_section",
+  "app_name": "FlavorWheel",
+  "description": "Implement a mobile-first login/register section under /auth for the FlavorWheel app using Next.js, TypeScript, and Supabase Auth. Use React Toastify for success/error feedback (e.g., login success, registration confirmation). Follow the workflow from AUDITORIA_AUTH_MODIFIED.md: toggle between login/register, frontend validation with Zod, automatic email confirmation, redirect after login, and switch to login after registration. Ensure a Mexican-inspired design (e.g., #1F5D4C primary color) and no hardcoded secrets.",
+  "dependencies": {
+    "framework": "next",
+    "language": "typescript",
+    "auth_provider": "supabase",
+    "packages": [
+      "@supabase/supabase-js@^2.55.0",
+      "next",
+      "react",
+      "react-toastify@^11.0.5",
+      "zod@^3.25.76",
+      "react-router-dom@^7.8.0"
+    ]
+  },
+  "supabase_config": {
+    "url": "https://kobuclkvlacdwvxmakvq.supabase.co",
+    "anon_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvYnVjbGt2bGFjZHd2eG1ha3ZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2OTYzOTIsImV4cCI6MjA2ODI3MjM5Mn0.wOq-3WWMLJyq9gKDoifb-7CqXb7kQx5hGcnv3MBCbPw",
+    "table": "users",
+    "schema": {
+      "id": "uuid",
+      "username": "text",
+      "photo_url": "text",
+      "bio": "text",
+      "posts_count": "integer",
+      "followers_count": "integer",
+      "following_count": "integer",
+      "preferred_category": "text",
+      "last_tasted_at": "timestamp with time zone",
+      "email_confirmed": "boolean",
+      "tastings_count": "integer",
+      "reviews_count": "integer",
+      "created_at": "timestamp with time zone",
+      "updated_at": "timestamp with time zone"
+    }
+  },
+  "ui_requirements": {
+    "layout": "mobile-first",
+    "design_system": {
       "colors": {
-        "brand": {
-          "primary": "#1F5D4C",
-          "primary-hover": "#2E7D32",
-          "secondary": "#D4AF37",
-          "secondary-hover": "#E6C84A",
-          "accent": "#C65A2E",
-          "accent-hover": "#D6743A"
-        },
-        "background": {
-          "app": "#FEF3E7",
-          "surface": "#FFFFFF",
-          "surface-secondary": "#F7F3EA",
-          "muted": "#F4E3CC",
-          "dark": "#161614"
-        },
-        "text": {
-          "primary": "#2C1810",
-          "secondary": "#5C5C5C",
-          "muted": "#8B8B8B",
-          "inverse": "#FFFFFF"
-        },
-        "border": {
-          "subtle": "rgba(0,0,0,0.08)",
-          "default": "rgba(0,0,0,0.12)",
-          "strong": "rgba(0,0,0,0.20)",
-          "focus": "#1F5D4C"
-        },
-        "semantic": {
-          "success": "#22C55E",
-          "warning": "#F59E0B",
-          "error": "#EF4444",
-          "info": "#3B82F6"
-        },
-        "flavor_wheel": {
-          "fruity": "#E4572E",
-          "floral": "#E9A2AD",
-          "vegetal": "#57A773",
-          "smoky": "#6B5B95",
-          "sweet": "#DFAF2B",
-          "spicy": "#B53F3F",
-          "bitter": "#2F4858",
-          "sour": "#3B9ED8",
-          "roasted": "#8C5A3A",
-          "nutty": "#C29F6D",
-          "mineral": "#7A8A8C",
-          "earthy": "#6D7F4B"
-        }
+        "primary": "#1F5D4C",
+        "background": "#FEF3E7",
+        "text": "#2C1810",
+        "button_hover": "#2E7D32"
       },
       "typography": {
-        "fonts": {
-          "heading": {
-            "family": "Crimson Text Variable, ui-serif, Georgia",
-            "weights": [400, 600, 700]
-          },
-          "body": {
-            "family": "Inter Variable, system-ui, -apple-system, sans-serif",
-            "weights": [400, 500, 600]
-          }
-        },
-        "scales": {
-          "h1": "clamp(22px, 5vw, 28px)",
-          "h2": "clamp(18px, 4vw, 24px)",
-          "h3": "clamp(16px, 3.5vw, 20px)",
-          "body": "16px",
-          "small": "clamp(14px, 2.5vw, 15px)",
-          "caption": "clamp(12px, 2vw, 13px)"
-        },
-        "line_heights": {
-          "heading": 1.3,
-          "body": 1.6,
-          "snug": 1.4
-        }
+        "font_family": "Inter Variable, system-ui, -apple-system, sans-serif",
+        "font_size": "16px",
+        "heading_size": "clamp(22px, 5vw, 28px)"
       },
       "spacing": {
-        "base_unit": "8px",
-        "scale": {
-          "0": "0px",
-          "1": "4px",
-          "2": "8px",
-          "3": "12px",
-          "4": "16px",
-          "5": "20px",
-          "6": "24px",
-          "8": "32px",
-          "10": "40px",
-          "12": "48px",
-          "16": "64px"
-        },
-        "component_spacing": {
-          "button": {
-            "padding_y": "12px",
-            "padding_x": "20px",
-            "min_height": "44px"
-          },
-          "card": {
-            "padding": "16px",
-            "margin": "12px",
-            "border_radius": "16px"
-          },
-          "input": {
-            "padding_y": "12px",
-            "padding_x": "14px",
-            "height": "44px",
-            "border_radius": "12px"
-          }
-        }
-      },
-      "components": {
-        "buttons": {
-          "primary": {
-            "background": "linear-gradient(135deg, #1F5D4C 0%, #2E7D32 100%)",
-            "text": "#FFFFFF",
-            "border_radius": "12px",
-            "padding": "12px 20px",
-            "min_height": "44px",
-            "font_weight": "600",
-            "shadow": "0 2px 8px rgba(31, 93, 76, 0.25)",
-            "hover": {
-              "shadow": "0 4px 16px rgba(31, 93, 76, 0.35)",
-              "transform": "translateY(-2px)"
-            },
-            "active": {
-              "transform": "translateY(1px) scale(0.98)",
-              "shadow": "0 1px 4px rgba(31, 93, 76, 0.3)"
-            }
-          },
-          "secondary": {
-            "background": "#FFFFFF",
-            "border": "2px solid rgba(0,0,0,0.12)",
-            "text": "#2C1810",
-            "border_radius": "12px",
-            "padding": "12px 20px",
-            "min_height": "44px",
-            "font_weight": "500",
-            "hover": {
-              "border_color": "#C65A2E",
-              "shadow": "0 1px 3px rgba(0,0,0,0.1)"
-            }
-          },
-          "ghost": {
-            "background": "transparent",
-            "text": "#1F5D4C",
-            "border": "1px solid #1F5D4C",
-            "border_radius": "12px",
-            "padding": "12px 20px",
-            "min_height": "44px"
-          }
-        },
-        "cards": {
-          "default": {
-            "background": "#FFFFFF",
-            "border": "1px solid rgba(0,0,0,0.12)",
-            "border_radius": "16px",
-            "shadow": "0 2px 8px rgba(0, 0, 0, 0.08)",
-            "padding": "16px",
-            "hover": {
-              "shadow": "0 8px 24px rgba(0, 0, 0, 0.12)",
-              "transform": "translateY(-4px)"
-            }
-          },
-          "tasting": {
-            "background": "linear-gradient(135deg, #FEF3E7 0%, #F7F3EA 100%)",
-            "border": "1px solid rgba(31, 93, 76, 0.1)",
-            "border_radius": "16px",
-            "shadow": "0 2px 8px rgba(31, 93, 76, 0.08)",
-            "hover": {
-              "shadow": "0 8px 24px rgba(31, 93, 76, 0.15)",
-              "transform": "translateY(-2px) scale(1.01)"
-            }
-          }
-        },
-        "forms": {
-          "input": {
-            "background": "#FFFFFF",
-            "border": "2px solid rgba(0,0,0,0.12)",
-            "border_radius": "12px",
-            "padding": "12px 14px",
-            "font_size": "16px",
-            "min_height": "44px",
-            "focus": {
-              "border_color": "#C65A2E",
-              "shadow": "0 0 0 3px rgb(212 175 55 / 10%)"
-            }
-          },
-          "label": {
-            "font_size": "14px",
-            "font_weight": "500",
-            "color": "#5C5C5C",
-            "margin_bottom": "8px"
-          }
-        }
-      },
-      "effects": {
-        "shadows": {
-          "xs": "0 1px 2px rgba(0,0,0,0.05)",
-          "sm": "0 1px 3px rgba(0,0,0,0.1)",
-          "md": "0 4px 6px rgba(0,0,0,0.1)",
-          "lg": "0 10px 15px rgba(0,0,0,0.15)",
-          "xl": "0 20px 25px rgba(0,0,0,0.2)"
-        },
-        "gradients": {
-          "primary": "linear-gradient(135deg, #1F5D4C 0%, #2E7D32 100%)",
-          "accent": "linear-gradient(135deg, #C65A2E 0%, #D6743A 100%)",
-          "subtle": "radial-gradient(90% 120% at 0% 0%, #FDF4E6 0%, #F7E9D6 60%, #F4E3CC 100%)"
-        },
-        "animations": {
-          "fade_in_up": "translateY(20px) to translateY(0)",
-          "scale_in": "scale(0.95) to scale(1)",
-          "slide_in_left": "translateX(-20px) to translateX(0)",
-          "slide_in_right": "translateX(20px) to translateX(0)"
-        }
-      },
-      "responsive": {
-        "breakpoints": {
-          "mobile": "0px",
-          "tablet": "640px",
-          "desktop": "1024px",
-          "wide": "1280px"
-        },
-        "containers": {
-          "mobile": "calc(100vw - 32px)",
-          "tablet": "calc(100vw - 48px)",
-          "desktop": "min(1200px, calc(100vw - 64px))"
-        }
-      },
-      "accessibility": {
-        "contrast_minimum": "4.5:1 for normal text",
-        "touch_targets": "≥44px minimum",
-        "focus_ring": "2px solid #1F5D4C",
-        "reduced_motion": "Respects prefers-reduced-motion",
-        "color_blind_safe": true
-      },
-      "css_variables": {
-        "colors": {
-          "--primary": "#1F5D4C",
-          "--primary-hover": "#2E7D32",
-          "--secondary": "#D4AF37",
-          "--accent": "#C65A2E",
-          "--background": "#FEF3E7",
-          "--surface": "#FFFFFF",
-          "--text-primary": "#2C1810",
-          "--text-secondary": "#5C5C5C",
-          "--border": "rgba(0,0,0,0.12)"
-        },
-        "typography": {
-          "--font-heading": "Crimson Text Variable, ui-serif, Georgia",
-          "--font-body": "Inter Variable, system-ui, -apple-system, sans-serif",
-          "--text-h1": "clamp(22px, 5vw, 28px)",
-          "--text-body": "16px"
-        },
-        "spacing": {
-          "--space-2": "8px",
-          "--space-3": "12px",
-          "--space-4": "16px",
-          "--space-5": "20px"
-        }
-      },
-      "tailwind_config": {
-        "colors": {
-          "primary": "var(--primary)",
-          "secondary": "var(--secondary)",
-          "accent": "var(--accent)",
-          "background": "var(--background)",
-          "surface": "var(--surface)",
-          "text": {
-            "primary": "var(--text-primary)",
-            "secondary": "var(--text-secondary)"
-          }
-        },
-        "fontFamily": {
-          "heading": ["var(--font-heading)"],
-          "body": ["var(--font-body)"]
-        },
-        "spacing": {
-          "2": "var(--space-2)",
-          "3": "var(--space-3)",
-          "4": "var(--space-4)",
-          "5": "var(--space-5)"
-        }
+        "padding": "16px",
+        "margin": "12px",
+        "button_padding": "12px 20px",
+        "button_min_height": "44px"
       }
     },
-    "requirements": {
-      "file_structure": "Set up a Next.js project with TypeScript support. Include directories for pages, components, styles, and assets. Ensure the structure supports mobile-first development and is scalable for future features (e.g., Quick Tasting, Create Tasting). Example structure: /pages, /components, /styles, /public.",
-      "landing_page": "Design a static landing page (/pages/index.tsx) reflecting the app's overview and unique value. Include a hero section with the app name, a brief tagline (e.g., 'Taste the World, One Sip at a Time'), and a call-to-action button (e.g., 'Get Started'). Use the CSS design system's colors, typography, and spacing for a Mexican-inspired look. Optimize for mobile screens with responsive layouts using the provided breakpoints.",
-      "no_functionality": "The landing page should be static HTML/TSX with inline styles or a linked CSS module (e.g., styles/index.module.css) based on the design system. Avoid adding interactive elements like forms or navigation beyond the call-to-action.",
-      "development_setup": "Configure package.json with Node.js dependencies (e.g., next, react, typescript, tailwindcss) and a start script for local development (e.g., 'next dev')."
+    "structure": {
+      "auth_page": {
+        "path": "/auth",
+        "fields": {
+          "register": [
+            {
+              "name": "full_name",
+              "type": "text",
+              "placeholder": "Full Name",
+              "required": true
+            },
+            {
+              "name": "email",
+              "type": "email",
+              "placeholder": "Email",
+              "required": true
+            },
+            {
+              "name": "password",
+              "type": "password",
+              "placeholder": "Password",
+              "required": true
+            }
+          ],
+          "login": [
+            {
+              "name": "email",
+              "type": "email",
+              "placeholder": "Email",
+              "required": true
+            },
+            {
+              "name": "password",
+              "type": "password",
+              "placeholder": "Password",
+              "required": true
+            }
+          ]
+        },
+        "button": {
+          "text": "{mode === 'login' ? 'Login' : 'Register'}",
+          "type": "primary",
+          "action": "{mode === 'login' ? 'signInUser' : 'signUpUser'}"
+        },
+        "toggle": {
+          "text": "Switch to {mode === 'login' ? 'Register' : 'Login'}",
+          "action": "toggle between register and login modes"
+        }
+      }
+    }
+  },
+  "code_generation": {
+    "file_path": "components/auth/AuthSection.tsx",
+    "framework": "next",
+    "language": "typescript",
+    "imports": [
+      "import { useState, useCallback } from 'react';",
+      "import { useRouter } from 'next/navigation';",
+      "import { createClient } from '@supabase/supabase-js';",
+      "import { toast } from 'react-toastify';",
+      "import { z } from 'zod';"
+    ],
+    "supabase_client": {
+      "code": "const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || '', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '');"
     },
-    "additional_notes": {
-      "inspiration": "Use the Quick Tasting PDF snippet to inspire the landing page's focus on simplicity and on-the-fly tasting. Leverage the Create Tasting PDF to hint at future versatility (e.g., Study vs. Competition modes) in the tagline or subtext.",
-      "accessibility": "Ensure the design is touch-friendly with large touch targets (≥44px) and high contrast for accessibility, per the CSS design system's guidelines."
+    "state_management": {
+      "mode": "useState<'login' | 'register'>('login')",
+      "form_data": "useState<{ full_name?: string; email: string; password: string }>({})",
+      "loading": "useState<boolean>(false)"
     },
-    "current_date": "2025-09-15",
-    "current_time": "11:34 AM CST"
+    "validation_schemas": {
+      "register_schema": "z.object({ full_name: z.string().min(2, 'Name required'), email: z.string().email('Invalid email'), password: z.string().min(8, 'Minimum 8 characters') })",
+      "login_schema": "z.object({ email: z.string().email('Invalid email'), password: z.string().min(8, 'Minimum 8 characters') })"
+    },
+    "functions": {
+      "handle_change": {
+        "code": "const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {\n  setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));\n};"
+      },
+      "handle_submit": {
+        "code": "const handleSubmit = useCallback(async (e: React.FormEvent) => {\n  e.preventDefault();\n  if (loading) return;\n  setLoading(true);\n  try {\n    if (mode === 'register') {\n      registerSchema.parse(formData);\n      const { data, error } = await supabase.auth.signUp({\n        email: formData.email,\n        password: formData.password,\n        options: { data: { full_name: formData.full_name } }\n      });\n      if (error) throw error;\n      toast.success('Registration successful! Check your email to confirm.');\n      setMode('login');\n    } else {\n      loginSchema.parse({ email: formData.email, password: formData.password });\n      const { data, error } = await supabase.auth.signInWithPassword({\n        email: formData.email,\n        password: formData.password\n      });\n      if (error) throw error;\n      toast.success('Login successful!');\n      router.push('/dashboard');\n    }\n  } catch (err) {\n    if (err instanceof z.ZodError) {\n      toast.error(err.errors[0].message);\n    } else {\n      toast.error(err.message || 'An error occurred');\n    }\n  } finally {\n    setLoading(false);\n  }\n}, [mode, formData, loading, router]);"
+      }
+    },
+    "render": {
+      "jsx": "<div className=\"min-h-screen bg-[#FEF3E7] p-4\">\n  <h1 className=\"text-[#2C1810] text-[clamp(22px,5vw,28px)] font-[Inter Variable] mb-4\">FlavorWheel</h1>\n  {mode === 'login' ? (\n    <form onSubmit={handleSubmit} className=\"space-y-4\">\n      <input\n        type=\"email\"\n        name=\"email\"\n        placeholder=\"Email\"\n        value={formData.email || ''}\n        onChange={handleChange}\n        required\n        className=\"w-full p-3 border-2 border-rgba(0,0,0,0.12) rounded-lg text-base min-h-[44px]\"\n      />\n      <input\n        type=\"password\"\n        name=\"password\"\n        placeholder=\"Password\"\n        value={formData.password || ''}\n        onChange={handleChange}\n        required\n        className=\"w-full p-3 border-2 border-rgba(0,0,0,0.12) rounded-lg text-base min-h-[44px] mt-3\"\n      />\n      <button\n        type=\"submit\"\n        disabled={loading}\n        className=\"w-full bg-[#1F5D4C] text-white p-3 rounded-lg min-h-[44px] font-semibold disabled:opacity-50\"\n      >\n        {loading ? 'Processing...' : 'Login'}\n      </button>\n    </form>\n  ) : (\n    <form onSubmit={handleSubmit} className=\"space-y-4\">\n      <input\n        type=\"text\"\n        name=\"full_name\"\n        placeholder=\"Full Name\"\n        value={formData.full_name || ''}\n        onChange={handleChange}\n        required\n        className=\"w-full p-3 border-2 border-rgba(0,0,0,0.12) rounded-lg text-base min-h-[44px]\"\n      />\n      <input\n        type=\"email\"\n        name=\"email\"\n        placeholder=\"Email\"\n        value={formData.email || ''}\n        onChange={handleChange}\n        required\n        className=\"w-full p-3 border-2 border-rgba(0,0,0,0.12) rounded-lg text-base min-h-[44px] mt-3\"\n      />\n      <input\n        type=\"password\"\n        name=\"password\"\n        placeholder=\"Password\"\n        value={formData.password || ''}\n        onChange={handleChange}\n        required\n        className=\"w-full p-3 border-2 border-rgba(0,0,0,0.12) rounded-lg text-base min-h-[44px] mt-3\"\n      />\n      <button\n        type=\"submit\"\n        disabled={loading}\n        className=\"w-full bg-[#1F5D4C] text-white p-3 rounded-lg min-h-[44px] font-semibold disabled:opacity-50\"\n      >\n        {loading ? 'Processing...' : 'Register'}\n      </button>\n    </form>\n  )}\n  <button\n    onClick={() => setMode(mode === 'login' ? 'register' : 'login')}\n    className=\"w-full mt-4 bg-transparent border border-[#1F5D4C] text-[#1F5D4C] p-3 rounded-lg min-h-[44px] hover:bg-[#2E7D32] hover:text-white\"\n  >\n    Switch to {mode === 'login' ? 'Register' : 'Login'}\n  </button>\n</div>"
+    }
+  },
+  "notes": {
+    "supabase_setup": "Ensure the trigger function (handle_new_user) is applied in Supabase. Store NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local.",
+    "toastify_usage": "Use toast.success/info/error for registration/login feedback as per AUDITORIA_AUTH_MODIFIED.md workflow.",
+    "mobile_optimization": "Test on 375x667px (iPhone SE) with touch targets ≥44px.",
+    "current_date_time": "2025-09-15 04:13 PM CST"
   }
 }
