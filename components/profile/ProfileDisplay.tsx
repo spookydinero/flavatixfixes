@@ -143,7 +143,7 @@ export default function ProfileDisplay({ profile, authEmail }: ProfileDisplayPro
         <div className="bg-[#FEF3E7] rounded-xl p-sm text-center">
           <div className="text-h2 font-heading font-bold text-[#1F5D4C]">
             {isLoadingStats ? (
-              <div className="animate-pulse bg-gray-300 h-8 w-8 rounded mx-auto"></div>
+              <span className="animate-pulse text-[#1F5D4C]/50">-</span>
             ) : (
               realTimeTastingsCount !== null ? realTimeTastingsCount : profile.tastings_count
             )}
