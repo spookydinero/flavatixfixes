@@ -236,7 +236,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
           {/* Session Notes */}
           <div className="card p-md">
-            <h3 className="text-h4 font-heading font-semibold text-text-primary mb-sm">Session Notes</h3>
+            <h3 className="text-h4 font-heading font-semibold text-text-primary mb-sm">Other Notes</h3>
             <textarea
               value={sessionNotes}
               onChange={(e) => setSessionNotes(e.target.value)}

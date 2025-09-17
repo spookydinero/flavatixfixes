@@ -169,7 +169,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
         {/* Session Notes */}
         {session.notes && (
           <div className="mt-sm p-sm bg-background-app rounded-lg">
-            <h3 className="text-small font-body font-medium text-text-secondary mb-xs">Session Notes</h3>
+            <h3 className="text-small font-body font-medium text-text-secondary mb-xs">Other Notes</h3>
             <p className="text-text-primary">{session.notes}</p>
           </div>
         )}
@@ -182,11 +182,11 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
           <div className="text-text-secondary">Total Items</div>
         </div>
         <div className="card p-md text-center">
-          <div className="text-h1 font-heading font-bold text-success mb-xs">{completedItems.length}</div>
+          <div className="text-h1 font-heading font-bold text-success text-primary mb-xs">{completedItems.length}</div>
           <div className="text-text-secondary">Items Scored</div>
         </div>
         <div className="card p-md text-center">
-          <div className="text-h1 font-heading font-bold text-warning mb-xs">
+          <div className="text-h1 font-heading font-bold text-warning text-primary mb-xs">
             {averageScore > 0 ? `${averageScore}/5` : 'N/A'}
           </div>
           <div className="text-text-secondary">Average Score</div>

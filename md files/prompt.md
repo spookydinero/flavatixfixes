@@ -1,397 +1,123 @@
-# Implementación de Funcionalidad de Eliminación de Catas - Guía JSON Detallada
+# Implementación: Cambio de Overall Score de 1-10 a 1-100
 
-## Estructura General del JSON de Implementación
+## JSON de Implementación Paso a Paso
 
 ```json
 {
-  "feature": {
-    "name": "delete_tasting_functionality",
-    "description": "Funcionalidad para eliminar catas individuales del historial",
-    "version": "1.0.0",
-    "priority": "high"
-  },
-  "requirements": {
-    "user_interface": {
-      "delete_button": {
-        "visibility": "visible",
-        "position": "top-right",
-        "icon": "trash",
-        "color": "red",
-        "text": "Eliminar",
-        "accessibility": {
-          "aria_label": "Eliminar cata",
-          "keyboard_support": true
+  "project": "flavatix",
+  "feature": "overall_score_1_to_100",
+  "description": "Cambiar el sistema de puntuación general de escala 1-10 a 1-100 con slider",
+  "steps": [
+
+    {
+      "step": 1,
+      "title": "Actualizar Función getScoreLabel",
+      "description": "Modificar las etiquetas de puntuación para el rango 1-100",
+      "files": [
+        {
+          "path": "${project_root}/components/quick-tasting/TastingItem.tsx",
+          "action": "update",
+          "line_range": "36-46",
+          "old_content": "const getScoreLabel = (score: number): string => {\n    const labels: Record<number, string> = {\n      1: '(Poor)',\n      2: '(Fair)',\n      3: '(Good)',\n      4: '(Very Good)',\n      5: '(Excellent)'\n    };\n    return labels[score] || '';\n  };",
+          "new_content": "const getScoreLabel = (score: number): string => {\n    if (score >= 90) return '(Exceptional)';\n    if (score >= 80) return '(Excellent)';\n    if (score >= 70) return '(Very Good)';\n    if (score >= 60) return '(Good)';\n    if (score >= 50) return '(Average)';\n    if (score >= 40) return '(Below Average)';\n    if (score >= 30) return '(Poor)';\n    if (score >= 20) return '(Very Poor)';\n    if (score >= 10) return '(Terrible)';\n    return '(Unacceptable)';\n  };"
         }
-      },
-      "confirmation_modal": {
-        "required": true,
-        "title": "Confirmar eliminación",
-        "message": "¿Estás seguro de que deseas eliminar esta cata? Esta acción no se puede deshacer.",
-        "buttons": {
-          "confirm": {
-            "text": "Eliminar",
-            "style": "destructive",
-            "color": "red"
-          },
-          "cancel": {
-            "text": "Cancelar",
-            "style": "secondary",
-            "color": "gray"
-          }
-        }
-      }
-    },
-    "backend_operations": {
-      "database_deletion": {
-        "permanent": true,
-        "cascade": true,
-        "tables_affected": [
-          "quick_tastings",
-          "quick_tasting_items"
-        ],
-        "verification": {
-          "user_ownership": true,
-          "existence_check": true
-        }
-      },
-      "view_update": {
-        "automatic": true,
-        "method": "state_refresh",
-        "animation": "fade_out"
-      }
-    }
-  },
-  "implementation": {
-    "files_to_modify": {
-      "historyService.ts": {
-        "path": "/lib/historyService.ts",
-        "changes": {
-          "new_function": {
-            "name": "deleteTasting",
-            "parameters": [
-              {
-                "name": "tastingId",
-                "type": "string",
-                "description": "ID único de la cata a eliminar"
-              },
-              {
-                "name": "userId",
-                "type": "string",
-                "description": "ID del usuario propietario"
-              }
-            ],
-            "return_type": "Promise<{ success: boolean; error: any }>",
-            "implementation_steps": [
-              "Verificar propiedad de la cata",
-              "Eliminar elementos relacionados (quick_tasting_items)",
-              "Eliminar cata principal (quick_tastings)",
-              "Manejar errores y retornar resultado"
-            ]
-          }
-        }
-      },
-      "TastingHistoryItem.tsx": {
-        "path": "/components/history/TastingHistoryItem.tsx",
-        "changes": {
-          "new_props": {
-            "onDelete": {
-              "type": "(id: string) => void",
-              "description": "Función callback para manejar eliminación"
-            }
-          },
-          "new_state": {
-            "isDeleting": {
-              "type": "boolean",
-              "initial_value": false,
-              "description": "Estado de carga durante eliminación"
-            }
-          },
-          "ui_elements": {
-            "delete_button": {
-              "component": "button",
-              "classes": "absolute top-2 right-2 p-2 text-red-500 hover:text-red-700",
-              "icon": "TrashIcon",
-              "onClick": "handleDeleteClick"
-            }
-          }
-        }
-      },
-      "TastingHistoryList.tsx": {
-        "path": "/components/history/TastingHistoryList.tsx",
-        "changes": {
-          "new_functions": {
-            "handleDeleteTasting": {
-              "parameters": ["tastingId: string"],
-              "implementation": [
-                "Mostrar modal de confirmación",
-                "Llamar deleteTasting del servicio",
-                "Actualizar estado local",
-                "Mostrar notificación de éxito/error"
-              ]
-            },
-            "refreshTastings": {
-              "description": "Recargar lista después de eliminación",
-              "implementation": "Llamar loadTastings nuevamente"
-            }
-          },
-          "state_updates": {
-            "tastings": {
-              "filter_method": "tastings.filter(t => t.id !== deletedId)",
-              "description": "Remover cata del estado"
-            }
-          }
-        }
-      }
-    },
-    "new_components": {
-      "ConfirmationModal": {
-        "optional": true,
-        "path": "/components/ui/ConfirmationModal.tsx",
-        "props": {
-          "isOpen": "boolean",
-          "onClose": "() => void",
-          "onConfirm": "() => void",
-          "title": "string",
-          "message": "string",
-          "confirmText": "string",
-          "cancelText": "string",
-          "isDestructive": "boolean"
-        },
-        "alternative": "Usar window.confirm() para implementación rápida"
-      }
-    }
-  },
-  "database_schema": {
-    "tables": {
-      "quick_tastings": {
-        "primary_key": "id",
-        "foreign_keys": {
-          "user_id": "references auth.users(id)"
-        },
-        "deletion_cascade": "manual"
-      },
-      "quick_tasting_items": {
-        "primary_key": "id",
-        "foreign_keys": {
-          "quick_tasting_id": "references quick_tastings(id)"
-        },
-        "deletion_order": "first"
-      }
-    },
-    "deletion_sequence": [
-      "1. Verificar propiedad (user_id = current_user)",
-      "2. Eliminar quick_tasting_items WHERE quick_tasting_id = target_id",
-      "3. Eliminar quick_tastings WHERE id = target_id AND user_id = current_user"
-    ]
-  },
-  "security_considerations": {
-    "authorization": {
-      "user_verification": {
-        "required": true,
-        "method": "user_id_match",
-        "description": "Solo el propietario puede eliminar sus catas"
-      },
-      "sql_injection_prevention": {
-        "method": "parameterized_queries",
-        "library": "supabase_client"
-      }
-    },
-    "data_validation": {
-      "tasting_id": {
-        "type": "uuid",
-        "required": true,
-        "validation": "isValidUUID()"
-      },
-      "user_id": {
-        "type": "uuid",
-        "required": true,
-        "source": "authenticated_session"
-      }
-    }
-  },
-  "error_handling": {
-    "scenarios": {
-      "tasting_not_found": {
-        "message": "La cata no existe o ya fue eliminada",
-        "action": "refresh_list"
-      },
-      "unauthorized_access": {
-        "message": "No tienes permisos para eliminar esta cata",
-        "action": "show_error"
-      },
-      "database_error": {
-        "message": "Error al eliminar la cata. Inténtalo de nuevo.",
-        "action": "retry_option"
-      },
-      "network_error": {
-        "message": "Error de conexión. Verifica tu internet.",
-        "action": "retry_option"
-      }
-    },
-    "user_feedback": {
-      "success": {
-        "type": "toast_success",
-        "duration": 3000
-      },
-      "error": {
-        "type": "toast_error",
-        "duration": 5000,
-        "dismissible": true
-      }
-    }
-  },
-  "testing_scenarios": {
-    "unit_tests": {
-      "deleteTasting_function": [
-        "Eliminación con datos válidos",
-        "Error cuando la cata no existe",
-        "Error cuando el usuario no es propietario",
-        "Error de base de datos",
-        "Manejo de parámetros inválidos"
       ]
     },
-    "integration_tests": {
-      "ui_flow": [
-        "Click en botón eliminar muestra confirmación",
-        "Confirmación ejecuta eliminación",
-        "Cancelación cierra modal sin eliminar",
-        "Lista se actualiza después de eliminación",
-        "Estados de carga se muestran correctamente"
+    {
+      "step": 2,
+      "title": "Reemplazar Sistema de Estrellas por Slider",
+      "description": "Cambiar la interfaz de puntuación de estrellas a slider de 1-100",
+      "files": [
+        {
+          "path": "${project_root}/components/quick-tasting/TastingItem.tsx",
+          "action": "update",
+          "line_range": "163-195",
+          "old_content": "        {/* Overall Score */}\n        <div className=\"text-center font-body flex-shrink-0\">\n          <div className=\"text-xs tablet:text-small font-body text-text-secondary mb-xs\">Overall Score</div>\n          <div className=\"flex space-x-1 tablet:space-x-xs justify-center\">\n            {[1, 2, 3, 4, 5].map((score) => (\n              <button\n                key={score}\n                onClick={() => handleScoreChange(score)}\n                className={`\n                  min-w-touch min-h-touch w-9 h-9 tablet:w-11 tablet:h-11 rounded-full transition-all duration-300 flex items-center justify-center\n                  transform hover:scale-110 active:scale-95 touch-manipulation\n                  ${localScore >= score\n                    ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 text-yellow-900 shadow-lg'\n                    : 'bg-background-surface text-text-secondary hover:bg-yellow-50 hover:text-yellow-600'\n                  }\n                `}\n              >\n                <Star \n                  className={`w-4 h-4 tablet:w-5 tablet:h-5 transition-all duration-200 ${\n                    localScore >= score \n                      ? 'fill-current drop-shadow-sm' \n                      : 'hover:fill-yellow-200'\n                  }`} \n                />\n              </button>\n            ))}\n          </div>\n          {localScore > 0 && (\n            <div className=\"text-xs tablet:text-small font-body font-medium text-text-primary mt-xs animate-fade-in\">\n              {localScore}/5 {getScoreLabel(localScore)}\n            </div>\n          )}\n        </div>",
+          "new_content": "        {/* Overall Score */}\n        <div className=\"text-center font-body flex-shrink-0\">\n          <div className=\"text-xs tablet:text-small font-body text-text-secondary mb-xs\">Overall Score</div>\n          <div className=\"flex flex-col items-center space-y-2\">\n            <input\n              type=\"range\"\n              min=\"1\"\n              max=\"100\"\n              value={localScore}\n              onChange={(e) => handleScoreChange(parseInt(e.target.value))}\n              className=\"w-32 tablet:w-40 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider\"\n              style={{\n                background: `linear-gradient(to right, #fbbf24 0%, #fbbf24 ${localScore}%, #e5e7eb ${localScore}%, #e5e7eb 100%)`\n              }}\n            />\n            <div className=\"text-center\">\n              <div className=\"text-lg tablet:text-xl font-bold text-primary-600\">{localScore}</div>\n              {localScore > 0 && (\n                <div className=\"text-xs tablet:text-small font-body font-medium text-text-primary animate-fade-in\">\n                  {getScoreLabel(localScore)}\n                </div>\n              )}\n            </div>\n          </div>\n        </div>"
+        }
       ]
     },
-    "e2e_tests": {
-      "complete_flow": [
-        "Usuario navega a historial",
-        "Hace click en eliminar cata",
-        "Confirma eliminación",
-        "Cata desaparece de la lista",
-        "No aparece en recargas posteriores"
-      ]
-    }
-  },
-  "performance_considerations": {
-    "optimizations": {
-      "optimistic_updates": {
-        "enabled": true,
-        "description": "Remover de UI inmediatamente, revertir si falla"
-      },
-      "batch_operations": {
-        "applicable": false,
-        "reason": "Eliminación individual por diseño"
-      },
-      "caching": {
-        "invalidation": "required",
-        "scope": "user_tasting_history"
-      }
-    },
-    "database_impact": {
-      "indexes": {
-        "required": [
-          "quick_tastings(user_id)",
-          "quick_tasting_items(quick_tasting_id)"
-        ]
-      },
-      "transaction_size": "small",
-      "estimated_duration": "< 100ms"
-    }
-  },
-  "deployment_checklist": {
-    "pre_deployment": [
-      "Verificar tests unitarios pasan",
-      "Verificar tests de integración pasan",
-      "Revisar permisos de base de datos",
-      "Confirmar backup de datos"
-    ],
-    "post_deployment": [
-      "Verificar funcionalidad en producción",
-      "Monitorear logs de errores",
-      "Confirmar performance aceptable",
-      "Validar con usuarios beta"
-    ]
-  },
-  "configuration_alternatives": {
-    "soft_delete": {
-      "description": "Marcar como eliminado en lugar de borrar físicamente",
-      "implementation": {
-        "field": "deleted_at",
-        "type": "timestamp",
-        "queries": "WHERE deleted_at IS NULL"
-      },
-      "pros": ["Recuperación posible", "Auditoría completa"],
-      "cons": ["Más complejidad", "Datos acumulados"]
-    },
-    "bulk_delete": {
-      "description": "Permitir selección múltiple para eliminar",
-      "ui_changes": ["Checkboxes", "Botón eliminar seleccionados"],
-      "complexity": "medium"
-    },
-    "undo_functionality": {
-      "description": "Permitir deshacer eliminación por tiempo limitado",
-      "implementation": "Soft delete + cleanup job",
-      "complexity": "high"
-    }
-  },
-  "maintenance_notes": {
-    "monitoring": {
-      "metrics": [
-        "Número de eliminaciones por día",
-        "Errores en eliminación",
-        "Tiempo de respuesta"
-      ],
-      "alerts": [
-        "Tasa de error > 5%",
-        "Tiempo de respuesta > 1s"
+    {
+      "step": 3,
+      "title": "Agregar Estilos CSS para Slider",
+      "description": "Añadir estilos personalizados para el slider de puntuación",
+      "files": [
+        {
+          "path": "${project_root}/styles/globals.css",
+          "action": "append",
+          "content": "\n/* Slider styles for overall score */\n.slider::-webkit-slider-thumb {\n  appearance: none;\n  height: 20px;\n  width: 20px;\n  border-radius: 50%;\n  background: #fbbf24;\n  cursor: pointer;\n  border: 2px solid #ffffff;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);\n}\n\n.slider::-moz-range-thumb {\n  height: 20px;\n  width: 20px;\n  border-radius: 50%;\n  background: #fbbf24;\n  cursor: pointer;\n  border: 2px solid #ffffff;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);\n}\n\n.slider:focus {\n  outline: none;\n}\n\n.slider:focus::-webkit-slider-thumb {\n  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.3);\n}\n\n.slider:hover::-webkit-slider-thumb {\n  transform: scale(1.1);\n  transition: transform 0.2s ease;\n}\n"
+        }
       ]
     },
-    "cleanup": {
-      "orphaned_data": "Verificar periódicamente items huérfanos",
-      "logs": "Rotar logs de eliminación mensualmente"
+    {
+      "step": 4,
+      "title": "Actualizar Tipos TypeScript",
+      "description": "Verificar y actualizar tipos en supabase.ts si es necesario",
+      "files": [
+        {
+          "path": "${project_root}/lib/supabase.ts",
+          "action": "verify",
+          "description": "Confirmar que los tipos permiten overall_score: number en el rango 1-100"
+        }
+      ]
+    },
+    {
+      "step": 5,
+      "title": "Actualizar Flavor Profile Display",
+      "description": "Modificar la visualización del perfil de sabores para mostrar el nuevo rango",
+      "files": [
+        {
+          "path": "${project_root}/components/quick-tasting/TastingItem.tsx",
+          "action": "update",
+          "line_range": "260-270",
+          "old_content": "                {flavor} ({score}/5)",
+          "new_content": "                {flavor} ({score}/100)"
+        }
+      ]
+    },
+    {
+      "step": 6,
+      "title": "Probar Funcionalidad",
+      "description": "Verificar que todos los cambios funcionen correctamente",
+      "actions": [
+        "Iniciar servidor de desarrollo: npm run dev",
+        "Navegar a /quick-tasting",
+        "Crear nueva sesión de cata",
+        "Verificar que el slider funciona de 1-100",
+        "Confirmar que las etiquetas se muestran correctamente",
+
+        "Comprobar que el historial muestra los nuevos puntajes"
+      ]
     }
+  ],
+  "validation_checklist": [
+    "✓ Función getScoreLabel actualizada para rango 1-100",
+    "✓ Sistema de estrellas reemplazado por slider",
+    "✓ Estilos CSS para slider agregados",
+    "✓ Tipos TypeScript verificados",
+    "✓ Display de flavor profile actualizado",
+    "✓ Funcionalidad probada end-to-end"
+  ],
+  "rollback_plan": {
+    "code": "Restaurar código desde git: git checkout HEAD~1 -- components/quick-tasting/TastingItem.tsx styles/globals.css"
   }
 }
 ```
 
-## Explicación de Secciones
-
-### 1. Feature
-Define la funcionalidad general, su nombre, descripción y prioridad.
-
-### 2. Requirements
-Especifica los requisitos de UI y backend, incluyendo elementos visuales y operaciones de base de datos.
-
-### 3. Implementation
-Detalla los archivos a modificar, nuevas funciones a crear y componentes adicionales necesarios.
-
-### 4. Database Schema
-Describe la estructura de base de datos relevante y el orden de eliminación para mantener integridad referencial.
-
-### 5. Security Considerations
-Cubre aspectos de seguridad como autorización, validación de datos y prevención de ataques.
-
-### 6. Error Handling
-Define escenarios de error posibles y cómo manejarlos, incluyendo mensajes para el usuario.
-
-### 7. Testing Scenarios
-Especifica casos de prueba para diferentes niveles (unitario, integración, e2e).
-
-### 8. Performance Considerations
-Optimizaciones posibles y consideraciones de rendimiento.
-
-### 9. Deployment Checklist
-Lista de verificación para antes y después del despliegue.
-
-### 10. Configuration Alternatives
-Opciones alternativas de implementación con sus pros y contras.
-
-### 11. Maintenance Notes
-Consideraciones para el mantenimiento a largo plazo.
-
 ## Notas de Implementación
 
-- **Prioridad de Seguridad**: Siempre verificar que el usuario sea propietario de la cata antes de eliminar.
-- **Experiencia de Usuario**: Proporcionar feedback claro y confirmación antes de acciones destructivas.
-- **Integridad de Datos**: Eliminar en el orden correcto para evitar violaciones de claves foráneas.
-- **Manejo de Errores**: Cubrir todos los escenarios posibles con mensajes informativos.
-- **Performance**: Considerar optimizaciones como actualizaciones optimistas para mejor UX.
+- **Compatibilidad**: El slider es compatible con dispositivos móviles y de escritorio
+- **Accesibilidad**: Mantiene soporte para navegación por teclado
+- **Performance**: No impacta el rendimiento de la aplicación
+- **UX**: Proporciona feedback visual inmediato al usuario
+- **Datos**: Mantiene compatibilidad con datos existentes (valores 1-10 siguen siendo válidos)
 
-Este JSON sirve como guía completa para implementar la funcionalidad de eliminación de catas de manera robusta y segura.
+## Comandos de Verificación
+
+```bash
+# Iniciar servidor de desarrollo
+npm run dev
+
+# Verificar tipos TypeScript
+npx tsc --noEmit
+```

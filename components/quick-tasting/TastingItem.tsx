@@ -33,14 +33,16 @@ const TastingItem: React.FC<TastingItemProps> = ({
   const [localScore, setLocalScore] = useState(item.overall_score || 0);
 
   const getScoreLabel = (score: number): string => {
-    const labels: Record<number, string> = {
-      1: '(Poor)',
-      2: '(Fair)',
-      3: '(Good)',
-      4: '(Very Good)',
-      5: '(Excellent)'
-    };
-    return labels[score] || '';
+    if (score >= 90) return '(Exceptional)';
+    if (score >= 80) return '(Excellent)';
+    if (score >= 70) return '(Very Good)';
+    if (score >= 60) return '(Good)';
+    if (score >= 50) return '(Average)';
+    if (score >= 40) return '(Below Average)';
+    if (score >= 30) return '(Poor)';
+    if (score >= 20) return '(Very Poor)';
+    if (score >= 10) return '(Terrible)';
+    return '(Unacceptable)';
   };
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = getSupabaseClient() as any;
@@ -163,36 +165,28 @@ const TastingItem: React.FC<TastingItemProps> = ({
         
         {/* Overall Score */}
         <div className="text-center font-body flex-shrink-0">
-          <div className="text-xs tablet:text-small font-body text-text-secondary mb-xs">Overall Score</div>
-          <div className="flex space-x-1 tablet:space-x-xs justify-center">
-            {[1, 2, 3, 4, 5].map((score) => (
-              <button
-                key={score}
-                onClick={() => handleScoreChange(score)}
-                className={`
-                  min-w-touch min-h-touch w-9 h-9 tablet:w-11 tablet:h-11 rounded-full transition-all duration-300 flex items-center justify-center
-                  transform hover:scale-110 active:scale-95 touch-manipulation
-                  ${localScore >= score
-                    ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 text-yellow-900 shadow-lg'
-                    : 'bg-background-surface text-text-secondary hover:bg-yellow-50 hover:text-yellow-600'
-                  }
-                `}
-              >
-                <Star 
-                  className={`w-4 h-4 tablet:w-5 tablet:h-5 transition-all duration-200 ${
-                    localScore >= score 
-                      ? 'fill-current drop-shadow-sm' 
-                      : 'hover:fill-yellow-200'
-                  }`} 
-                />
-              </button>
-            ))}
-          </div>
-          {localScore > 0 && (
-            <div className="text-xs tablet:text-small font-body font-medium text-text-primary mt-xs animate-fade-in">
-              {localScore}/5 {getScoreLabel(localScore)}
+          <div className="text-xs tablet:text-small font-body text-text-secondary mb-1">Overall Score</div>
+          <div className="flex flex-col items-center space-y-1.5">
+            <input
+              type="range"
+              min="1"
+              max="100"
+              value={localScore}
+              onChange={(e) => handleScoreChange(parseInt(e.target.value))}
+              className="w-28 mobile:w-32 tablet:w-40 h-2.5 mobile:h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+              style={{
+                background: `linear-gradient(to right, #fbbf24 0%, #fbbf24 ${localScore}%, #e5e7eb ${localScore}%, #e5e7eb 100%)`
+              }}
+            />
+            <div className="text-center">
+              <div className="text-base mobile:text-lg tablet:text-xl font-bold text-primary-600">{localScore}</div>
+              {localScore > 0 && (
+                <div className="text-xs mobile:text-xs tablet:text-small font-body font-medium text-text-primary animate-fade-in leading-tight">
+                  {getScoreLabel(localScore)}
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 
@@ -243,7 +237,7 @@ const TastingItem: React.FC<TastingItemProps> = ({
 
       {/* Notes Section */}
       <div>
-        <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Tasting Notes</h4>
+        <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Aroma</h4>
         <textarea
           value={localNotes}
           onChange={(e) => handleNotesChange(e.target.value)}
@@ -262,7 +256,7 @@ const TastingItem: React.FC<TastingItemProps> = ({
                 key={flavor}
                 className="px-xs tablet:px-sm py-1 tablet:py-xs bg-primary-100 text-primary-800 rounded-full text-xs tablet:text-small font-body font-medium"
               >
-                {flavor} ({score}/5)
+                {flavor} ({score}/100)
               </div>
             ))}
           </div>

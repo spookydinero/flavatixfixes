@@ -186,3 +186,47 @@ textarea {
 .skip-link:focus {
   top: 6px;
 }
+
+/* Add any additional global styles here */
+
+/* Force light mode for form inputs */
+.form-input {
+  background: #FFFFFF !important;
+  color: #2C1810 !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Slider styles for overall score */
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #fbbf24;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #fbbf24;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider:focus {
+  outline: none;
+}
+
+.slider:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.3);
+}
+
+.slider:hover::-webkit-slider-thumb {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
