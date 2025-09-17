@@ -94,7 +94,7 @@ const AuthSection = () => {
           </p>
         </div>
         
-        <div className="bg-background-surface rounded-card shadow-md p-6 border border-border-subtle">
+        <div className="card p-6">
           {/* Mode Toggle */}
           <div className="flex mb-6 bg-background-muted rounded-button p-1">
             <button
@@ -181,7 +181,7 @@ const AuthSection = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary text-text-inverse px-4 py-3 rounded-button min-h-[44px] font-body font-semibold shadow-primary hover:bg-primary-hover hover:shadow-primary-hover focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary disabled:hover:shadow-primary transition-all duration-200"
+                className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary disabled:hover:shadow-primary"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">

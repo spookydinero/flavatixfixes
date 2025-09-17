@@ -24,22 +24,22 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-subtle opacity-60"></div>
           
           {/* Content Container */}
-          <div className="relative z-10 px-4 py-16 mx-auto max-w-4xl text-center">
+          <div className="relative z-10 px-md py-2xl mx-auto max-w-4xl text-center">
             {/* Logo/Brand Area */}
-            <div className="mb-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-gradient-primary rounded-full shadow-primary">
+            <div className="mb-lg">
+              <div className="inline-flex items-center justify-center w-20 h-20 mb-md bg-gradient-primary rounded-full shadow-primary">
                 <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
               </div>
               
               {/* App Name */}
-              <h1 className="font-heading font-bold text-h1 text-text-primary mb-4">
+              <h1 className="font-heading font-bold text-h1 text-text-primary mb-sm">
                 FlavorWheel
               </h1>
               
               {/* Tagline */}
-              <p className="text-h3 text-text-secondary font-medium mb-2">
+              <p className="text-h3 text-text-secondary font-medium mb-xs">
                 Taste the World, One Sip at a Time
               </p>
               
@@ -52,14 +52,14 @@ export default function Home() {
             </div>
             
             {/* Key Features Preview */}
-            <div className="grid grid-cols-1 tablet:grid-cols-3 gap-6 mb-12 max-w-3xl mx-auto">
-              <div className="card-tasting p-6 text-center">
-                <div className="w-12 h-12 bg-flavor-fruity rounded-full mx-auto mb-4 flex items-center justify-center">
+            <div className="grid grid-cols-1 tablet:grid-cols-3 gap-md mb-xl max-w-3xl mx-auto">
+              <div className="card-tasting p-md text-center">
+                <div className="w-12 h-12 bg-flavor-fruity rounded-full mx-auto mb-sm flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M9 11H7v9a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9h-2m-7 2v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16"/>
                   </svg>
                 </div>
-                <h3 className="font-heading font-semibold text-h3 text-text-primary mb-2">
+                <h3 className="font-heading font-semibold text-h3 text-text-primary mb-xs">
                   Quick Tasting
                 </h3>
                 <p className="text-small text-text-secondary">
@@ -67,13 +67,13 @@ export default function Home() {
                 </p>
               </div>
               
-              <div className="card-tasting p-6 text-center">
-                <div className="w-12 h-12 bg-flavor-vegetal rounded-full mx-auto mb-4 flex items-center justify-center">
+              <div className="card-tasting p-md text-center">
+                <div className="w-12 h-12 bg-flavor-vegetal rounded-full mx-auto mb-sm flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                   </svg>
                 </div>
-                <h3 className="font-heading font-semibold text-h3 text-text-primary mb-2">
+                <h3 className="font-heading font-semibold text-h3 text-text-primary mb-xs">
                   Create Tastings
                 </h3>
                 <p className="text-small text-text-secondary">
@@ -81,13 +81,13 @@ export default function Home() {
                 </p>
               </div>
               
-              <div className="card-tasting p-6 text-center">
-                <div className="w-12 h-12 bg-flavor-roasted rounded-full mx-auto mb-4 flex items-center justify-center">
+              <div className="card-tasting p-md text-center">
+                <div className="w-12 h-12 bg-flavor-roasted rounded-full mx-auto mb-sm flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                   </svg>
                 </div>
-                <h3 className="font-heading font-semibold text-h3 text-text-primary mb-2">
+                <h3 className="font-heading font-semibold text-h3 text-text-primary mb-xs">
                   Flavor Wheels
                 </h3>
                 <p className="text-small text-text-secondary">
@@ -97,8 +97,8 @@ export default function Home() {
             </div>
             
             {/* Call to Action */}
-            <div className="space-y-4">
-              <button className="btn-primary text-body px-8 py-4 mx-auto block tablet:inline-block">
+            <div className="space-y-sm">
+              <button className="btn-primary mx-auto block tablet:inline-block">
                 Get Started
               </button>
               
@@ -110,15 +110,15 @@ export default function Home() {
         </div>
         
         {/* Value Proposition Section */}
-        <section className="py-16 px-4">
+        <section className="py-2xl px-md">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="font-heading font-bold text-h2 text-text-primary mb-8">
+            <h2 className="font-heading font-bold text-h2 text-text-primary mb-lg">
               Why FlavorWheel?
             </h2>
             
-            <div className="grid grid-cols-1 tablet:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 tablet:grid-cols-2 gap-lg max-w-3xl mx-auto">
               <div className="text-left">
-                <h3 className="font-heading font-semibold text-h3 text-primary mb-3">
+                <h3 className="font-heading font-semibold text-h3 text-primary mb-sm">
                   For Everyone
                 </h3>
                 <p className="text-body text-text-secondary leading-body">
@@ -128,7 +128,7 @@ export default function Home() {
               </div>
               
               <div className="text-left">
-                <h3 className="font-heading font-semibold text-h3 text-primary mb-3">
+                <h3 className="font-heading font-semibold text-h3 text-primary mb-sm">
                   Data-Driven Insights
                 </h3>
                 <p className="text-body text-text-secondary leading-body">
@@ -138,7 +138,7 @@ export default function Home() {
               </div>
               
               <div className="text-left">
-                <h3 className="font-heading font-semibold text-h3 text-primary mb-3">
+                <h3 className="font-heading font-semibold text-h3 text-primary mb-sm">
                   Social & Collaborative
                 </h3>
                 <p className="text-body text-text-secondary leading-body">
@@ -148,7 +148,7 @@ export default function Home() {
               </div>
               
               <div className="text-left">
-                <h3 className="font-heading font-semibold text-h3 text-primary mb-3">
+                <h3 className="font-heading font-semibold text-h3 text-primary mb-sm">
                   Cross-Industry
                 </h3>
                 <p className="text-body text-text-secondary leading-body">
@@ -161,19 +161,19 @@ export default function Home() {
         </section>
         
         {/* Footer */}
-        <footer className="bg-primary text-white py-12 px-4">
+        <footer className="bg-primary text-white py-xl px-md">
           <div className="max-w-4xl mx-auto text-center">
-            <h3 className="font-heading font-bold text-h3 mb-4">
+            <h3 className="font-heading font-bold text-h3 mb-sm">
               Ready to Transform Your Tasting Experience?
             </h3>
-            <p className="text-body mb-8 opacity-90">
+            <p className="text-body mb-lg opacity-90">
               Join the FlavorWheel community and discover the world of flavor like never before.
             </p>
-            <button className="bg-secondary hover:bg-secondary-hover text-text-primary font-semibold px-8 py-4 rounded-button transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
+            <button className="btn-secondary">
               Start Tasting Today
             </button>
             
-            <div className="mt-12 pt-8 border-t border-white/20">
+            <div className="mt-xl pt-lg border-t border-white/20">
               <p className="text-small opacity-70">
                 © 2025 FlavorWheel. Taste the World, One Sip at a Time.
               </p>

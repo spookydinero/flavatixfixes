@@ -3,6 +3,7 @@ import { getSupabaseClient } from '../../lib/supabase';
 import FlavorWheel from './FlavorWheel';
 import TastingItem from './TastingItem';
 import { toast } from '../../lib/toast';
+import { Utensils } from 'lucide-react';
 
 interface QuickTasting {
   id: string;
@@ -141,10 +142,10 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   return (
     <div className="max-w-6xl mx-auto">
       {/* Session Header */}
-      <div className="bg-background-surface rounded-lg p-6 mb-8">
+      <div className="card p-md mb-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-text-primary mb-2">
+            <h2 className="text-h2 font-heading font-bold text-text-primary mb-2">
               {session.session_name}
             </h2>
             <p className="text-text-secondary">
@@ -153,51 +154,51 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           </div>
           <div className="mt-4 md:mt-0 flex items-center space-x-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary-600">{completedItems}</div>
-              <div className="text-sm text-text-secondary">Completed</div>
+              <div className="text-h2 font-heading font-bold text-primary-600">{completedItems}</div>
+              <div className="text-small font-body text-text-secondary">Completed</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-text-primary">{items.length}</div>
-              <div className="text-sm text-text-secondary">Total Items</div>
+              <div className="text-h2 font-heading font-bold text-text-primary">{items.length}</div>
+              <div className="text-small font-body text-text-secondary">Total Items</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
         {/* Left Column - Item Management */}
         <div className="space-y-6">
           {/* Item Navigation */}
           {hasItems && (
-            <div className="bg-background-surface rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-text-primary">Items</h3>
+            <div className="card p-md">
+              <div className="flex items-center justify-between mb-sm">
+                <h3 className="text-h4 font-heading font-semibold text-text-primary">Items</h3>
                 <button
                   onClick={addNewItem}
-                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                className="btn-primary"
                 >
                   Add Item
                 </button>
               </div>
               
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex flex-wrap gap-xs mb-sm">
                 {items.map((item, index) => (
                   <button
                     key={item.id}
                     onClick={() => setCurrentItemIndex(index)}
                     className={`
-                      px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                      px-sm py-xs rounded-lg text-small font-body font-medium transition-colors min-h-touch
                       ${currentItemIndex === index
-                        ? 'bg-primary-600 text-white'
+                        ? 'bg-primary text-white'
                         : item.overall_score !== null
-                        ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                        ? 'bg-success/10 text-success hover:bg-success/20'
                         : 'bg-background-surface text-text-secondary hover:bg-border-default'
                       }
                     `}
                   >
                     {item.item_name}
                     {item.overall_score !== null && (
-                      <span className="ml-1">✓</span>
+                      <span className="ml-xs">✓</span>
                     )}
                   </button>
                 ))}
@@ -214,17 +215,19 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               onUpdate={(updates: Partial<TastingItemData>) => updateItem(currentItem.id, updates)}
             />
           ) : (
-            <div className="bg-background-surface rounded-lg p-8 text-center">
-              <div className="text-6xl mb-4">🍽️</div>
-              <h3 className="text-xl font-semibold text-text-primary mb-2">
+            <div className="card p-lg text-center">
+              <div className="flex items-center justify-center mb-sm">
+                <Utensils size={64} className="text-text-secondary" />
+              </div>
+              <h3 className="text-h3 font-heading font-semibold text-text-primary mb-2">
                 No Items Yet
               </h3>
-              <p className="text-text-secondary mb-6">
+              <p className="text-text-secondary mb-md">
                 Add your first item to start tasting!
               </p>
               <button
                 onClick={addNewItem}
-                className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+                className="btn-primary"
               >
                 Add First Item
               </button>
@@ -232,13 +235,13 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           )}
 
           {/* Session Notes */}
-          <div className="bg-background-surface rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-text-primary mb-4">Session Notes</h3>
+          <div className="card p-md">
+            <h3 className="text-h4 font-heading font-semibold text-text-primary mb-sm">Session Notes</h3>
             <textarea
               value={sessionNotes}
               onChange={(e) => setSessionNotes(e.target.value)}
               placeholder="Add notes about this tasting session..."
-              className="w-full h-32 p-3 border border-border-default rounded-lg bg-background-app text-text-primary placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+              className="form-input w-full h-32 resize-none"
             />
           </div>
         </div>
@@ -263,7 +266,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           <button
             onClick={completeSession}
             disabled={isLoading}
-            className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Completing...' : 'Complete Session'}
           </button>

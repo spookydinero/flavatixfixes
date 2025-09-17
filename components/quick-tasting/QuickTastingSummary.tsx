@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { toast } from '../../lib/toast';
+import { Coffee, Wine, Beer, Utensils, Star } from 'lucide-react';
 
 interface QuickTasting {
   id: string;
@@ -96,16 +97,21 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
       .slice(0, 5);
   };
 
-  const getCategoryEmoji = (category: string): string => {
-    const emojis: Record<string, string> = {
-      coffee: '☕',
-      wine: '🍷',
-      whiskey: '🥃',
-      beer: '🍺',
-      tea: '🍵',
-      chocolate: '🍫',
-    };
-    return emojis[category] || '🍽️';
+  const getCategoryIcon = (category: string) => {
+    const iconProps = { size: 32, className: "text-primary-600" };
+    switch (category) {
+      case 'coffee':
+      case 'tea':
+        return <Coffee {...iconProps} />;
+      case 'wine':
+        return <Wine {...iconProps} />;
+      case 'beer':
+        return <Beer {...iconProps} />;
+      case 'whiskey':
+      case 'chocolate':
+      default:
+        return <Utensils {...iconProps} />;
+    }
   };
 
   const formatDate = (dateString: string): string => {
@@ -125,7 +131,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="bg-background-surface rounded-lg p-8 text-center">
+        <div className="card p-lg text-center">
           <div className="animate-spin w-8 h-8 border-2 border-primary-600 border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-text-secondary">Loading tasting summary...</p>
         </div>
@@ -136,25 +142,25 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Session Header */}
-      <div className="bg-background-surface rounded-lg p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-4">
-            <div className="text-4xl">{getCategoryEmoji(session.category)}</div>
+      <div className="card p-md">
+        <div className="flex items-center justify-between mb-sm">
+          <div className="flex items-center space-x-sm">
+            <div className="flex items-center justify-center w-16 h-16">{getCategoryIcon(session.category)}</div>
             <div>
-              <h2 className="text-2xl font-bold text-text-primary">
+              <h2 className="text-h2 font-heading font-bold text-text-primary">
                 {session.session_name}
               </h2>
               <p className="text-text-secondary">
                 {session.category.charAt(0).toUpperCase() + session.category.slice(1)} Tasting Session
               </p>
-              <p className="text-sm text-text-secondary">
+              <p className="text-small font-body text-text-secondary">
                 Completed on {formatDate(session.completed_at || session.updated_at)}
               </p>
             </div>
           </div>
           <button
             onClick={onStartNewSession}
-            className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+            className="btn-primary"
           >
             Start New Session
           </button>
@@ -162,25 +168,25 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
 
         {/* Session Notes */}
         {session.notes && (
-          <div className="mt-4 p-4 bg-background-app rounded-lg">
-            <h3 className="text-sm font-medium text-text-secondary mb-2">Session Notes</h3>
+          <div className="mt-sm p-sm bg-background-app rounded-lg">
+            <h3 className="text-small font-body font-medium text-text-secondary mb-xs">Session Notes</h3>
             <p className="text-text-primary">{session.notes}</p>
           </div>
         )}
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-background-surface rounded-lg p-6 text-center">
-          <div className="text-3xl font-bold text-primary-600 mb-2">{items.length}</div>
+      <div className="grid grid-cols-1 tablet:grid-cols-3 gap-md">
+        <div className="card p-md text-center">
+          <div className="text-h1 font-heading font-bold text-primary mb-xs">{items.length}</div>
           <div className="text-text-secondary">Total Items</div>
         </div>
-        <div className="bg-background-surface rounded-lg p-6 text-center">
-          <div className="text-3xl font-bold text-green-600 mb-2">{completedItems.length}</div>
+        <div className="card p-md text-center">
+          <div className="text-h1 font-heading font-bold text-success mb-xs">{completedItems.length}</div>
           <div className="text-text-secondary">Items Scored</div>
         </div>
-        <div className="bg-background-surface rounded-lg p-6 text-center">
-          <div className="text-3xl font-bold text-yellow-600 mb-2">
+        <div className="card p-md text-center">
+          <div className="text-h1 font-heading font-bold text-warning mb-xs">
             {averageScore > 0 ? `${averageScore}/5` : 'N/A'}
           </div>
           <div className="text-text-secondary">Average Score</div>
@@ -189,22 +195,22 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
 
       {/* Top Flavors */}
       {topFlavors.length > 0 && (
-        <div className="bg-background-surface rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-text-primary mb-4">Top Flavors</h3>
-          <div className="space-y-3">
+        <div className="card p-md">
+          <h3 className="text-h4 font-heading font-semibold text-text-primary mb-sm">Top Flavors</h3>
+          <div className="space-y-sm">
             {topFlavors.map((flavor, index) => (
               <div key={flavor.flavor} className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-primary-100 text-primary-800 rounded-full flex items-center justify-center text-sm font-bold">
+                <div className="flex items-center space-x-sm">
+                  <div className="w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center text-small font-body font-bold">
                     {index + 1}
                   </div>
                   <span className="font-medium text-text-primary">{flavor.flavor}</span>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-medium text-text-primary">
+                  <div className="text-small font-body font-medium text-text-primary">
                     {flavor.avgScore}/5 avg
                   </div>
-                  <div className="text-xs text-text-secondary">
+                  <div className="text-caption font-body text-text-secondary">
                     {flavor.count} item{flavor.count !== 1 ? 's' : ''}
                   </div>
                 </div>
@@ -215,30 +221,29 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
       )}
 
       {/* Items List */}
-      <div className="bg-background-surface rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-text-primary mb-4">Tasted Items</h3>
-        <div className="space-y-4">
+      <div className="card p-md">
+        <h3 className="text-h4 font-heading font-semibold text-text-primary mb-sm">Tasted Items</h3>
+        <div className="space-y-sm">
           {items.map((item) => (
             <div key={item.id} className="border border-border-primary rounded-lg overflow-hidden">
-              <div 
-                className="p-4 bg-background-app cursor-pointer hover:bg-background-surface transition-colors"
+              <div className="p-sm bg-background-app cursor-pointer hover:bg-background-surface transition-colors"
                 onClick={() => setExpandedItem(expandedItem === item.id ? null : item.id)}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-sm">
                     <h4 className="font-medium text-text-primary">{item.item_name}</h4>
                     {item.overall_score && (
-                      <div className="flex items-center space-x-1">
-                        <span className="text-yellow-500">⭐</span>
-                        <span className="text-sm font-medium text-text-primary">
+                      <div className="flex items-center space-x-xs">
+                        <Star className="w-4 h-4 text-warning fill-current" />
+                        <span className="text-small font-body font-medium text-text-primary">
                           {item.overall_score}/5
                         </span>
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-xs">
                     {item.photo_url && (
-                      <span className="text-sm text-text-secondary">📸</span>
+                      <span className="text-small font-body text-text-secondary">📸</span>
                     )}
                     <span className="text-text-secondary">
                       {expandedItem === item.id ? '▼' : '▶'}
@@ -248,12 +253,12 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
               </div>
               
               {expandedItem === item.id && (
-                <div className="p-4 border-t border-border-default bg-background-app">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-sm border-t border-border-default bg-background-app">
+                  <div className="grid grid-cols-1 tablet:grid-cols-2 gap-md">
                     {/* Photo */}
                     {item.photo_url && (
                       <div>
-                        <h5 className="text-sm font-medium text-text-secondary mb-2">Photo</h5>
+                        <h5 className="text-small font-body font-medium text-text-secondary mb-xs">Photo</h5>
                         <img
                           src={item.photo_url}
                           alt={item.item_name}
@@ -265,21 +270,21 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
                     {/* Notes */}
                     {item.notes && (
                       <div>
-                        <h5 className="text-sm font-medium text-text-secondary mb-2">Notes</h5>
-                        <p className="text-text-primary text-sm leading-relaxed">{item.notes}</p>
+                        <h5 className="text-small font-body font-medium text-text-secondary mb-xs">Notes</h5>
+                        <p className="text-text-primary text-small font-body leading-relaxed">{item.notes}</p>
                       </div>
                     )}
                   </div>
                   
                   {/* Flavor Scores */}
                   {item.flavor_scores && Object.keys(item.flavor_scores).length > 0 && (
-                    <div className="mt-4">
-                      <h5 className="text-sm font-medium text-text-secondary mb-2">Flavor Profile</h5>
-                      <div className="flex flex-wrap gap-2">
+                    <div className="mt-sm">
+                      <h5 className="text-small font-body font-medium text-text-secondary mb-xs">Flavor Profile</h5>
+                      <div className="flex flex-wrap gap-xs">
                         {Object.entries(item.flavor_scores).map(([flavor, score]) => (
                           <div
                             key={flavor}
-                            className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm font-medium"
+                            className="px-sm py-xs bg-primary/10 text-primary rounded-full text-small font-body font-medium"
                           >
                             {flavor} ({score}/5)
                           </div>

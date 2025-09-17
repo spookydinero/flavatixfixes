@@ -167,26 +167,26 @@ const FlavorWheel: React.FC<FlavorWheelProps> = ({
   };
 
   return (
-    <div className="bg-background-surface rounded-lg p-6">
-      <h3 className="text-lg font-semibold text-text-primary mb-6">Flavor Profile</h3>
+    <div className="card p-md">
+      <h3 className="text-h4 font-heading font-semibold text-text-primary mb-md">Flavor Profile</h3>
       
       {/* Category Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-sm mb-md">
         {categories.map((cat) => (
           <button
             key={cat.name}
             onClick={() => setActiveCategory(activeCategory === cat.name ? null : cat.name)}
             className={`
-              p-4 rounded-lg border-2 transition-all duration-200
+              p-sm rounded-lg border-2 transition-all duration-200
               ${activeCategory === cat.name
                 ? 'border-primary-500 bg-primary-50'
                 : 'border-border-default bg-background-app hover:border-primary-300'
               }
             `}
           >
-            <div className={`w-8 h-8 rounded-full ${cat.color} mx-auto mb-2`}></div>
-            <div className="text-sm font-medium text-text-primary">{cat.name}</div>
-            <div className="text-xs text-text-secondary">
+            <div className={`w-8 h-8 rounded-full ${cat.color} mx-auto mb-xs`}></div>
+            <div className="text-small font-body font-medium text-text-primary">{cat.name}</div>
+            <div className="text-caption font-body text-text-secondary">
               {cat.flavors.filter(flavor => getFlavorScore(flavor) > 0).length} selected
             </div>
           </button>
@@ -195,19 +195,19 @@ const FlavorWheel: React.FC<FlavorWheelProps> = ({
 
       {/* Active Category Flavors */}
       {activeCategory && (
-        <div className="border-t border-border-primary pt-6">
-          <h4 className="text-md font-medium text-text-primary mb-4">
+        <div className="border-t border-border-primary pt-md">
+          <h4 className="text-lg font-body font-medium text-text-primary mb-sm">
             {activeCategory} Flavors
           </h4>
-          <div className="space-y-3">
+          <div className="space-y-sm">
             {categories
               .find(cat => cat.name === activeCategory)
               ?.flavors.map((flavor) => {
                 const score = getFlavorScore(flavor);
                 return (
                   <div key={flavor} className="flex items-center justify-between">
-                    <span className="text-text-primary font-medium">{flavor}</span>
-                    <div className="flex items-center space-x-2">
+                    <span className="text-text-primary font-body font-medium">{flavor}</span>
+                    <div className="flex items-center space-x-xs">
                       {[1, 2, 3, 4, 5].map((value) => (
                         <button
                           key={value}
@@ -220,7 +220,7 @@ const FlavorWheel: React.FC<FlavorWheelProps> = ({
                             }
                           `}
                         >
-                          <span className="text-xs font-medium">{value}</span>
+                          <span className="text-caption font-body font-medium">{value}</span>
                         </button>
                       ))}
                     </div>
@@ -234,19 +234,19 @@ const FlavorWheel: React.FC<FlavorWheelProps> = ({
 
       {/* Selected Flavors Summary */}
       {Object.keys(selectedFlavors).length > 0 && (
-        <div className="border-t border-border-primary pt-6 mt-6">
-          <h4 className="text-md font-medium text-text-primary mb-4">Selected Flavors</h4>
-          <div className="flex flex-wrap gap-2">
+        <div className="border-t border-border-primary pt-md mt-md">
+          <h4 className="text-lg font-body font-medium text-text-primary mb-sm">Selected Flavors</h4>
+          <div className="flex flex-wrap gap-xs">
             {Object.entries(selectedFlavors).map(([flavor, score]) => (
               <div
                 key={flavor}
-                className="flex items-center space-x-1 px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm"
+                className="flex items-center space-x-xs px-sm py-xs bg-primary-100 text-primary-800 rounded-full text-small font-body"
               >
                 <span>{flavor}</span>
-                <span className="font-medium">({score})</span>
+                <span className="font-body font-medium">({score})</span>
                 <button
                   onClick={() => updateFlavorScore(flavor, 0)}
-                  className="ml-1 text-primary-600 hover:text-primary-800"
+                  className="ml-xs text-primary-600 hover:text-primary-800"
                 >
                   ×
                 </button>

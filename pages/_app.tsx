@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>FlavorWheel - Taste the World, One Sip at a Time</title>
         <meta name="description" content="FlavorWheel is the world's most pivotal tasting app for coffee and drinks, designed to be the most user-friendly tasting experience ever created." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <meta name="theme-color" content="#1F5D4C" />
+        <meta name="theme-color" content="var(--color-primary)" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

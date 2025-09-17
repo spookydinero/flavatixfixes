@@ -126,7 +126,7 @@ export default function AvatarUpload({
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-sm ${className}`}>
       {/* Avatar Preview */}
       <div className="flex justify-center">
         <div className="relative">
@@ -146,7 +146,7 @@ export default function AvatarUpload({
           
           {previewUrl && !uploading && (
             <button
-              className="absolute -top-2 -right-2 rounded-full w-8 h-8 p-0 bg-red-500 hover:bg-red-600 text-white transition-colors flex items-center justify-center"
+              className="absolute -top-xs -right-xs rounded-full w-8 h-8 p-0 bg-error hover:bg-error/90 text-white transition-colors flex items-center justify-center"
               onClick={removeAvatar}
             >
               <X className="w-4 h-4" />
@@ -157,14 +157,14 @@ export default function AvatarUpload({
 
       {/* Upload Progress */}
       {uploading && (
-        <div className="space-y-2">
+        <div className="space-y-xs">
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
               className="bg-gradient-to-r from-[#1F5D4C] to-[#2E7D32] h-2 rounded-full transition-all duration-300"
               style={{ width: `${uploadProgress}%` }}
             ></div>
           </div>
-          <p className="text-sm text-center text-gray-600">
+          <p className="text-small font-body text-center text-gray-600">
             {uploadProgress < 100 ? 'Uploading...' : 'Processing...'}
           </p>
         </div>
@@ -174,7 +174,7 @@ export default function AvatarUpload({
       <div
         {...getRootProps()}
         className={`
-          border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
+          border-2 border-dashed rounded-lg p-md text-center cursor-pointer transition-colors
           ${isDragActive && !isDragReject ? 'border-blue-400 bg-blue-50' : ''}
           ${isDragReject ? 'border-red-400 bg-red-50' : ''}
           ${!isDragActive && !isDragReject ? 'border-gray-300 hover:border-gray-400' : ''}
@@ -183,7 +183,7 @@ export default function AvatarUpload({
       >
         <input {...getInputProps()} />
         
-        <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+        <Upload className="w-8 h-8 mx-auto mb-xs text-gray-400" />
         
         {isDragActive ? (
           isDragReject ? (
@@ -193,10 +193,10 @@ export default function AvatarUpload({
           )
         ) : (
           <div>
-            <p className="text-gray-600 mb-1">
+            <p className="text-gray-600 mb-xs">
               Drag & drop an image here, or click to select
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-small font-body text-gray-500">
               Supports: JPEG, PNG, WebP (max 5MB)
             </p>
           </div>
@@ -205,22 +205,22 @@ export default function AvatarUpload({
 
       {/* Error Message */}
       {error && (
-        <div className="flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800">
+        <div className="flex items-center space-x-xs p-sm bg-red-50 border border-red-200 rounded-lg text-red-800">
           <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          <span className="text-sm">{error}</span>
+          <span className="text-small font-body">{error}</span>
         </div>
       )}
 
       {/* Success Message */}
       {success && (
-        <div className="flex items-center space-x-2 p-3 bg-green-50 border border-green-200 rounded-lg text-green-800">
+        <div className="flex items-center space-x-xs p-sm bg-green-50 border border-green-200 rounded-lg text-green-800">
           <CheckCircle className="h-4 w-4 flex-shrink-0" />
-          <span className="text-sm">{success}</span>
+          <span className="text-small font-body">{success}</span>
         </div>
       )}
 
       {/* Upload Guidelines */}
-      <div className="text-xs text-gray-500 space-y-1">
+      <div className="text-caption font-body text-gray-500 space-y-xs">
         <p>• Images will be automatically resized to 400x400 pixels</p>
         <p>• Supported formats: JPEG, PNG, WebP</p>
         <p>• Maximum file size: 5MB</p>

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { getSupabaseClient } from '../../lib/supabase';
 import { toast } from '../../lib/toast';
+import { Coffee, Wine, Beer, Utensils, Star, Camera } from 'lucide-react';
 
 interface TastingItemData {
   id: string;
@@ -30,6 +31,17 @@ const TastingItem: React.FC<TastingItemProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [localNotes, setLocalNotes] = useState(item.notes || '');
   const [localScore, setLocalScore] = useState(item.overall_score || 0);
+
+  const getScoreLabel = (score: number): string => {
+    const labels: Record<number, string> = {
+      1: '(Poor)',
+      2: '(Fair)',
+      3: '(Good)',
+      4: '(Very Good)',
+      5: '(Excellent)'
+    };
+    return labels[score] || '';
+  };
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = getSupabaseClient() as any;
 
@@ -118,68 +130,80 @@ const TastingItem: React.FC<TastingItemProps> = ({
     }
   };
 
-  const getCategoryEmoji = (category: string): string => {
-    const emojis: Record<string, string> = {
-      coffee: '☕',
-      wine: '🍷',
-      whiskey: '🥃',
-      beer: '🍺',
-      tea: '🍵',
-      chocolate: '🍫',
-    };
-    return emojis[category] || '🍽️';
+  const getCategoryIcon = (category: string) => {
+    const iconProps = { size: 24, className: "text-primary-600" };
+    switch (category) {
+      case 'coffee':
+      case 'tea':
+        return <Coffee {...iconProps} />;
+      case 'wine':
+        return <Wine {...iconProps} />;
+      case 'beer':
+        return <Beer {...iconProps} />;
+      case 'whiskey':
+      case 'chocolate':
+      default:
+        return <Utensils {...iconProps} />;
+    }
   };
 
   return (
-    <div className="bg-background-surface rounded-lg p-6">
+    <div className="card p-sm tablet:p-md mobile-container mobile-touch">
       {/* Item Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="text-3xl">{getCategoryEmoji(category)}</div>
-          <div>
-            <h3 className="text-xl font-semibold text-text-primary">{item.item_name}</h3>
-            <p className="text-sm text-text-secondary">
+      <div className="flex flex-col tablet:flex-row tablet:items-center tablet:justify-between gap-sm mb-md">
+        <div className="flex items-center space-x-sm min-w-0 flex-1">
+          <div className="flex items-center justify-center w-10 h-10 tablet:w-12 tablet:h-12 flex-shrink-0">{getCategoryIcon(category)}</div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary truncate">{item.item_name}</h3>
+            <p className="text-xs tablet:text-small font-body text-text-secondary">
               {category.charAt(0).toUpperCase() + category.slice(1)} Tasting
             </p>
           </div>
         </div>
         
         {/* Overall Score */}
-        <div className="text-center">
-          <div className="text-sm text-text-secondary mb-1">Overall Score</div>
-          <div className="flex space-x-1">
+        <div className="text-center font-body flex-shrink-0">
+          <div className="text-xs tablet:text-small font-body text-text-secondary mb-xs">Overall Score</div>
+          <div className="flex space-x-1 tablet:space-x-xs justify-center">
             {[1, 2, 3, 4, 5].map((score) => (
               <button
                 key={score}
                 onClick={() => handleScoreChange(score)}
                 className={`
-                  w-8 h-8 rounded-full transition-all duration-200
+                  min-w-touch min-h-touch w-9 h-9 tablet:w-11 tablet:h-11 rounded-full transition-all duration-300 flex items-center justify-center
+                  transform hover:scale-110 active:scale-95 touch-manipulation
                   ${localScore >= score
-                    ? 'bg-yellow-400 text-yellow-900'
-                    : 'bg-background-surface text-text-secondary hover:bg-yellow-100'
+                    ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 text-yellow-900 shadow-lg'
+                    : 'bg-background-surface text-text-secondary hover:bg-yellow-50 hover:text-yellow-600'
                   }
                 `}
               >
-                ⭐
+                <Star 
+                  className={`w-4 h-4 tablet:w-5 tablet:h-5 transition-all duration-200 ${
+                    localScore >= score 
+                      ? 'fill-current drop-shadow-sm' 
+                      : 'hover:fill-yellow-200'
+                  }`} 
+                />
               </button>
             ))}
           </div>
           {localScore > 0 && (
-            <div className="text-sm font-medium text-text-primary mt-1">
-              {localScore}/5
+            <div className="text-xs tablet:text-small font-body font-medium text-text-primary mt-xs animate-fade-in">
+              {localScore}/5 {getScoreLabel(localScore)}
             </div>
           )}
         </div>
       </div>
 
       {/* Photo Section */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <h4 className="text-md font-medium text-text-primary">Photo</h4>
+      <div className="mb-md">
+        <div className="flex flex-col tablet:flex-row tablet:items-center tablet:justify-between gap-xs mb-sm">
+          <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary">Photo</h4>
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className="px-3 py-1 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
+            className="btn-primary text-xs tablet:text-small disabled:opacity-50 min-w-touch min-h-touch px-sm py-xs tablet:px-md tablet:py-sm self-start tablet:self-auto"
           >
             {isUploading ? 'Uploading...' : item.photo_url ? 'Change Photo' : 'Add Photo'}
           </button>
@@ -194,24 +218,24 @@ const TastingItem: React.FC<TastingItemProps> = ({
         />
         
         {item.photo_url ? (
-          <div className="relative">
+          <div className="relative overflow-hidden rounded-lg">
             <img
               src={item.photo_url}
               alt={item.item_name}
-              className="w-full h-48 object-cover rounded-lg"
+              className="w-full h-40 tablet:h-48 object-cover"
             />
             <button
               onClick={removePhoto}
-              className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors flex items-center justify-center"
+              className="absolute top-xs right-xs min-w-touch min-h-touch w-9 h-9 tablet:w-11 tablet:h-11 bg-error text-white rounded-full hover:bg-error/90 transition-colors flex items-center justify-center text-sm tablet:text-lg font-bold touch-manipulation"
             >
               ×
             </button>
           </div>
         ) : (
-          <div className="w-full h-48 border-2 border-dashed border-border-default rounded-lg flex items-center justify-center bg-background-app">
-            <div className="text-center">
-              <div className="text-4xl mb-2">📸</div>
-              <p className="text-text-secondary">No photo added</p>
+          <div className="w-full h-40 tablet:h-48 border-2 border-dashed border-border-default rounded-lg flex items-center justify-center bg-background-app">
+            <div className="text-center font-body px-sm">
+              <Camera size={32} className="text-text-secondary mb-xs mx-auto tablet:w-12 tablet:h-12" />
+              <p className="text-sm tablet:text-body font-body text-text-secondary">No photo added</p>
             </div>
           </div>
         )}
@@ -219,24 +243,24 @@ const TastingItem: React.FC<TastingItemProps> = ({
 
       {/* Notes Section */}
       <div>
-        <h4 className="text-md font-medium text-text-primary mb-3">Tasting Notes</h4>
+        <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Tasting Notes</h4>
         <textarea
           value={localNotes}
           onChange={(e) => handleNotesChange(e.target.value)}
           placeholder={`Describe the ${category}'s aroma, taste, mouthfeel, and finish...`}
-          className="w-full h-32 p-3 border border-border-default rounded-lg bg-background-app text-text-primary placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+          className="form-input w-full h-24 tablet:h-32 resize-none text-sm tablet:text-base"
         />
       </div>
 
       {/* Flavor Summary */}
       {item.flavor_scores && Object.keys(item.flavor_scores).length > 0 && (
-        <div className="mt-6 pt-6 border-t border-border-primary">
-          <h4 className="text-md font-medium text-text-primary mb-3">Flavor Profile</h4>
-          <div className="flex flex-wrap gap-2">
+        <div className="mt-md pt-md border-t border-border-primary">
+          <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Flavor Profile</h4>
+          <div className="flex flex-wrap gap-1 tablet:gap-xs">
             {Object.entries(item.flavor_scores).map(([flavor, score]) => (
               <div
                 key={flavor}
-                className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm font-medium"
+                className="px-xs tablet:px-sm py-1 tablet:py-xs bg-primary-100 text-primary-800 rounded-full text-xs tablet:text-small font-body font-medium"
               >
                 {flavor} ({score}/5)
               </div>
