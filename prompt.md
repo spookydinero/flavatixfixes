@@ -137,7 +137,7 @@
           "state_updates": {
             "tastings": {
               "filter_method": "tastings.filter(t => t.id !== deletedId)",
-              "description": "Remover cata eliminada del estado"
+              "description": "Remover cata del estado"
             }
           }
         }
@@ -230,7 +230,6 @@
     },
     "user_feedback": {
       "success": {
-        "message": "Cata eliminada exitosamente",
         "type": "toast_success",
         "duration": 3000
       },
@@ -244,7 +243,7 @@
   "testing_scenarios": {
     "unit_tests": {
       "deleteTasting_function": [
-        "Eliminación exitosa con datos válidos",
+        "Eliminación con datos válidos",
         "Error cuando la cata no existe",
         "Error cuando el usuario no es propietario",
         "Error de base de datos",

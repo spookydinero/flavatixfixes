@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TastingHistory, HistoryFilters, getUserTastingHistory } from '../../lib/historyService';
+import { TastingHistory, HistoryFilters, getUserTastingHistory, deleteTasting } from '../../lib/historyService';
 import TastingHistoryItem from './TastingHistoryItem';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -20,6 +20,32 @@ const TastingHistoryList: React.FC<TastingHistoryListProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [offset, setOffset] = useState(0);
+
+  const handleDeleteTasting = async (tastingId: string) => {
+    if (!user?.id) return;
+
+    try {
+      const { success, error: deleteError } = await deleteTasting(tastingId, user.id);
+
+      if (success) {
+        // Actualizar estado local removiendo la cata eliminada
+        setTastings(prev => prev.filter(t => t.id !== tastingId));
+        
+        // Mostrar notificación de éxito (usando alert por simplicidad)
+        // Eliminación exitosa sin mensaje
+      } else {
+        console.error('Error deleting tasting:', deleteError);
+        alert('Error al eliminar la cata. Inténtalo de nuevo.');
+      }
+    } catch (error) {
+      console.error('Unexpected error deleting tasting:', error);
+      alert('Error inesperado al eliminar la cata.');
+    }
+  };
+
+  const refreshTastings = () => {
+    loadTastings(true);
+  };
 
   const loadTastings = async (reset: boolean = false) => {
     if (!user?.id) return;
@@ -132,6 +158,7 @@ const TastingHistoryList: React.FC<TastingHistoryListProps> = ({
           key={tasting.id}
           tasting={tasting}
           onClick={onTastingClick}
+          onDelete={handleDeleteTasting}
         />
       ))}
       

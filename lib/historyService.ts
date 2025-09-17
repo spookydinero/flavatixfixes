@@ -416,3 +416,64 @@ export async function getLatestTasting(
     return { data: null, error };
   }
 }
+
+/**
+ * Elimina una cata y todos sus elementos relacionados
+ * @param tastingId - ID único de la cata a eliminar
+ * @param userId - ID del usuario propietario
+ * @returns Promise con resultado de la operación
+ */
+export async function deleteTasting(
+  tastingId: string,
+  userId: string
+): Promise<{ success: boolean; error: any }> {
+  try {
+    // Verificar que la cata existe y pertenece al usuario
+    const { data: tasting, error: fetchError } = await supabase
+      .from('quick_tastings')
+      .select('id, user_id')
+      .eq('id', tastingId)
+      .eq('user_id', userId)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching tasting for deletion:', fetchError);
+      return { success: false, error: fetchError };
+    }
+
+    if (!tasting) {
+      return { 
+        success: false, 
+        error: { message: 'La cata no existe o no tienes permisos para eliminarla' } 
+      };
+    }
+
+    // Eliminar elementos relacionados primero (quick_tasting_items)
+    const { error: itemsError } = await supabase
+      .from('quick_tasting_items')
+      .delete()
+      .eq('tasting_id', tastingId);
+
+    if (itemsError) {
+      console.error('Error deleting tasting items:', itemsError);
+      return { success: false, error: itemsError };
+    }
+
+    // Eliminar la cata principal
+    const { error: tastingError } = await supabase
+      .from('quick_tastings')
+      .delete()
+      .eq('id', tastingId)
+      .eq('user_id', userId);
+
+    if (tastingError) {
+      console.error('Error deleting tasting:', tastingError);
+      return { success: false, error: tastingError };
+    }
+
+    return { success: true, error: null };
+  } catch (error) {
+    console.error('Unexpected error in deleteTasting:', error);
+    return { success: false, error };
+  }
+}

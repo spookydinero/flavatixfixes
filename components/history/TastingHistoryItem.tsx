@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TastingHistory } from '../../lib/historyService';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -6,9 +6,11 @@ import { es } from 'date-fns/locale';
 interface TastingHistoryItemProps {
   tasting: TastingHistory;
   onClick: (tasting: TastingHistory) => void;
+  onDelete: (id: string) => void;
 }
 
-const TastingHistoryItem: React.FC<TastingHistoryItemProps> = ({ tasting, onClick }) => {
+const TastingHistoryItem: React.FC<TastingHistoryItemProps> = ({ tasting, onClick, onDelete }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
   const formatDate = (dateString: string) => {
     return formatDistanceToNow(new Date(dateString), { 
       addSuffix: true,
@@ -38,12 +40,40 @@ const TastingHistoryItem: React.FC<TastingHistoryItemProps> = ({ tasting, onClic
     return 'text-red-600';
   };
 
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Evitar que se active el onClick del contenedor
+    if (isDeleting) return;
+    
+    setIsDeleting(true);
+    onDelete(tasting.id);
+  };
+
   return (
     <div 
-      className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
+      className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer relative"
       onClick={() => onClick(tasting)}
     >
-      <div className="flex justify-between items-start mb-3">
+      {/* Botón de eliminar */}
+      <button
+        onClick={handleDeleteClick}
+        disabled={isDeleting}
+        className="absolute top-2 right-2 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
+        aria-label="Eliminar cata"
+        title="Eliminar cata"
+      >
+        {isDeleting ? (
+          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        ) : (
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        )}
+      </button>
+
+      <div className="flex justify-between items-start mb-3 pr-10">
         <div className="flex-1">
           <h3 className="font-semibold text-gray-900 mb-1">
             {tasting.session_name || `Sesión de ${tasting.category}`}
@@ -74,9 +104,7 @@ const TastingHistoryItem: React.FC<TastingHistoryItemProps> = ({ tasting, onClic
             <span className="text-gray-400">/{tasting.total_items}</span>
             <span className="ml-1">elementos</span>
           </span>
-          {tasting.completed_at && (
-            <span className="text-green-600 font-medium">Completada</span>
-          )}
+
         </div>
         
         <div className="flex items-center">
