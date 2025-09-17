@@ -5,11 +5,14 @@ import { useAuth } from '../contexts/AuthContext';
 import ProfileService, { UserProfile } from '../lib/profileService';
 import ProfileDisplay from '../components/profile/ProfileDisplay';
 import ProfileEditForm from '../components/profile/ProfileEditForm';
+import { getUserTastingStats, getLatestTasting } from '../lib/historyService';
 
 export default function Dashboard() {
   const { user, loading, signOut } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeTab, setActiveTab] = useState<'profile' | 'edit'>('profile');
+  const [tastingStats, setTastingStats] = useState<any>(null);
+  const [latestTasting, setLatestTasting] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,6 +33,14 @@ export default function Dashboard() {
       // Fetch user profile
       const userProfile = await ProfileService.getProfile(user.id);
       setProfile(userProfile);
+      
+      // Fetch tasting stats and latest tasting
+      const [stats, latest] = await Promise.all([
+        getUserTastingStats(user.id),
+        getLatestTasting(user.id)
+      ]);
+      setTastingStats(stats);
+      setLatestTasting(latest);
       
     } catch (error) {
       console.error('Error initializing dashboard:', error);
@@ -124,6 +135,48 @@ export default function Dashboard() {
           <ProfileEditForm profile={profile} onProfileUpdate={handleProfileUpdate} />
         )}
 
+        {/* Recent Tasting Summary */}
+        {latestTasting && (
+          <div className="card p-md">
+            <div className="flex items-center justify-between mb-sm">
+              <h3 className="text-h4 font-heading font-semibold text-text-primary">
+                Latest Tasting
+              </h3>
+              <button
+                onClick={() => router.push('/history')}
+                className="text-[#1F5D4C] text-small font-body font-medium hover:underline"
+              >
+                View All
+              </button>
+            </div>
+            <div className="bg-gradient-to-br from-[#FEF3E7] to-[#F7F3EA] rounded-xl p-sm border border-[#1F5D4C]/10">
+              <div className="flex items-center justify-between mb-xs">
+                <span className="text-[#1F5D4C] font-body font-semibold text-small">
+                  {latestTasting.category?.replace('_', ' ') || 'Tasting'}
+                </span>
+                <span className="text-text-secondary text-caption font-body">
+                  {latestTasting.created_at && !isNaN(new Date(latestTasting.created_at).getTime()) 
+                    ? new Date(latestTasting.created_at).toLocaleDateString()
+                    : 'Fecha no disponible'
+                  }
+                </span>
+              </div>
+              <div className="flex items-center space-x-sm">
+                <div className="flex items-center">
+                  <span className="text-text-secondary text-caption font-body mr-xs">Score:</span>
+                  <span className="text-[#1F5D4C] font-body font-semibold text-small">
+                    {latestTasting.overall_score}/5
+                  </span>
+                </div>
+                <div className="text-text-muted">•</div>
+                <div className="text-text-secondary text-caption font-body">
+                  {latestTasting.items?.length || 0} items
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Quick Actions */}
         <div className="card p-md">
           <h3 className="text-h4 font-heading font-semibold text-text-primary mb-sm">
@@ -148,9 +201,14 @@ export default function Dashboard() {
             <div className="text-text-secondary text-caption font-body">View your taste profile</div>
             </button>
             
-            <button className="card text-left min-h-touch">
-            <div className="text-text-secondary font-body font-semibold text-small mb-xs">History</div>
-            <div className="text-text-muted text-caption font-body">View past tastings</div>
+            <button 
+              onClick={() => router.push('/history')}
+              className="bg-gradient-to-br from-[#FEF3E7] to-[#F7F3EA] border border-[#1F5D4C]/10 rounded-xl p-sm text-left hover:shadow-md transition-all hover:-translate-y-0.5 min-h-touch"
+            >
+              <div className="text-[#1F5D4C] font-body font-semibold text-small mb-xs">History</div>
+              <div className="text-text-secondary text-caption font-body">
+                {tastingStats ? `${tastingStats.totalTastings} tastings completed` : 'View past tastings'}
+              </div>
             </button>
           </div>
         </div>

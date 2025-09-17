@@ -1,266 +1,398 @@
+# Implementación de Funcionalidad de Eliminación de Catas - Guía JSON Detallada
 
-  
-  
-  "mobile_first_design_system": {
-    "overview": {
-      "description": "Comprehensive mobile-first design system for FlavorWheel application",
-      "target_viewport": "375x667px (iPhone SE) minimum",
-      "design_philosophy": "Clean, accessible, touch-friendly interface with consistent visual hierarchy"
-    },
-    
-    "color_palette": {
-      "primary": {
-        "50": "#fef7ee",
-        "100": "#fdedd3",
-        "200": "#fbd7a5",
-        "300": "#f8bc6d",
-        "400": "#f59e0b",
-        "500": "#d97706",
-        "600": "#b45309",
-        "700": "#92400e",
-        "800": "#78350f",
-        "900": "#451a03"
-      },
-      "secondary": {
-        "50": "#f0f9ff",
-        "100": "#e0f2fe",
-        "200": "#bae6fd",
-        "300": "#7dd3fc",
-        "400": "#38bdf8",
-        "500": "#0ea5e9",
-        "600": "#0284c7",
-        "700": "#0369a1",
-        "800": "#075985",
-        "900": "#0c4a6e"
-      },
-      "neutral": {
-        "50": "#fafafa",
-        "100": "#f5f5f5",
-        "200": "#e5e5e5",
-        "300": "#d4d4d4",
-        "400": "#a3a3a3",
-        "500": "#737373",
-        "600": "#525252",
-        "700": "#404040",
-        "800": "#262626",
-        "900": "#171717"
-      },
-      "semantic": {
-        "success": "#10b981",
-        "warning": "#f59e0b",
-        "error": "#ef4444",
-        "info": "#3b82f6"
-      }
-    },
-    
-    "typography": {
-      "font_families": {
-        "primary": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        "secondary": "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-        "mono": "'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace"
-      },
-      "scale": {
-        "xs": "0.75rem",
-        "sm": "0.875rem",
-        "base": "1rem",
-        "lg": "1.125rem",
-        "xl": "1.25rem",
-        "2xl": "1.5rem",
-        "3xl": "1.875rem",
-        "4xl": "2.25rem"
-      },
-      "weights": {
-        "light": 300,
-        "normal": 400,
-        "medium": 500,
-        "semibold": 600,
-        "bold": 700
-      },
-      "line_heights": {
-        "tight": 1.25,
-        "normal": 1.5,
-        "relaxed": 1.625
-      }
-    },
-    
-    "spacing_system": {
-      "base_unit": "4px",
-      "scale": {
-        "0": "0px",
-        "1": "4px",
-        "2": "8px",
-        "3": "12px",
-        "4": "16px",
-        "5": "20px",
-        "6": "24px",
-        "8": "32px",
-        "10": "40px",
-        "12": "48px",
-        "16": "64px",
-        "20": "80px"
-      }
-    },
-    
-    "component_specifications": {
-      "buttons": {
-        "primary": {
-          "background": "primary-500",
-          "text": "white",
-          "padding": "12px 24px",
-          "border_radius": "8px",
-          "font_weight": "medium",
-          "min_height": "44px",
-          "touch_target": "44x44px minimum"
-        },
-        "secondary": {
-          "background": "transparent",
-          "text": "primary-600",
-          "border": "1px solid primary-300",
-          "padding": "12px 24px",
-          "border_radius": "8px",
-          "min_height": "44px"
+## Estructura General del JSON de Implementación
+
+```json
+{
+  "feature": {
+    "name": "delete_tasting_functionality",
+    "description": "Funcionalidad para eliminar catas individuales del historial",
+    "version": "1.0.0",
+    "priority": "high"
+  },
+  "requirements": {
+    "user_interface": {
+      "delete_button": {
+        "visibility": "visible",
+        "position": "top-right",
+        "icon": "trash",
+        "color": "red",
+        "text": "Eliminar",
+        "accessibility": {
+          "aria_label": "Eliminar cata",
+          "keyboard_support": true
         }
       },
-      "inputs": {
-        "text_field": {
-          "background": "neutral-50",
-          "border": "1px solid neutral-300",
-          "border_radius": "8px",
-          "padding": "12px 16px",
-          "font_size": "16px",
-          "min_height": "44px",
-          "focus_border": "primary-500"
-        },
-        "textarea": {
-          "background": "neutral-50",
-          "border": "1px solid neutral-300",
-          "border_radius": "8px",
-          "padding": "12px 16px",
-          "font_size": "16px",
-          "min_height": "88px",
-          "resize": "vertical"
-        }
-      },
-      "cards": {
-        "default": {
-          "background": "white",
-          "border_radius": "12px",
-          "shadow": "0 1px 3px rgba(0,0,0,0.1)",
-          "padding": "16px",
-          "border": "1px solid neutral-200"
+      "confirmation_modal": {
+        "required": true,
+        "title": "Confirmar eliminación",
+        "message": "¿Estás seguro de que deseas eliminar esta cata? Esta acción no se puede deshacer.",
+        "buttons": {
+          "confirm": {
+            "text": "Eliminar",
+            "style": "destructive",
+            "color": "red"
+          },
+          "cancel": {
+            "text": "Cancelar",
+            "style": "secondary",
+            "color": "gray"
+          }
         }
       }
     },
-    
-    "mobile_optimization_guidelines": {
-      "viewport_management": {
-        "meta_viewport": "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
-        "container_max_width": "100vw",
-        "horizontal_padding": "16px",
-        "prevent_horizontal_scroll": "overflow-x: hidden on body and html"
+    "backend_operations": {
+      "database_deletion": {
+        "permanent": true,
+        "cascade": true,
+        "tables_affected": [
+          "quick_tastings",
+          "quick_tasting_items"
+        ],
+        "verification": {
+          "user_ownership": true,
+          "existence_check": true
+        }
       },
-      "touch_targets": {
-        "minimum_size": "44x44px",
-        "spacing_between": "8px minimum",
-        "thumb_zone": "Bottom 1/3 of screen for primary actions"
-      },
-      "content_strategy": {
-        "single_column_layout": "Always use single column on mobile",
-        "progressive_disclosure": "Show essential info first, details on demand",
-        "thumb_friendly_navigation": "Bottom navigation for primary actions"
-      }
-    },
-    
-    "overflow_fixes": {
-      "global_styles": {
-        "html_body": "overflow-x: hidden; max-width: 100vw;",
-        "container_classes": "max-w-full overflow-hidden",
-        "image_responsive": "max-width: 100%; height: auto;"
-      },
-      "common_issues": {
-        "wide_content": "Use 'w-full max-w-full' classes",
-        "fixed_widths": "Replace with responsive units (%, vw, rem)",
-        "long_text": "word-wrap: break-word; overflow-wrap: break-word;",
-        "tables": "overflow-x: auto; on container with min-width"
-      }
-    },
-    
-    "implementation_strategy": {
-      "css_custom_properties": {
-        "location": "styles/design-tokens.css",
-        "naming_convention": "--color-primary-500, --spacing-4, --font-size-lg",
-        "dark_mode_support": "CSS custom properties with media queries"
-      },
-      "tailwind_config": {
-        "extend_theme": "Add custom colors, fonts, and spacing to tailwind.config.js",
-        "component_classes": "Create utility classes for common patterns",
-        "responsive_breakpoints": "sm: 640px, md: 768px, lg: 1024px, xl: 1280px"
-      },
-      "component_library": {
-       "base_components": "Button, Input, Card, Modal, Toast",
-       "composition_pattern": "Build complex components from base components",
-       "accessibility": "ARIA labels, keyboard navigation, screen reader support"
-     },
-     
-     "icon_system": {
-       "library": "Lucide React",
-       "package": "lucide-react",
-       "usage_policy": "Use Lucide icons exclusively - NO emojis allowed",
-       "installation": "npm install lucide-react",
-       "import_pattern": "import { IconName } from 'lucide-react'",
-       "sizing": {
-         "small": "16px",
-         "medium": "20px",
-         "large": "24px",
-         "xl": "32px"
-       },
-       "color_inheritance": "Icons should inherit text color by default",
-       "common_icons": {
-         "navigation": "ChevronLeft, ChevronRight, Menu, X, Home, User",
-         "actions": "Plus, Minus, Edit, Trash2, Save, Download, Upload",
-         "status": "Check, AlertCircle, Info, XCircle, CheckCircle",
-         "media": "Camera, Image, Play, Pause, Volume2",
-         "social": "Heart, Share, MessageCircle, Star"
-       }
-     }
-    },
-    
-    "migration_plan": {
-      "phase_1": {
-        "title": "Foundation Setup",
-        "tasks": [
-          "Update design-tokens.css with new color palette",
-          "Configure Tailwind with custom theme",
-          "Add global overflow fixes to globals.css",
-          "Update viewport meta tag"
-        ]
-      },
-      "phase_2": {
-        "title": "Component Updates",
-        "tasks": [
-          "Refactor buttons to use new design system",
-          "Update form inputs with proper sizing",
-          "Fix card components with consistent styling",
-          "Ensure all touch targets meet 44px minimum"
-        ]
-      },
-      "phase_3": {
-        "title": "Layout Optimization",
-        "tasks": [
-          "Convert multi-column layouts to single column on mobile",
-          "Implement responsive image handling",
-          "Add proper text wrapping for long content",
-          "Test and fix any remaining overflow issues"
-        ]
-      },
-      "phase_4": {
-        "title": "Testing and Refinement",
-        "tasks": [
-          "Test on various mobile devices and screen sizes",
-          "Validate accessibility compliance",
-          "Performance optimization",
-          "User testing and feedback incorporation"
-        ]
+      "view_update": {
+        "automatic": true,
+        "method": "state_refresh",
+        "animation": "fade_out"
       }
     }
+  },
+  "implementation": {
+    "files_to_modify": {
+      "historyService.ts": {
+        "path": "/lib/historyService.ts",
+        "changes": {
+          "new_function": {
+            "name": "deleteTasting",
+            "parameters": [
+              {
+                "name": "tastingId",
+                "type": "string",
+                "description": "ID único de la cata a eliminar"
+              },
+              {
+                "name": "userId",
+                "type": "string",
+                "description": "ID del usuario propietario"
+              }
+            ],
+            "return_type": "Promise<{ success: boolean; error: any }>",
+            "implementation_steps": [
+              "Verificar propiedad de la cata",
+              "Eliminar elementos relacionados (quick_tasting_items)",
+              "Eliminar cata principal (quick_tastings)",
+              "Manejar errores y retornar resultado"
+            ]
+          }
+        }
+      },
+      "TastingHistoryItem.tsx": {
+        "path": "/components/history/TastingHistoryItem.tsx",
+        "changes": {
+          "new_props": {
+            "onDelete": {
+              "type": "(id: string) => void",
+              "description": "Función callback para manejar eliminación"
+            }
+          },
+          "new_state": {
+            "isDeleting": {
+              "type": "boolean",
+              "initial_value": false,
+              "description": "Estado de carga durante eliminación"
+            }
+          },
+          "ui_elements": {
+            "delete_button": {
+              "component": "button",
+              "classes": "absolute top-2 right-2 p-2 text-red-500 hover:text-red-700",
+              "icon": "TrashIcon",
+              "onClick": "handleDeleteClick"
+            }
+          }
+        }
+      },
+      "TastingHistoryList.tsx": {
+        "path": "/components/history/TastingHistoryList.tsx",
+        "changes": {
+          "new_functions": {
+            "handleDeleteTasting": {
+              "parameters": ["tastingId: string"],
+              "implementation": [
+                "Mostrar modal de confirmación",
+                "Llamar deleteTasting del servicio",
+                "Actualizar estado local",
+                "Mostrar notificación de éxito/error"
+              ]
+            },
+            "refreshTastings": {
+              "description": "Recargar lista después de eliminación",
+              "implementation": "Llamar loadTastings nuevamente"
+            }
+          },
+          "state_updates": {
+            "tastings": {
+              "filter_method": "tastings.filter(t => t.id !== deletedId)",
+              "description": "Remover cata eliminada del estado"
+            }
+          }
+        }
+      }
+    },
+    "new_components": {
+      "ConfirmationModal": {
+        "optional": true,
+        "path": "/components/ui/ConfirmationModal.tsx",
+        "props": {
+          "isOpen": "boolean",
+          "onClose": "() => void",
+          "onConfirm": "() => void",
+          "title": "string",
+          "message": "string",
+          "confirmText": "string",
+          "cancelText": "string",
+          "isDestructive": "boolean"
+        },
+        "alternative": "Usar window.confirm() para implementación rápida"
+      }
+    }
+  },
+  "database_schema": {
+    "tables": {
+      "quick_tastings": {
+        "primary_key": "id",
+        "foreign_keys": {
+          "user_id": "references auth.users(id)"
+        },
+        "deletion_cascade": "manual"
+      },
+      "quick_tasting_items": {
+        "primary_key": "id",
+        "foreign_keys": {
+          "quick_tasting_id": "references quick_tastings(id)"
+        },
+        "deletion_order": "first"
+      }
+    },
+    "deletion_sequence": [
+      "1. Verificar propiedad (user_id = current_user)",
+      "2. Eliminar quick_tasting_items WHERE quick_tasting_id = target_id",
+      "3. Eliminar quick_tastings WHERE id = target_id AND user_id = current_user"
+    ]
+  },
+  "security_considerations": {
+    "authorization": {
+      "user_verification": {
+        "required": true,
+        "method": "user_id_match",
+        "description": "Solo el propietario puede eliminar sus catas"
+      },
+      "sql_injection_prevention": {
+        "method": "parameterized_queries",
+        "library": "supabase_client"
+      }
+    },
+    "data_validation": {
+      "tasting_id": {
+        "type": "uuid",
+        "required": true,
+        "validation": "isValidUUID()"
+      },
+      "user_id": {
+        "type": "uuid",
+        "required": true,
+        "source": "authenticated_session"
+      }
+    }
+  },
+  "error_handling": {
+    "scenarios": {
+      "tasting_not_found": {
+        "message": "La cata no existe o ya fue eliminada",
+        "action": "refresh_list"
+      },
+      "unauthorized_access": {
+        "message": "No tienes permisos para eliminar esta cata",
+        "action": "show_error"
+      },
+      "database_error": {
+        "message": "Error al eliminar la cata. Inténtalo de nuevo.",
+        "action": "retry_option"
+      },
+      "network_error": {
+        "message": "Error de conexión. Verifica tu internet.",
+        "action": "retry_option"
+      }
+    },
+    "user_feedback": {
+      "success": {
+        "message": "Cata eliminada exitosamente",
+        "type": "toast_success",
+        "duration": 3000
+      },
+      "error": {
+        "type": "toast_error",
+        "duration": 5000,
+        "dismissible": true
+      }
+    }
+  },
+  "testing_scenarios": {
+    "unit_tests": {
+      "deleteTasting_function": [
+        "Eliminación exitosa con datos válidos",
+        "Error cuando la cata no existe",
+        "Error cuando el usuario no es propietario",
+        "Error de base de datos",
+        "Manejo de parámetros inválidos"
+      ]
+    },
+    "integration_tests": {
+      "ui_flow": [
+        "Click en botón eliminar muestra confirmación",
+        "Confirmación ejecuta eliminación",
+        "Cancelación cierra modal sin eliminar",
+        "Lista se actualiza después de eliminación",
+        "Estados de carga se muestran correctamente"
+      ]
+    },
+    "e2e_tests": {
+      "complete_flow": [
+        "Usuario navega a historial",
+        "Hace click en eliminar cata",
+        "Confirma eliminación",
+        "Cata desaparece de la lista",
+        "No aparece en recargas posteriores"
+      ]
+    }
+  },
+  "performance_considerations": {
+    "optimizations": {
+      "optimistic_updates": {
+        "enabled": true,
+        "description": "Remover de UI inmediatamente, revertir si falla"
+      },
+      "batch_operations": {
+        "applicable": false,
+        "reason": "Eliminación individual por diseño"
+      },
+      "caching": {
+        "invalidation": "required",
+        "scope": "user_tasting_history"
+      }
+    },
+    "database_impact": {
+      "indexes": {
+        "required": [
+          "quick_tastings(user_id)",
+          "quick_tasting_items(quick_tasting_id)"
+        ]
+      },
+      "transaction_size": "small",
+      "estimated_duration": "< 100ms"
+    }
+  },
+  "deployment_checklist": {
+    "pre_deployment": [
+      "Verificar tests unitarios pasan",
+      "Verificar tests de integración pasan",
+      "Revisar permisos de base de datos",
+      "Confirmar backup de datos"
+    ],
+    "post_deployment": [
+      "Verificar funcionalidad en producción",
+      "Monitorear logs de errores",
+      "Confirmar performance aceptable",
+      "Validar con usuarios beta"
+    ]
+  },
+  "configuration_alternatives": {
+    "soft_delete": {
+      "description": "Marcar como eliminado en lugar de borrar físicamente",
+      "implementation": {
+        "field": "deleted_at",
+        "type": "timestamp",
+        "queries": "WHERE deleted_at IS NULL"
+      },
+      "pros": ["Recuperación posible", "Auditoría completa"],
+      "cons": ["Más complejidad", "Datos acumulados"]
+    },
+    "bulk_delete": {
+      "description": "Permitir selección múltiple para eliminar",
+      "ui_changes": ["Checkboxes", "Botón eliminar seleccionados"],
+      "complexity": "medium"
+    },
+    "undo_functionality": {
+      "description": "Permitir deshacer eliminación por tiempo limitado",
+      "implementation": "Soft delete + cleanup job",
+      "complexity": "high"
+    }
+  },
+  "maintenance_notes": {
+    "monitoring": {
+      "metrics": [
+        "Número de eliminaciones por día",
+        "Errores en eliminación",
+        "Tiempo de respuesta"
+      ],
+      "alerts": [
+        "Tasa de error > 5%",
+        "Tiempo de respuesta > 1s"
+      ]
+    },
+    "cleanup": {
+      "orphaned_data": "Verificar periódicamente items huérfanos",
+      "logs": "Rotar logs de eliminación mensualmente"
+    }
   }
+}
+```
+
+## Explicación de Secciones
+
+### 1. Feature
+Define la funcionalidad general, su nombre, descripción y prioridad.
+
+### 2. Requirements
+Especifica los requisitos de UI y backend, incluyendo elementos visuales y operaciones de base de datos.
+
+### 3. Implementation
+Detalla los archivos a modificar, nuevas funciones a crear y componentes adicionales necesarios.
+
+### 4. Database Schema
+Describe la estructura de base de datos relevante y el orden de eliminación para mantener integridad referencial.
+
+### 5. Security Considerations
+Cubre aspectos de seguridad como autorización, validación de datos y prevención de ataques.
+
+### 6. Error Handling
+Define escenarios de error posibles y cómo manejarlos, incluyendo mensajes para el usuario.
+
+### 7. Testing Scenarios
+Especifica casos de prueba para diferentes niveles (unitario, integración, e2e).
+
+### 8. Performance Considerations
+Optimizaciones posibles y consideraciones de rendimiento.
+
+### 9. Deployment Checklist
+Lista de verificación para antes y después del despliegue.
+
+### 10. Configuration Alternatives
+Opciones alternativas de implementación con sus pros y contras.
+
+### 11. Maintenance Notes
+Consideraciones para el mantenimiento a largo plazo.
+
+## Notas de Implementación
+
+- **Prioridad de Seguridad**: Siempre verificar que el usuario sea propietario de la cata antes de eliminar.
+- **Experiencia de Usuario**: Proporcionar feedback claro y confirmación antes de acciones destructivas.
+- **Integridad de Datos**: Eliminar en el orden correcto para evitar violaciones de claves foráneas.
+- **Manejo de Errores**: Cubrir todos los escenarios posibles con mensajes informativos.
+- **Performance**: Considerar optimizaciones como actualizaciones optimistas para mejor UX.
+
+Este JSON sirve como guía completa para implementar la funcionalidad de eliminación de catas de manera robusta y segura.
