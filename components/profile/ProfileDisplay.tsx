@@ -1,11 +1,46 @@
 import { UserProfile } from '../../lib/profileService';
+import { getUserTastingStats, TastingStats } from '../../lib/historyService';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ProfileDisplayProps {
   profile: UserProfile | null;
   authEmail?: string;
 }
 
+
+
 export default function ProfileDisplay({ profile, authEmail }: ProfileDisplayProps) {
+  const { user } = useAuth();
+  const [realTimeTastingsCount, setRealTimeTastingsCount] = useState<number | null>(null);
+  const [isLoadingStats, setIsLoadingStats] = useState(false);
+
+  // Obtener el conteo real de tastings
+  useEffect(() => {
+    const fetchRealTastingsCount = async () => {
+      if (!profile || !user) return;
+      
+      setIsLoadingStats(true);
+      try {
+        const result = await getUserTastingStats(user.id);
+        if (result.data) {
+          setRealTimeTastingsCount(result.data.totalTastings);
+        } else {
+          // En caso de error, usar el valor de la base de datos
+          setRealTimeTastingsCount(profile.tastings_count);
+        }
+      } catch (error) {
+        console.error('Error fetching real tastings count:', error);
+        // En caso de error, usar el valor de la base de datos
+        setRealTimeTastingsCount(profile.tastings_count);
+      } finally {
+        setIsLoadingStats(false);
+      }
+    };
+
+    fetchRealTastingsCount();
+  }, [profile, user]);
+
   if (!profile) {
     return (
       <div className="card p-md">
@@ -107,7 +142,11 @@ export default function ProfileDisplay({ profile, authEmail }: ProfileDisplayPro
       <div className="grid grid-cols-2 gap-sm mb-md">
         <div className="bg-[#FEF3E7] rounded-xl p-sm text-center">
           <div className="text-h2 font-heading font-bold text-[#1F5D4C]">
-            {profile.tastings_count}
+            {isLoadingStats ? (
+              <div className="animate-pulse bg-gray-300 h-8 w-8 rounded mx-auto"></div>
+            ) : (
+              realTimeTastingsCount !== null ? realTimeTastingsCount : profile.tastings_count
+            )}
           </div>
           <div className="text-small font-body text-text-secondary">Tastings</div>
         </div>
