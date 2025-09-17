@@ -39,8 +39,8 @@ export default function Dashboard() {
         getUserTastingStats(user.id),
         getLatestTasting(user.id)
       ]);
-      setTastingStats(stats);
-      setLatestTasting(latest);
+      setTastingStats(stats.data);
+      setLatestTasting(latest.data);
       
     } catch (error) {
       console.error('Error initializing dashboard:', error);
@@ -165,7 +165,7 @@ export default function Dashboard() {
                 <div className="flex items-center">
                   <span className="text-text-secondary text-caption font-body mr-xs">Score:</span>
                   <span className="text-[#1F5D4C] font-body font-semibold text-small">
-                    {latestTasting.overall_score}/5
+                    {latestTasting.average_score ? latestTasting.average_score.toFixed(1) : 'N/A'}/5
                   </span>
                 </div>
                 <div className="text-text-muted">•</div>
