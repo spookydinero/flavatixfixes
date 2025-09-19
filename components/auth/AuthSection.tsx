@@ -125,7 +125,7 @@ const AuthSection = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-background-light from-0% dark:from-background-dark" />
             <div className="absolute inset-0 flex items-center justify-center">
               <img
-                src="/images/flavicon.png"
+                src="/flavicon.png"
                 alt="Flavatix Logo"
                 className="h-24 w-24"
               />
