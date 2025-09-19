@@ -68,7 +68,7 @@ export default function SocialPage() {
       }
 
       // Now get profiles for these users
-      const userIds = tastingsData?.map(t => t.user_id) || [];
+      const userIds = (tastingsData as any[])?.map((t: any) => t.user_id) || [];
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, full_name, username, avatar_url')
@@ -79,11 +79,11 @@ export default function SocialPage() {
       }
 
       // Get social stats for each tasting (likes, comments, shares)
-      const tastingIds = tastingsData?.map(t => t.id) || [];
+      const tastingIds = (tastingsData as any[])?.map((t: any) => t.id) || [];
 
-      let likesData = [];
-      let commentsData = [];
-      let sharesData = [];
+      let likesData: any[] = [];
+      let commentsData: any[] = [];
+      let sharesData: any[] = [];
       let userLikes = new Set<string>();
       let userFollows = new Set<string>();
 
@@ -127,7 +127,7 @@ export default function SocialPage() {
             .select('tasting_id')
             .eq('user_id', user.id)
             .in('tasting_id', tastingIds);
-          userLikes = new Set(userLikesData?.map(l => l.tasting_id) || []);
+          userLikes = new Set((userLikesData as any[])?.map((l: any) => l.tasting_id) || []);
         } catch (error) {
           console.log('User likes query failed, using defaults');
         }
@@ -137,16 +137,16 @@ export default function SocialPage() {
             .from('user_follows')
             .select('following_id')
             .eq('follower_id', user.id);
-          userFollows = new Set(userFollowsData?.map(f => f.following_id) || []);
+          userFollows = new Set((userFollowsData as any[])?.map((f: any) => f.following_id) || []);
         } catch (error) {
           console.log('User follows query failed, using defaults');
         }
       }
 
       // Combine the data
-      const data = tastingsData?.map(tasting => ({
+      const data = (tastingsData as any[])?.map((tasting: any) => ({
         ...tasting,
-        profiles: profilesData?.find(p => p.user_id === tasting.user_id)
+        profiles: (profilesData as any[])?.find((p: any) => p.user_id === tasting.user_id)
       }));
 
       // Transform the data to match our interface
@@ -224,7 +224,7 @@ export default function SocialPage() {
       if (isCurrentlyLiked) {
         // Unlike
         try {
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('tasting_likes')
             .delete()
             .eq('user_id', user.id)
@@ -250,7 +250,7 @@ export default function SocialPage() {
       } else {
         // Like
         try {
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('tasting_likes')
             .insert({
               user_id: user.id,
@@ -302,7 +302,7 @@ export default function SocialPage() {
       if (isCurrentlyFollowing) {
         // Unfollow
         try {
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('user_follows')
             .delete()
             .eq('follower_id', user.id)
@@ -324,7 +324,7 @@ export default function SocialPage() {
       } else {
         // Follow
         try {
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('user_follows')
             .insert({
               follower_id: user.id,
@@ -367,7 +367,7 @@ export default function SocialPage() {
 
       // Record the share in database (if table exists)
       try {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('tasting_shares')
           .insert({
             user_id: user.id,
