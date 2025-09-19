@@ -41,7 +41,7 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen">
+    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen pb-20">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-orange-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -118,7 +118,7 @@ export default function HistoryPage() {
       </div>
 
       {/* Bottom Navigation */}
-      <footer className="border-t border-zinc-200 bg-background-light dark:border-zinc-800 dark:bg-background-dark">
+      <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200 bg-background-light dark:border-zinc-800 dark:bg-background-dark">
         <nav className="flex justify-around p-2">
           <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/dashboard">
             <span className="material-symbols-outlined">home</span>

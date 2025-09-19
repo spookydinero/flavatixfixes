@@ -124,11 +124,11 @@ const AuthSection = () => {
             <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1558221525-4b07c87c713b?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')" }} />
             <div className="absolute inset-0 bg-gradient-to-t from-background-light from-0% dark:from-background-dark" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <svg className="h-24 w-24 text-white" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="48" stroke="currentColor" strokeWidth="4" />
-                <path d="M50 20 L50 80 M20 50 L80 50" stroke="currentColor" strokeLinecap="round" strokeWidth="4" />
-                <circle cx="50" cy="50" fill="currentColor" r="10" />
-              </svg>
+              <img
+                src="/images/flavicon.png"
+                alt="Flavatix Logo"
+                className="h-24 w-24"
+              />
             </div>
           </div>
           <div className="px-6 py-8 text-center">

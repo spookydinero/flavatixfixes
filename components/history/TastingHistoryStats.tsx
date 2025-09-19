@@ -62,15 +62,15 @@ const TastingHistoryStats: React.FC<TastingHistoryStatsProps> = ({ className = '
 
   const getCategoryIcon = (category: string) => {
     const icons: Record<string, string> = {
-      'coffee': '☕',
-      'wine': '🍷',
-      'tea': '🍵',
-      'chocolate': '🍫',
-      'cheese': '🧀',
-      'beer': '🍺',
-      'spirits': '🥃'
+      'coffee': 'coffee',
+      'wine': 'wine_bar',
+      'tea': 'local_cafe',
+      'chocolate': 'cookie',
+      'cheese': 'restaurant',
+      'beer': 'sports_bar',
+      'spirits': 'local_bar'
     };
-    return icons[category.toLowerCase()] || '🍽️';
+    return icons[category.toLowerCase()] || 'restaurant';
   };
 
   const getStreakColor = (streak: number) => {
@@ -96,7 +96,7 @@ const TastingHistoryStats: React.FC<TastingHistoryStatsProps> = ({ className = '
             <p className="text-2xl font-bold text-gray-900">{stats.totalTastings}</p>
             <p className="text-sm text-gray-600">Catas totales</p>
           </div>
-          <div className="text-2xl">📊</div>
+          <span className="material-symbols-outlined text-gray-400">analytics</span>
         </div>
       </div>
 
@@ -109,7 +109,7 @@ const TastingHistoryStats: React.FC<TastingHistoryStatsProps> = ({ className = '
             </p>
             <p className="text-sm text-gray-600">Puntuación media</p>
           </div>
-          <div className="text-2xl">⭐</div>
+          <span className="material-symbols-outlined text-gray-400">star</span>
         </div>
       </div>
 
@@ -122,7 +122,7 @@ const TastingHistoryStats: React.FC<TastingHistoryStatsProps> = ({ className = '
             </p>
             <p className="text-sm text-gray-600">Racha actual</p>
           </div>
-          <div className="text-2xl">🔥</div>
+          <span className="material-symbols-outlined text-gray-400">local_fire_department</span>
         </div>
       </div>
 
@@ -135,9 +135,9 @@ const TastingHistoryStats: React.FC<TastingHistoryStatsProps> = ({ className = '
             </p>
             <p className="text-sm text-gray-600">Categoría favorita</p>
           </div>
-          <div className="text-2xl">
-            {stats.mostTastedCategory ? getCategoryIcon(stats.mostTastedCategory) : '❓'}
-          </div>
+          <span className="material-symbols-outlined text-gray-400">
+            {stats.mostTastedCategory ? getCategoryIcon(stats.mostTastedCategory) : 'help'}
+          </span>
         </div>
       </div>
 
@@ -151,7 +151,7 @@ const TastingHistoryStats: React.FC<TastingHistoryStatsProps> = ({ className = '
               .map(([category, count]) => (
                 <div key={category} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                   <div className="flex items-center">
-                    <span className="text-lg mr-2">{getCategoryIcon(category)}</span>
+                    <span className="material-symbols-outlined text-gray-600 mr-2">{getCategoryIcon(category)}</span>
                     <span className="text-sm font-medium capitalize">{category}</span>
                   </div>
                   <span className="text-sm font-bold text-gray-700">{count}</span>

@@ -28,13 +28,11 @@ export default function Home() {
           <div className="relative z-10 px-md py-2xl mx-auto max-w-4xl text-center">
             {/* Logo/Brand Area */}
             <div className="mb-lg">
-              <div className="inline-flex items-center justify-center w-20 h-20 mb-md bg-gradient-primary rounded-full shadow-primary overflow-hidden">
-                <img
-                  src="/images/flavicon.png"
-                  alt="Flavatix Logo"
-                  className="w-12 h-12 object-contain"
-                />
-              </div>
+              <img
+                src="/images/flavicon.png"
+                alt="Flavatix Logo"
+                className="w-16 h-16 mx-auto mb-md"
+              />
               
               {/* App Name */}
               <h1 className="font-heading font-bold text-h1 text-text-primary mb-sm">
