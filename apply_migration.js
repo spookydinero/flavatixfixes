@@ -1,6 +1,13 @@
 const fs = require('fs');
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config({ path: '.env.local' });
+
+// Load environment variables from .env.local
+require('fs').readFileSync('.env.local', 'utf8').split('\n').forEach(line => {
+  const [key, value] = line.split('=');
+  if (key && value) {
+    process.env[key] = value;
+  }
+});
 
 async function applyMigration() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
