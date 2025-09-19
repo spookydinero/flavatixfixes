@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { getSupabaseClient } from '../../lib/supabase';
 import { toast } from '../../lib/toast';
 import { Coffee, Wine, Beer, Utensils, Star, Camera } from 'lucide-react';
@@ -31,6 +31,12 @@ const TastingItem: React.FC<TastingItemProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [localNotes, setLocalNotes] = useState(item.notes || '');
   const [localScore, setLocalScore] = useState(item.overall_score || 0);
+
+  // Reset local state when item changes
+  useEffect(() => {
+    setLocalNotes(item.notes || '');
+    setLocalScore(item.overall_score || 0);
+  }, [item.id]);
 
   const getScoreLabel = (score: number): string => {
     if (score >= 90) return '(Exceptional)';
