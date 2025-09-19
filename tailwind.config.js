@@ -34,6 +34,21 @@ module.exports = {
           500: '#ef4444',
           600: '#dc2626',
         },
+        // Flavor Profile Colors
+        flavor: {
+          fruity: '#E4572E',
+          floral: '#E9A2AD',
+          vegetal: '#57A773',
+          smoky: '#6B5B95',
+          sweet: '#DFAF2B',
+          spicy: '#B53F3F',
+          bitter: '#2F4858',
+          sour: '#3B9ED8',
+          roasted: '#8C5A3A',
+          nutty: '#C29F6D',
+          mineral: '#7A8A8C',
+          earthy: '#6D7F4B',
+        },
       },
       fontFamily: {
         display: ['Space Grotesk', 'sans-serif'],

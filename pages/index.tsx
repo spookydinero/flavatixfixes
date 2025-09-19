@@ -54,8 +54,9 @@ export default function Home() {
             <div className="grid grid-cols-1 tablet:grid-cols-3 gap-md mb-xl max-w-3xl mx-auto">
               <div className={`${styles.card} card-tasting p-md text-center`}>
                 <div className="w-12 h-12 bg-flavor-fruity rounded-full mx-auto mb-sm flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 11H7v9a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9h-2m-7 2v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16"/>
+                  <svg className="w-6 h-6 text-white" fill="white" viewBox="0 0 24 24" style={{display: 'block'}}>
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M8 12h8M12 8v8"/>
                   </svg>
                 </div>
                 <h3 className="font-heading font-semibold text-h3 text-text-primary mb-xs">
@@ -68,7 +69,8 @@ export default function Home() {
               
               <div className={`${styles.card} card-tasting p-md text-center`}>
                 <div className="w-12 h-12 bg-flavor-vegetal rounded-full mx-auto mb-sm flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-white" fill="white" viewBox="0 0 24 24" style={{display: 'block'}}>
+                    <circle cx="12" cy="12" r="10"/>
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                   </svg>
                 </div>
@@ -82,7 +84,8 @@ export default function Home() {
               
               <div className={`${styles.card} card-tasting p-md text-center`}>
                 <div className="w-12 h-12 bg-flavor-roasted rounded-full mx-auto mb-sm flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-white" fill="white" viewBox="0 0 24 24" style={{display: 'block'}}>
+                    <circle cx="12" cy="12" r="10"/>
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                   </svg>
                 </div>
