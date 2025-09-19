@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { getSupabaseClient } from './supabase';
+import { getSupabaseClient, Database } from './supabase';
 
 export interface UserProfile {
   user_id: string;
@@ -90,7 +90,7 @@ class ProfileService {
         }
       }
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('profiles')
         .update({
           ...updates,

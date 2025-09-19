@@ -10,14 +10,14 @@ const crimsonText = Crimson_Text({
 
 export default function Home() {
   return (
-    <>
+    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200">
       <Head>
         <title>FlavorWheel - Taste the World, One Sip at a Time</title>
         <meta name="description" content="The world's most pivotal tasting app for coffee and drinks. Discover, analyze, and share your tasting experiences with our user-friendly platform." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      
-      <main className={`${inter.variable} ${crimsonText.variable} min-h-screen bg-background-app font-body`}>
+
+      <main className={`${inter.variable} ${crimsonText.variable} min-h-screen`}>
         {/* Hero Section */}
         <div className="relative overflow-hidden">
           {/* Background Gradient */}
@@ -98,10 +98,10 @@ export default function Home() {
             
             {/* Call to Action */}
             <div className="space-y-sm">
-              <button className="btn-primary mx-auto block tablet:inline-block">
+              <a href="/auth" className="btn-primary mx-auto block tablet:inline-block">
                 Get Started
-              </button>
-              
+              </a>
+
               <p className="text-caption text-text-muted">
                 Join thousands of tasters discovering new flavors every day
               </p>
@@ -169,9 +169,9 @@ export default function Home() {
             <p className="text-body mb-lg opacity-90">
               Join the FlavorWheel community and discover the world of flavor like never before.
             </p>
-            <button className="btn-secondary">
+            <a href="/auth" className="btn-secondary">
               Start Tasting Today
-            </button>
+            </a>
             
             <div className="mt-xl pt-lg border-t border-white/20">
               <p className="text-small opacity-70">
@@ -181,6 +181,6 @@ export default function Home() {
           </div>
         </footer>
       </main>
-    </>
+    </div>
   )
 }

@@ -172,3 +172,6 @@ temp/
 /data
 *.csv
 *.json.backup
+
+# Ignore kluster.ai Verify Code rules
+.cursor/rules/kluster-code-verify.mdc

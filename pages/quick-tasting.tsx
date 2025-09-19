@@ -62,31 +62,31 @@ const QuickTastingPage: React.FC = () => {
     }
 
     setIsLoading(true);
-    
+
     try {
       console.log('Refreshing session for auth synchronization...');
       const { data: sessionData, error: sessionError } = await supabase.auth.refreshSession();
-      
+
       if (sessionError) {
         console.error('Session refresh failed:', sessionError);
         toast.error('Authentication error. Please try again.');
         return;
       }
-      
+
       console.log('Session refreshed successfully');
-      
+
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('user_id')
         .eq('user_id', user.id)
         .single();
-      
+
       if (profileError || !profile) {
         console.error('User profile not found:', profileError);
         toast.error('User profile not found. Please contact support.');
         return;
       }
-      
+
       console.log('Auth state debug:', {
         'auth.uid()': (await supabase.auth.getUser()).data.user?.id,
         'user.id': user.id,
@@ -111,7 +111,7 @@ const QuickTastingPage: React.FC = () => {
           'Current auth.uid()': (await supabase.auth.getUser()).data.user?.id,
           'Error details': error
         });
-        
+
         if (error.code === '42501') {
           toast.error('Permission denied. Please try logging out and back in.');
           return;
@@ -164,7 +164,7 @@ const QuickTastingPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background-app">
+    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen">
       <main id="main-content">
         <div className="container mx-auto px-md py-lg">
           <div className="mb-lg">
@@ -188,7 +188,7 @@ const QuickTastingPage: React.FC = () => {
           <div className="mb-lg">
             <div className="flex items-center justify-center space-x-sm">
               <div className={`flex items-center ${
-                currentStep === 'category' ? 'text-primary-600' : 
+                currentStep === 'category' ? 'text-primary-600' :
                 currentStep === 'session' || currentStep === 'summary' ? 'text-primary-400' : 'text-text-secondary'
               }`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
@@ -247,7 +247,7 @@ const QuickTastingPage: React.FC = () => {
                 onSessionComplete={(data) => handleSessionComplete(data as any)}
               />
             )}
-            
+
             {currentStep === 'summary' && currentSession && (
               <QuickTastingSummary
                 session={currentSession as any}

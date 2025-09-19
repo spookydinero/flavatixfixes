@@ -3,21 +3,19 @@
 @import 'tailwindcss/utilities';
 @import './design-tokens.css';
 @import './component-tokens.css';
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 /* Legacy CSS variables for backward compatibility */
 :root {
   /* Legacy Colors - mapped to new design tokens */
-  --primary: var(--color-primary);
-  --primary-hover: var(--color-primary-hover);
-  --secondary: var(--color-secondary-500);
-  --accent: var(--color-accent);
-  --background: var(--color-background-app);
-  --surface: var(--color-background-surface);
-  --text-primary: var(--color-text-primary);
-  --text-secondary: var(--color-text-secondary);
-  --border: var(--color-border-default);
+  --primary: #ec7813;
+  --primary-hover: #d66a11;
+  --secondary: #ec7813;
+  --accent: #ec7813;
+  --background: #f8f7f6;
+  --surface: #ffffff;
+  --text-primary: #18181b;
+  --text-secondary: #71717a;
+  --border: rgba(0,0,0,0.12);
   
   /* Legacy Typography - mapped to new design tokens */
   --font-heading: var(--font-heading);
@@ -80,27 +78,27 @@ a {
 
 /* Custom component styles */
 .btn-primary {
-  @apply bg-gradient-primary text-white rounded-button px-5 py-3 min-h-touch font-semibold shadow-primary transition-all duration-200 hover:shadow-primary-hover hover:-translate-y-0.5 active:translate-y-0.5 active:scale-95;
+  @apply bg-primary text-white rounded-lg px-5 py-3 min-h-11 font-semibold transition-all duration-200 hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0.5 active:scale-95;
 }
 
 .btn-secondary {
-  @apply bg-white border-2 border-border text-text-primary rounded-button px-5 py-3 min-h-touch font-medium transition-all duration-200 hover:border-accent hover:shadow-sm;
+  @apply bg-white border-2 border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-white rounded-lg px-5 py-3 min-h-11 font-medium transition-all duration-200 hover:border-primary hover:shadow-sm;
 }
 
 .btn-ghost {
-  @apply bg-transparent text-primary border border-primary rounded-button px-5 py-3 min-h-touch transition-all duration-200 hover:bg-primary hover:text-white;
+  @apply bg-transparent text-primary border border-primary rounded-lg px-5 py-3 min-h-11 transition-all duration-200 hover:bg-primary hover:text-white;
 }
 
 .card {
-  @apply bg-white border border-border rounded-card shadow-md p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
+  @apply bg-white dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-md p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
 }
 
 .card-tasting {
-  @apply bg-gradient-tasting border border-primary/10 rounded-card shadow-tasting transition-all duration-200 hover:shadow-tasting-hover hover:-translate-y-0.5 hover:scale-[1.01];
+  @apply bg-zinc-50 dark:bg-zinc-800/50 border border-primary/10 rounded-lg shadow-md transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:scale-[1.01];
 }
 
 .input {
-  @apply bg-white border-2 border-border rounded-input px-3.5 py-3 text-body min-h-touch focus:border-accent focus:ring-2 focus:ring-secondary/10 focus:outline-none transition-all duration-200;
+  @apply bg-white dark:bg-zinc-700 border-2 border-zinc-300 dark:border-zinc-600 rounded-lg px-3.5 py-3 min-h-11 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all duration-200;
 }
 
 .text-small {
@@ -109,7 +107,7 @@ a {
 }
 
 .label {
-  @apply text-small font-body font-medium text-text-secondary mb-2 block;
+  @apply text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-2 block;
 }
 
 /* Accessibility */
@@ -126,7 +124,7 @@ a {
 
 /* Enhanced Focus styles for accessibility */
 *:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid #ec7813;
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -134,17 +132,17 @@ a {
 /* Specific focus styles for interactive elements */
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid #ec7813;
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(31, 93, 76, 0.1);
+  box-shadow: 0 0 0 4px rgba(236, 120, 19, 0.1);
 }
 
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   outline: none;
-  border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px rgba(31, 93, 76, 0.1);
+  border-color: #ec7813;
+  box-shadow: 0 0 0 3px rgba(236, 120, 19, 0.1);
 }
 
 /* High contrast mode support */
@@ -185,6 +183,13 @@ textarea {
 
 .skip-link:focus {
   top: 6px;
+}
+
+/* Material Symbols styles */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
 /* Add any additional global styles here */
@@ -229,4 +234,33 @@ textarea {
 .slider:hover::-webkit-slider-thumb {
   transform: scale(1.1);
   transition: transform 0.2s ease;
+}
+
+/* 3D Flavor Wheel Styles */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Animation utilities */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out;
 }

@@ -80,145 +80,137 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FEF3E7]">
-      <main id="main-content">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#1F5D4C] to-[#2E7D32] text-white">
-          <div className="max-w-md mx-auto px-md py-md">
-            <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-h2 font-heading font-bold">FlavorWheel</h1>
-              <p className="text-green-100 text-small font-body">Welcome back, {profile?.full_name || user?.email}!</p>
+    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200">
+      <div className="flex h-screen flex-col">
+        <header className="flex items-center border-b border-zinc-200 dark:border-zinc-700 p-4">
+          <h1 className="flex-1 text-center text-xl font-bold">Dashboard</h1>
+          <div className="w-10"></div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
+                Welcome back, {profile?.full_name || user?.email}!
+              </h2>
+              <p className="text-zinc-600 dark:text-zinc-400">
+                Ready to explore new flavors?
+              </p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="bg-white/20 hover:bg-white/30 px-sm py-xs rounded-xl text-small font-body font-medium transition-colors"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-md mx-auto px-md py-md space-y-md">
-        {/* Tab Navigation */}
-        <div className="card p-xs">
-          <div className="flex">
-            <button
-              onClick={() => setActiveTab('profile')}
-              className={`flex-1 py-sm px-sm rounded-xl text-small font-body font-medium transition-all ${
-                activeTab === 'profile'
-                  ? 'bg-gradient-to-r from-[#1F5D4C] to-[#2E7D32] text-white shadow-md'
-                  : 'text-[#5C5C5C] hover:text-[#2C1810] hover:bg-[#F7F3EA]'
-              }`}
-            >
-              My Profile
-            </button>
-            <button
-              onClick={() => setActiveTab('edit')}
-              className={`flex-1 py-sm px-sm rounded-xl text-small font-body font-medium transition-all ${
-                activeTab === 'edit'
-                  ? 'bg-gradient-to-r from-[#1F5D4C] to-[#2E7D32] text-white shadow-md'
-                  : 'text-[#5C5C5C] hover:text-[#2C1810] hover:bg-[#F7F3EA]'
-              }`}
-            >
-              Edit Profile
-            </button>
-          </div>
-        </div>
+            {/* Quick Actions */}
+            <div className="space-y-4">
+              <div className="bg-white dark:bg-zinc-800/50 p-4 rounded-lg">
+                <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-4">Quick Start</h3>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => router.push('/quick-tasting')}
+                    className="w-full flex items-center gap-3 p-3 bg-primary text-white rounded-lg hover:bg-orange-600 transition-colors"
+                  >
+                    <span className="material-symbols-outlined">local_bar</span>
+                    <div className="text-left">
+                      <div className="font-medium">Start Quick Tasting</div>
+                      <div className="text-sm opacity-90">Begin your flavor journey</div>
+                    </div>
+                  </button>
 
-        {/* Tab Content */}
-        {activeTab === 'profile' ? (
-          <ProfileDisplay profile={profile} authEmail={user?.email} />
-        ) : (
-          <ProfileEditForm profile={profile} onProfileUpdate={handleProfileUpdate} />
-        )}
-
-        {/* Recent Tasting Summary */}
-        {latestTasting && (
-          <div className="card p-md">
-            <div className="flex items-center justify-between mb-sm">
-              <h3 className="text-h4 font-heading font-semibold text-text-primary">
-                Latest Tasting
-              </h3>
-              <button
-                onClick={() => router.push('/history')}
-                className="text-[#1F5D4C] text-small font-body font-medium hover:underline"
-              >
-                View All
-              </button>
-            </div>
-            <div className="bg-gradient-to-br from-[#FEF3E7] to-[#F7F3EA] rounded-xl p-sm border border-[#1F5D4C]/10">
-              <div className="flex items-center justify-between mb-xs">
-                <span className="text-[#1F5D4C] font-body font-semibold text-small">
-                  {latestTasting.category?.replace('_', ' ') || 'Tasting'}
-                </span>
-                <span className="text-text-secondary text-caption font-body">
-                  {latestTasting.created_at && !isNaN(new Date(latestTasting.created_at).getTime()) 
-                    ? new Date(latestTasting.created_at).toLocaleDateString()
-                    : 'Fecha no disponible'
-                  }
-                </span>
-              </div>
-              <div className="flex items-center space-x-sm">
-                <div className="flex items-center">
-                  <span className="text-text-secondary text-caption font-body mr-xs">Score:</span>
-                  <span className="text-[#1F5D4C] font-body font-semibold text-small">
-                    {latestTasting.average_score ? latestTasting.average_score.toFixed(1) : 'N/A'}/5
-                  </span>
-                </div>
-                <div className="text-text-muted">•</div>
-                <div className="text-text-secondary text-caption font-body">
-                  {latestTasting.items?.length || 0} items
+                  <button
+                    onClick={() => router.push('/history')}
+                    className="w-full flex items-center gap-3 p-3 bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-white rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors"
+                  >
+                    <span className="material-symbols-outlined">history</span>
+                    <div className="text-left">
+                      <div className="font-medium">View History</div>
+                      <div className="text-sm opacity-75">Your past tastings</div>
+                    </div>
+                  </button>
                 </div>
               </div>
+
+              {/* Recent Tasting Summary */}
+              {latestTasting && (
+                <div className="bg-white dark:bg-zinc-800/50 p-4 rounded-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-bold text-zinc-900 dark:text-white">
+                      Latest Tasting
+                    </h3>
+                    <button
+                      onClick={() => router.push('/history')}
+                      className="text-primary hover:underline text-sm"
+                    >
+                      View All
+                    </button>
+                  </div>
+                  <div className="bg-zinc-50 dark:bg-zinc-700/50 p-3 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-zinc-900 dark:text-white font-medium">
+                        {latestTasting.category?.replace('_', ' ') || 'Tasting'}
+                      </span>
+                      <span className="text-zinc-500 dark:text-zinc-400 text-sm">
+                        {latestTasting.created_at && !isNaN(new Date(latestTasting.created_at).getTime())
+                          ? new Date(latestTasting.created_at).toLocaleDateString()
+                          : 'Date unavailable'
+                        }
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-zinc-600 dark:text-zinc-400">Score:</span>
+                      <span className="text-primary font-semibold">
+                        {latestTasting.average_score ? latestTasting.average_score.toFixed(1) : 'N/A'}/5
+                      </span>
+                      <span className="text-zinc-400">•</span>
+                      <span className="text-zinc-600 dark:text-zinc-400">
+                        {latestTasting.items?.length || 0} items
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Stats Card */}
+              {tastingStats && (
+                <div className="bg-white dark:bg-zinc-800/50 p-4 rounded-lg">
+                  <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-3">Your Stats</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-primary">{tastingStats.totalTastings}</div>
+                      <div className="text-sm text-zinc-600 dark:text-zinc-400">Total Tastings</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-primary">
+                        {tastingStats.averageScore ? tastingStats.averageScore.toFixed(1) : '0.0'}
+                      </div>
+                      <div className="text-sm text-zinc-600 dark:text-zinc-400">Avg Score</div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </main>
 
-        {/* Quick Actions */}
-        <div className="card p-md">
-          <h3 className="text-h4 font-heading font-semibold text-text-primary mb-sm">
-            Quick Actions
-          </h3>
-          <div className="grid grid-cols-1 tablet:grid-cols-2 gap-sm">
-            <button 
-              onClick={() => router.push('/quick-tasting')}
-              className="bg-gradient-to-br from-[#FEF3E7] to-[#F7F3EA] border border-[#1F5D4C]/10 rounded-xl p-sm text-left hover:shadow-md transition-all hover:-translate-y-0.5 min-h-touch"
-            >
-              <div className="text-[#1F5D4C] font-body font-semibold text-small mb-xs">Quick Tasting</div>
-              <div className="text-text-secondary text-caption font-body">Start a new tasting session</div>
-            </button>
-            
-            <button className="card text-left min-h-touch">
-            <div className="text-[#C65A2E] font-body font-semibold text-small mb-xs">Write Review</div>
-            <div className="text-text-secondary text-caption font-body">Share your experience</div>
-            </button>
-            
-            <button className="card text-left min-h-touch">
-            <div className="text-[#D4AF37] font-body font-semibold text-small mb-xs">Flavor Wheels</div>
-            <div className="text-text-secondary text-caption font-body">View your taste profile</div>
-            </button>
-            
-            <button 
-              onClick={() => router.push('/history')}
-              className="bg-gradient-to-br from-[#FEF3E7] to-[#F7F3EA] border border-[#1F5D4C]/10 rounded-xl p-sm text-left hover:shadow-md transition-all hover:-translate-y-0.5 min-h-touch"
-            >
-              <div className="text-[#1F5D4C] font-body font-semibold text-small mb-xs">History</div>
-              <div className="text-text-secondary text-caption font-body">
-                {tastingStats ? `${tastingStats.totalTastings} tastings completed` : 'View past tastings'}
-              </div>
-            </button>
-          </div>
-        </div>
+        {/* Bottom Navigation */}
+        <footer className="border-t border-zinc-200 bg-background-light dark:border-zinc-800 dark:bg-background-dark">
+          <nav className="flex justify-around p-2">
+            <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/dashboard">
+              <span className="material-symbols-outlined">home</span>
+              <span className="text-xs font-bold">Home</span>
+            </a>
+            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/quick-tasting">
+              <span className="material-symbols-outlined">local_bar</span>
+              <span className="text-xs font-medium">Tasting</span>
+            </a>
+            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/history">
+              <span className="material-symbols-outlined">analytics</span>
+              <span className="text-xs font-medium">Analytics</span>
+            </a>
+            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/profile">
+              <span className="material-symbols-outlined">person</span>
+              <span className="text-xs font-medium">Profile</span>
+            </a>
+          </nav>
+        </footer>
       </div>
-
-      {/* Footer */}
-      <div className="text-center text-text-muted text-small font-body">
-        <p>FlavorWheel México • Version 1.0.0</p>
-      </div>
-      </main>
     </div>
   );
 }
