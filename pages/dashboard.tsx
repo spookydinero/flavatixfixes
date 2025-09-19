@@ -200,6 +200,10 @@ export default function Dashboard() {
               <span className="material-symbols-outlined">local_bar</span>
               <span className="text-xs font-medium">Tasting</span>
             </a>
+            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/social">
+              <span className="material-symbols-outlined">diversity_3</span>
+              <span className="text-xs font-medium">Social</span>
+            </a>
             <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/history">
               <span className="material-symbols-outlined">analytics</span>
               <span className="text-xs font-medium">Analytics</span>

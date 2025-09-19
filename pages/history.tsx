@@ -116,6 +116,32 @@ export default function HistoryPage() {
           </div>
         )}
       </div>
+
+      {/* Bottom Navigation */}
+      <footer className="border-t border-zinc-200 bg-background-light dark:border-zinc-800 dark:bg-background-dark">
+        <nav className="flex justify-around p-2">
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/dashboard">
+            <span className="material-symbols-outlined">home</span>
+            <span className="text-xs font-medium">Home</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/quick-tasting">
+            <span className="material-symbols-outlined">local_bar</span>
+            <span className="text-xs font-medium">Tasting</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/social">
+            <span className="material-symbols-outlined">diversity_3</span>
+            <span className="text-xs font-medium">Social</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/history">
+            <span className="material-symbols-outlined">analytics</span>
+            <span className="text-xs font-bold">Analytics</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/profile">
+            <span className="material-symbols-outlined">person</span>
+            <span className="text-xs font-medium">Profile</span>
+          </a>
+        </nav>
+      </footer>
     </div>
   );
 }
