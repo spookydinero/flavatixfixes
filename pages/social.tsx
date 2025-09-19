@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
 import { getSupabaseClient, Database } from '../lib/supabase';
+import { toast } from '../lib/toast';
 
 type TastingPost = {
   id: string;
@@ -19,6 +20,13 @@ type TastingPost = {
     username?: string;
     avatar_url?: string;
   };
+  stats: {
+    likes: number;
+    comments: number;
+    shares: number;
+  };
+  isLiked: boolean;
+  isFollowed: boolean;
 };
 
 export default function SocialPage() {
@@ -70,6 +78,71 @@ export default function SocialPage() {
         console.error('Error fetching profiles:', profilesError);
       }
 
+      // Get social stats for each tasting (likes, comments, shares)
+      const tastingIds = tastingsData?.map(t => t.id) || [];
+
+      let likesData = [];
+      let commentsData = [];
+      let sharesData = [];
+      let userLikes = new Set<string>();
+      let userFollows = new Set<string>();
+
+      try {
+        // Get likes count for each tasting
+        const likesResult = await supabase
+          .from('tasting_likes')
+          .select('tasting_id, user_id')
+          .in('tasting_id', tastingIds);
+        likesData = likesResult.data || [];
+      } catch (error) {
+        console.log('Likes table not available yet, using defaults');
+      }
+
+      try {
+        // Get comments count for each tasting
+        const commentsResult = await supabase
+          .from('tasting_comments')
+          .select('tasting_id')
+          .in('tasting_id', tastingIds);
+        commentsData = commentsResult.data || [];
+      } catch (error) {
+        console.log('Comments table not available yet, using defaults');
+      }
+
+      try {
+        // Get shares count for each tasting
+        const sharesResult = await supabase
+          .from('tasting_shares')
+          .select('tasting_id')
+          .in('tasting_id', tastingIds);
+        sharesData = sharesResult.data || [];
+      } catch (error) {
+        console.log('Shares table not available yet, using defaults');
+      }
+
+      if (user?.id) {
+        try {
+          const { data: userLikesData } = await supabase
+            .from('tasting_likes')
+            .select('tasting_id')
+            .eq('user_id', user.id)
+            .in('tasting_id', tastingIds);
+          userLikes = new Set(userLikesData?.map(l => l.tasting_id) || []);
+        } catch (error) {
+          console.log('User likes query failed, using defaults');
+        }
+
+        try {
+          const { data: userFollowsData } = await supabase
+            .from('user_follows')
+            .select('following_id')
+            .eq('follower_id', user.id);
+          userFollows = new Set(userFollowsData?.map(f => f.following_id) || []);
+        } catch (error) {
+          console.log('User follows query failed, using defaults');
+        }
+      }
+
       // Combine the data
       const data = tastingsData?.map(tasting => ({
         ...tasting,
@@ -77,19 +150,32 @@ export default function SocialPage() {
       }));
 
       // Transform the data to match our interface
-      const transformedPosts: TastingPost[] = (data as any[])?.map(post => ({
-        id: post.id,
-        user_id: post.user_id,
-        category: post.category,
-        session_name: post.session_name,
-        notes: post.notes,
-        average_score: post.average_score,
-        created_at: post.created_at,
-        completed_at: post.completed_at,
-        total_items: post.total_items,
-        completed_items: post.completed_items,
-        user: Array.isArray(post.profiles) ? post.profiles[0] || {} : post.profiles || {}
-      })) || [];
+      const transformedPosts: TastingPost[] = (data as any[])?.map(post => {
+        const likes = likesData?.filter(l => l.tasting_id === post.id) || [];
+        const comments = commentsData?.filter(c => c.tasting_id === post.id) || [];
+        const shares = sharesData?.filter(s => s.tasting_id === post.id) || [];
+
+        return {
+          id: post.id,
+          user_id: post.user_id,
+          category: post.category,
+          session_name: post.session_name,
+          notes: post.notes,
+          average_score: post.average_score,
+          created_at: post.created_at,
+          completed_at: post.completed_at,
+          total_items: post.total_items,
+          completed_items: post.completed_items,
+          user: Array.isArray(post.profiles) ? post.profiles[0] || {} : post.profiles || {},
+          stats: {
+            likes: likes.length,
+            comments: comments.length,
+            shares: shares.length
+          },
+          isLiked: userLikes.has(post.id),
+          isFollowed: userFollows.has(post.user_id)
+        };
+      }) || [];
 
       setPosts(transformedPosts);
     } catch (error) {
@@ -125,36 +211,198 @@ export default function SocialPage() {
     return colors[category.toLowerCase()] || 'text-primary';
   };
 
-  const handleLike = (postId: string) => {
-    setLikedPosts(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(postId)) {
-        newSet.delete(postId);
+  const handleLike = async (postId: string) => {
+    if (!user?.id) {
+      toast.error('Please sign in to like posts');
+      return;
+    }
+
+    try {
+      const supabase = getSupabaseClient();
+      const isCurrentlyLiked = likedPosts.has(postId);
+
+      if (isCurrentlyLiked) {
+        // Unlike
+        try {
+          const { error } = await supabase
+            .from('tasting_likes')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('tasting_id', postId);
+
+          if (error) throw error;
+        } catch (dbError) {
+          console.log('Likes table not available, using local state only');
+        }
+
+        setLikedPosts(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(postId);
+          return newSet;
+        });
+
+        // Update post stats
+        setPosts(prev => prev.map(post =>
+          post.id === postId
+            ? { ...post, stats: { ...post.stats, likes: Math.max(0, post.stats.likes - 1) }, isLiked: false }
+            : post
+        ));
       } else {
-        newSet.add(postId);
+        // Like
+        try {
+          const { error } = await supabase
+            .from('tasting_likes')
+            .insert({
+              user_id: user.id,
+              tasting_id: postId
+            });
+
+          if (error) throw error;
+        } catch (dbError) {
+          console.log('Likes table not available, using local state only');
+        }
+
+        setLikedPosts(prev => {
+          const newSet = new Set(prev);
+          newSet.add(postId);
+          return newSet;
+        });
+
+        // Update post stats
+        setPosts(prev => prev.map(post =>
+          post.id === postId
+            ? { ...post, stats: { ...post.stats, likes: post.stats.likes + 1 }, isLiked: true }
+            : post
+        ));
+
+        toast.success('Post liked!');
       }
-      return newSet;
-    });
-    // TODO: Save to database when tables are created
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      toast.error('Failed to update like');
+    }
+  };
+
+  const handleFollow = async (targetUserId: string, targetUserName: string) => {
+    if (!user?.id) {
+      toast.error('Please sign in to follow users');
+      return;
+    }
+
+    if (targetUserId === user.id) {
+      toast.error('You cannot follow yourself');
+      return;
+    }
+
+    try {
+      const supabase = getSupabaseClient();
+      const post = posts.find(p => p.user_id === targetUserId);
+      const isCurrentlyFollowing = post?.isFollowed || false;
+
+      if (isCurrentlyFollowing) {
+        // Unfollow
+        try {
+          const { error } = await supabase
+            .from('user_follows')
+            .delete()
+            .eq('follower_id', user.id)
+            .eq('following_id', targetUserId);
+
+          if (error) throw error;
+        } catch (dbError) {
+          console.log('Follows table not available, using local state only');
+        }
+
+        // Update post
+        setPosts(prev => prev.map(post =>
+          post.user_id === targetUserId
+            ? { ...post, isFollowed: false }
+            : post
+        ));
+
+        toast.success(`Unfollowed ${targetUserName}`);
+      } else {
+        // Follow
+        try {
+          const { error } = await supabase
+            .from('user_follows')
+            .insert({
+              follower_id: user.id,
+              following_id: targetUserId
+            });
+
+          if (error) throw error;
+        } catch (dbError) {
+          console.log('Follows table not available, using local state only');
+        }
+
+        // Update post
+        setPosts(prev => prev.map(post =>
+          post.user_id === targetUserId
+            ? { ...post, isFollowed: true }
+            : post
+        ));
+
+        toast.success(`Following ${targetUserName}!`);
+      }
+    } catch (error) {
+      console.error('Error toggling follow:', error);
+      toast.error('Failed to update follow status');
+    }
   };
 
   const handleComment = (postId: string) => {
     // TODO: Open comment modal/input when implemented
-    console.log('Comment on post:', postId);
+    toast.info('Comments feature coming soon!');
   };
 
-  const handleShare = (postId: string) => {
-    // TODO: Implement share functionality
-    if (navigator.share) {
-      navigator.share({
-        title: 'Check out this tasting!',
-        text: 'I just completed a tasting session',
-        url: window.location.href
-      });
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      console.log('Link copied to clipboard');
+  const handleShare = async (postId: string) => {
+    if (!user?.id) {
+      toast.error('Please sign in to share posts');
+      return;
+    }
+
+    try {
+      const supabase = getSupabaseClient();
+
+      // Record the share in database (if table exists)
+      try {
+        const { error } = await supabase
+          .from('tasting_shares')
+          .insert({
+            user_id: user.id,
+            tasting_id: postId
+          });
+
+        if (error && !error.message.includes('duplicate key')) {
+          throw error;
+        }
+      } catch (dbError) {
+        console.log('Shares table not available, skipping database record');
+      }
+
+      // Update post stats
+      setPosts(prev => prev.map(post =>
+        post.id === postId
+          ? { ...post, stats: { ...post.stats, shares: post.stats.shares + 1 } }
+          : post
+      ));
+
+      // Use Web Share API or clipboard
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Check out this tasting!',
+          text: 'I found an interesting tasting session',
+          url: `${window.location.origin}/social`
+        });
+        toast.success('Post shared!');
+      } else {
+        await navigator.clipboard.writeText(`${window.location.origin}/social`);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      toast.error('Failed to share post');
     }
   };
 
@@ -222,16 +470,31 @@ export default function SocialPage() {
 
                     <div className="flex-1 min-w-0">
                       {/* User Info */}
-                      <div className="flex items-baseline space-x-2 mb-1">
-                        <p className="font-bold text-zinc-900 dark:text-white truncate">
-                          {post.user.full_name || 'Anonymous User'}
-                        </p>
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate">
-                          @{post.user.username || post.user.full_name?.toLowerCase().replace(' ', '') || 'user'}
-                        </p>
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                          · {formatTimeAgo(post.completed_at || post.created_at)}
-                        </p>
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-baseline space-x-2 flex-1 min-w-0">
+                          <p className="font-bold text-zinc-900 dark:text-white truncate">
+                            {post.user.full_name || 'Anonymous User'}
+                          </p>
+                          <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate">
+                            @{post.user.username || post.user.full_name?.toLowerCase().replace(' ', '') || 'user'}
+                          </p>
+                          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                            · {formatTimeAgo(post.completed_at || post.created_at)}
+                          </p>
+                        </div>
+                        {/* Follow Button */}
+                        {user?.id !== post.user_id && (
+                          <button
+                            onClick={() => handleFollow(post.user_id, post.user.full_name || 'User')}
+                            className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
+                              post.isFollowed
+                                ? 'bg-primary text-white hover:bg-primary/80'
+                                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                            }`}
+                          >
+                            {post.isFollowed ? 'Following' : 'Follow'}
+                          </button>
+                        )}
                       </div>
 
                       {/* Category Badge */}
@@ -271,28 +534,29 @@ export default function SocialPage() {
                           className="flex items-center space-x-2 hover:text-primary group transition-colors"
                         >
                           <span className="material-symbols-outlined group-hover:text-primary text-lg">mode_comment</span>
-                          <span className="text-sm">0</span>
+                          <span className="text-sm">{post.stats.comments}</span>
                         </button>
                         <button
                           onClick={() => handleLike(post.id)}
                           className={`flex items-center space-x-2 group transition-colors ${
-                            likedPosts.has(post.id)
+                            post.isLiked
                               ? 'text-red-500'
                               : 'hover:text-red-500'
                           }`}
                         >
                           <span className={`material-symbols-outlined text-lg ${
-                            likedPosts.has(post.id) ? 'text-red-500' : 'group-hover:text-red-500'
+                            post.isLiked ? 'text-red-500' : 'group-hover:text-red-500'
                           }`}>
-                            {likedPosts.has(post.id) ? 'favorite' : 'favorite_border'}
+                            {post.isLiked ? 'favorite' : 'favorite_border'}
                           </span>
-                          <span className="text-sm">{likedPosts.has(post.id) ? '1' : '0'}</span>
+                          <span className="text-sm">{post.stats.likes}</span>
                         </button>
                         <button
                           onClick={() => handleShare(post.id)}
-                          className="hover:text-primary group transition-colors"
+                          className="flex items-center space-x-2 hover:text-primary group transition-colors"
                         >
                           <span className="material-symbols-outlined group-hover:text-primary text-lg">share</span>
+                          <span className="text-sm">{post.stats.shares}</span>
                         </button>
                       </div>
                     </div>
