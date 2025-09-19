@@ -30,7 +30,7 @@ export default function SamplePage() {
                   </svg>
                 </div>
               </div>
-              <h1 className="text-3xl font-bold text-zinc-900 dark:text-white mb-2">FlavorWheel México</h1>
+              <h1 className="text-3xl font-bold text-zinc-900 dark:text-white mb-2">Flavatix México</h1>
               <p className="text-zinc-600 dark:text-zinc-400">Taste, analyze, and share your reviews of México's finest beverages.</p>
             </section>
 

@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import { Inter, Crimson_Text } from 'next/font/google'
+import styles from './HeroSection.module.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const crimsonText = Crimson_Text({ 
@@ -12,16 +13,14 @@ export default function Home() {
   return (
     <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200">
       <Head>
-        <title>FlavorWheel - Taste the World, One Sip at a Time</title>
+        <title>Flavatix - Taste the World, One Sip at a Time</title>
         <meta name="description" content="The world's most pivotal tasting app for coffee and drinks. Discover, analyze, and share your tasting experiences with our user-friendly platform." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       <main className={`${inter.variable} ${crimsonText.variable} min-h-screen`}>
         {/* Hero Section */}
-        <div className="relative overflow-hidden">
-          {/* Background Gradient */}
-          <div className="absolute inset-0 bg-gradient-subtle opacity-60"></div>
+        <div className={`${styles.hero} relative overflow-hidden`}>
           
           {/* Content Container */}
           <div className="relative z-10 px-md py-2xl mx-auto max-w-4xl text-center">
@@ -35,7 +34,7 @@ export default function Home() {
               
               {/* App Name */}
               <h1 className="font-heading font-bold text-h1 text-text-primary mb-sm">
-                FlavorWheel
+                Flavatix
               </h1>
               
               {/* Tagline */}
@@ -53,7 +52,7 @@ export default function Home() {
             
             {/* Key Features Preview */}
             <div className="grid grid-cols-1 tablet:grid-cols-3 gap-md mb-xl max-w-3xl mx-auto">
-              <div className="card-tasting p-md text-center">
+              <div className={`${styles.card} card-tasting p-md text-center`}>
                 <div className="w-12 h-12 bg-flavor-fruity rounded-full mx-auto mb-sm flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M9 11H7v9a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9h-2m-7 2v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16"/>
@@ -67,7 +66,7 @@ export default function Home() {
                 </p>
               </div>
               
-              <div className="card-tasting p-md text-center">
+              <div className={`${styles.card} card-tasting p-md text-center`}>
                 <div className="w-12 h-12 bg-flavor-vegetal rounded-full mx-auto mb-sm flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -81,7 +80,7 @@ export default function Home() {
                 </p>
               </div>
               
-              <div className="card-tasting p-md text-center">
+              <div className={`${styles.card} card-tasting p-md text-center`}>
                 <div className="w-12 h-12 bg-flavor-roasted rounded-full mx-auto mb-sm flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -113,21 +112,21 @@ export default function Home() {
         <section className="py-2xl px-md">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="font-heading font-bold text-h2 text-text-primary mb-lg">
-              Why FlavorWheel?
+              Why Flavatix?
             </h2>
             
             <div className="grid grid-cols-1 tablet:grid-cols-2 gap-lg max-w-3xl mx-auto">
-              <div className="text-left">
+              <div className="text-center">
                 <h3 className="font-heading font-semibold text-h3 text-primary mb-sm">
                   For Everyone
                 </h3>
                 <p className="text-body text-text-secondary leading-body">
                   Whether you're a casual coffee lover or an industry professional, 
-                  FlavorWheel adapts to your needs with intuitive design and powerful customization.
+                  Flavatix adapts to your needs with intuitive design and powerful customization.
                 </p>
               </div>
               
-              <div className="text-left">
+              <div className="text-center">
                 <h3 className="font-heading font-semibold text-h3 text-primary mb-sm">
                   Data-Driven Insights
                 </h3>
@@ -137,7 +136,7 @@ export default function Home() {
                 </p>
               </div>
               
-              <div className="text-left">
+              <div className="text-center">
                 <h3 className="font-heading font-semibold text-h3 text-primary mb-sm">
                   Social & Collaborative
                 </h3>
@@ -147,12 +146,12 @@ export default function Home() {
                 </p>
               </div>
               
-              <div className="text-left">
+              <div className="text-center">
                 <h3 className="font-heading font-semibold text-h3 text-primary mb-sm">
                   Cross-Industry
                 </h3>
                 <p className="text-body text-text-secondary leading-body">
-                  From coffee and wine to spirits and olive oil, FlavorWheel supports 
+                  From coffee and wine to spirits and olive oil, Flavatix supports 
                   tastings across all industries with customizable templates.
                 </p>
               </div>
@@ -167,7 +166,7 @@ export default function Home() {
               Ready to Transform Your Tasting Experience?
             </h3>
             <p className="text-body mb-lg opacity-90">
-              Join the FlavorWheel community and discover the world of flavor like never before.
+              Join the Flavatix community and discover the world of flavor like never before.
             </p>
             <a href="/auth" className="btn-secondary">
               Start Tasting Today
@@ -175,7 +174,7 @@ export default function Home() {
             
             <div className="mt-xl pt-lg border-t border-white/20">
               <p className="text-small opacity-70">
-                © 2025 FlavorWheel. Taste the World, One Sip at a Time.
+                © 2025 Flavatix. Taste the World, One Sip at a Time.
               </p>
             </div>
           </div>

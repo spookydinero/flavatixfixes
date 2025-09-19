@@ -132,7 +132,7 @@ const AuthSection = () => {
             </div>
           </div>
           <div className="px-6 py-8 text-center">
-            <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">FlavorWheel México</h1>
+            <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">Flavatix México</h1>
             <p className="mt-2 text-zinc-600 dark:text-zinc-400">Taste, analyze, and share your reviews of México's finest beverages.</p>
           </div>
 

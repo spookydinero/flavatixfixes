@@ -1,7 +1,7 @@
-# FlavorWheel Social Features
+# Flavatix Social Features
 
 ## Overview
-The FlavorWheel social feed allows users to share, discuss, and discover tasting experiences with the community.
+The Flavatix social feed allows users to share, discuss, and discover tasting experiences with the community.
 
 ## Features Implemented
 

@@ -7,7 +7,7 @@ interface FlavorCategory {
   angle: number;
 }
 
-interface FlavorWheelProps {
+interface FlavatixProps {
   category: string;
   selectedFlavors: Record<string, number>;
   onFlavorSelect: (flavors: Record<string, number>) => void;
@@ -180,7 +180,7 @@ const flavorProfiles: Record<string, FlavorCategory[]> = {
   ]
 };
 
-const FlavorWheel: React.FC<FlavorWheelProps> = ({
+const Flavatix: React.FC<FlavatixProps> = ({
   category,
   selectedFlavors,
   onFlavorSelect,
@@ -652,4 +652,4 @@ const FlavorWheel: React.FC<FlavorWheelProps> = ({
   );
 };
 
-export default FlavorWheel;
+export default Flavatix;

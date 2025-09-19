@@ -1,4 +1,4 @@
--- Social Features Tables for FlavorWheel
+-- Social Features Tables for Flavatix
 
 -- Likes table for tasting posts
 CREATE TABLE IF NOT EXISTS "public"."tasting_likes" (
@@ -59,25 +59,25 @@ ALTER TABLE "public"."tasting_shares" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."user_follows" ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for tasting_likes
-CREATE POLICY IF NOT EXISTS "Users can view all tasting likes" ON "public"."tasting_likes" FOR SELECT TO "authenticated" USING (true);
-CREATE POLICY IF NOT EXISTS "Users can insert their own likes" ON "public"."tasting_likes" FOR INSERT WITH CHECK (("auth"."uid"() = "user_id"));
-CREATE POLICY IF NOT EXISTS "Users can delete their own likes" ON "public"."tasting_likes" FOR DELETE USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "tasting_likes_select_policy" ON "public"."tasting_likes" FOR SELECT TO "authenticated" USING (true);
+CREATE POLICY "tasting_likes_insert_policy" ON "public"."tasting_likes" FOR INSERT WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "tasting_likes_delete_policy" ON "public"."tasting_likes" FOR DELETE USING (("auth"."uid"() = "user_id"));
 
 -- RLS Policies for tasting_comments
-CREATE POLICY IF NOT EXISTS "Users can view all tasting comments" ON "public"."tasting_comments" FOR SELECT TO "authenticated" USING (true);
-CREATE POLICY IF NOT EXISTS "Users can insert their own comments" ON "public"."tasting_comments" FOR INSERT WITH CHECK (("auth"."uid"() = "user_id"));
-CREATE POLICY IF NOT EXISTS "Users can update their own comments" ON "public"."tasting_comments" FOR UPDATE USING (("auth"."uid"() = "user_id"));
-CREATE POLICY IF NOT EXISTS "Users can delete their own comments" ON "public"."tasting_comments" FOR DELETE USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "tasting_comments_select_policy" ON "public"."tasting_comments" FOR SELECT TO "authenticated" USING (true);
+CREATE POLICY "tasting_comments_insert_policy" ON "public"."tasting_comments" FOR INSERT WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "tasting_comments_update_policy" ON "public"."tasting_comments" FOR UPDATE USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "tasting_comments_delete_policy" ON "public"."tasting_comments" FOR DELETE USING (("auth"."uid"() = "user_id"));
 
 -- RLS Policies for tasting_shares
-CREATE POLICY IF NOT EXISTS "Users can view all tasting shares" ON "public"."tasting_shares" FOR SELECT TO "authenticated" USING (true);
-CREATE POLICY IF NOT EXISTS "Users can insert their own shares" ON "public"."tasting_shares" FOR INSERT WITH CHECK (("auth"."uid"() = "user_id"));
-CREATE POLICY IF NOT EXISTS "Users can delete their own shares" ON "public"."tasting_shares" FOR DELETE USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "tasting_shares_select_policy" ON "public"."tasting_shares" FOR SELECT TO "authenticated" USING (true);
+CREATE POLICY "tasting_shares_insert_policy" ON "public"."tasting_shares" FOR INSERT WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "tasting_shares_delete_policy" ON "public"."tasting_shares" FOR DELETE USING (("auth"."uid"() = "user_id"));
 
 -- RLS Policies for user_follows
-CREATE POLICY IF NOT EXISTS "Users can view follow relationships" ON "public"."user_follows" FOR SELECT TO "authenticated" USING (true);
-CREATE POLICY IF NOT EXISTS "Users can follow others" ON "public"."user_follows" FOR INSERT WITH CHECK (("auth"."uid"() = "follower_id"));
-CREATE POLICY IF NOT EXISTS "Users can unfollow others" ON "public"."user_follows" FOR DELETE USING (("auth"."uid"() = "follower_id"));
+CREATE POLICY "user_follows_select_policy" ON "public"."user_follows" FOR SELECT TO "authenticated" USING (true);
+CREATE POLICY "user_follows_insert_policy" ON "public"."user_follows" FOR INSERT WITH CHECK (("auth"."uid"() = "follower_id"));
+CREATE POLICY "user_follows_delete_policy" ON "public"."user_follows" FOR DELETE USING (("auth"."uid"() = "follower_id"));
 
 -- Foreign key constraints
 ALTER TABLE ONLY "public"."tasting_likes" ADD CONSTRAINT "tasting_likes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
