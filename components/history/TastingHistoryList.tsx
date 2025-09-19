@@ -6,13 +6,15 @@ import { useAuth } from '../../contexts/AuthContext';
 interface TastingHistoryListProps {
   filters?: HistoryFilters;
   onTastingClick: (tasting: TastingHistory) => void;
+  onTastingsLoaded?: (hasItems: boolean) => void;
   limit?: number;
 }
 
-const TastingHistoryList: React.FC<TastingHistoryListProps> = ({ 
-  filters, 
-  onTastingClick, 
-  limit = 20 
+const TastingHistoryList: React.FC<TastingHistoryListProps> = ({
+  filters,
+  onTastingClick,
+  onTastingsLoaded,
+  limit = 20
 }) => {
   const { user } = useAuth();
   const [tastings, setTastings] = useState<TastingHistory[]>([]);
@@ -64,16 +66,21 @@ const TastingHistoryList: React.FC<TastingHistoryListProps> = ({
     if (fetchError) {
       setError('Error al cargar el historial de catas');
       console.error('Error loading tasting history:', fetchError);
-    } else if (data) {
-      if (reset) {
-        setTastings(data);
-        setOffset(limit);
-      } else {
-        setTastings(prev => [...prev, ...data]);
-        setOffset(prev => prev + limit);
+      } else if (data) {
+        if (reset) {
+          setTastings(data);
+          setOffset(limit);
+        } else {
+          setTastings(prev => [...prev, ...data]);
+          setOffset(prev => prev + limit);
+        }
+        setHasMore(data.length === limit);
+
+        // Notify parent component about tastings availability
+        if (onTastingsLoaded) {
+          onTastingsLoaded(data.length > 0);
+        }
       }
-      setHasMore(data.length === limit);
-    }
 
     setLoading(false);
   };

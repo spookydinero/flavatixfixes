@@ -50,10 +50,17 @@ const CONTENT_POOL = {
 };
 
 const ICONS = {
-  inspirational_messages: "✨",
-  did_you_know: "💡",
-  tasting_tips: "🍷",
-  community_highlights: "🌍"
+  inspirational_messages: "auto_awesome",
+  did_you_know: "lightbulb",
+  tasting_tips: "local_bar",
+  community_highlights: "groups"
+};
+
+const ICON_COLORS = {
+  inspirational_messages: "text-orange-500", // primary orange
+  did_you_know: "text-amber-500", // amber
+  tasting_tips: "text-orange-600", // primary orange darker
+  community_highlights: "text-green-600" // green
 };
 
 const InspirationBox: React.FC<InspirationBoxProps> = ({ className = '' }) => {
@@ -113,27 +120,36 @@ const InspirationBox: React.FC<InspirationBoxProps> = ({ className = '' }) => {
     <div className={`mx-auto max-w-2xl px-4 ${className}`}>
       <div
         className={`
-          relative mx-auto max-w-lg rounded-xl bg-white/90 p-5 text-center
-          shadow-lg backdrop-blur-sm transition-all duration-500 ease-out
+          mx-auto max-w-lg rounded-xl p-5 text-center
+          transition-all duration-500 ease-out
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
-          border border-white/20
         `}
         style={{
-          boxShadow: '0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)'
+          background: 'var(--surface-card, #ffffff)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+          color: 'var(--text-secondary, #333333)',
+          borderRadius: '12px',
+          padding: '1rem 1.25rem',
+          maxWidth: '600px'
         }}
       >
+
         {/* Icon */}
-        <div className="mb-3 text-2xl">
-          {currentContent.icon}
+        <div className="mb-3">
+          <span
+            className={`material-symbols-outlined text-2xl ${ICON_COLORS[currentContent.category]}`}
+          >
+            {currentContent.icon}
+          </span>
         </div>
 
         {/* Content */}
-        <p className="text-sm leading-relaxed text-gray-700">
+        <p className="text-sm leading-relaxed font-body">
           {currentContent.text}
         </p>
 
         {/* Category indicator */}
-        <div className="mt-4 text-xs text-gray-400 uppercase tracking-wide">
+        <div className="mt-3 text-xs uppercase tracking-wide font-medium opacity-75">
           {currentContent.category.replace('_', ' ')}
         </div>
       </div>

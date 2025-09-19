@@ -4,6 +4,14 @@ import { useAuth } from '../contexts/AuthContext';
 import TastingHistoryList from '../components/history/TastingHistoryList';
 import TastingHistoryStats from '../components/history/TastingHistoryStats';
 import TastingHistoryDetail from '../components/history/TastingHistoryDetail';
+import { usePageWhitespace } from '../components/GlobalInspirationBox';
+import dynamic from 'next/dynamic';
+
+// Dynamically import to avoid SSR issues
+const InspirationBox = dynamic(() => import('../components/ui/inspiration-box'), {
+  ssr: false,
+  loading: () => null
+});
 
 type ViewMode = 'list' | 'stats' | 'detail';
 
@@ -12,6 +20,8 @@ export default function HistoryPage() {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [selectedTastingId, setSelectedTastingId] = useState<string | null>(null);
+  const [hasTastings, setHasTastings] = useState(false);
+  const { hasWhitespace, containerRef } = usePageWhitespace();
 
   // Redirect to auth if not logged in
   if (!loading && !user) {
@@ -90,15 +100,18 @@ export default function HistoryPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div ref={containerRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {viewMode === 'list' && (
-          <TastingHistoryList onTastingClick={handleTastingSelect} />
+          <TastingHistoryList
+            onTastingClick={handleTastingSelect}
+            onTastingsLoaded={(hasItems) => setHasTastings(hasItems)}
+          />
         )}
-        
+
         {viewMode === 'stats' && (
           <TastingHistoryStats />
         )}
-        
+
         {viewMode === 'detail' && selectedTastingId && (
           <div>
             <div className="mb-6">
@@ -113,6 +126,13 @@ export default function HistoryPage() {
               </button>
             </div>
             <TastingHistoryDetail tastingId={selectedTastingId} onBack={handleBackToList} />
+          </div>
+        )}
+
+        {/* Inspiration Box - only show in genuine whitespace areas, not in list view with tastings */}
+        {hasWhitespace && !(viewMode === 'list' && hasTastings) && (
+          <div className="mt-8">
+            <InspirationBox />
           </div>
         )}
       </div>
