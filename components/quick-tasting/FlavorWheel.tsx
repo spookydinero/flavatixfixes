@@ -18,75 +18,87 @@ const flavorProfiles: Record<string, FlavorCategory[]> = {
     {
       name: 'Fruity',
       flavors: ['Berry', 'Citrus', 'Stone Fruit', 'Tropical'],
-      color: 'bg-red-500',
+      color: '#ef4444',
       angle: 0
     },
     {
       name: 'Sweet',
       flavors: ['Chocolate', 'Caramel', 'Vanilla', 'Honey'],
-      color: 'bg-yellow-500',
-      angle: 60
+      color: '#f59e0b',
+      angle: 45
     },
     {
       name: 'Nutty',
       flavors: ['Almond', 'Hazelnut', 'Walnut', 'Peanut'],
-      color: 'bg-amber-600',
-      angle: 120
+      color: '#d97706',
+      angle: 90
     },
     {
       name: 'Spicy',
       flavors: ['Cinnamon', 'Clove', 'Pepper', 'Cardamom'],
-      color: 'bg-orange-600',
-      angle: 180
+      color: '#ea580c',
+      angle: 135
     },
     {
       name: 'Floral',
       flavors: ['Jasmine', 'Rose', 'Lavender', 'Hibiscus'],
-      color: 'bg-pink-500',
-      angle: 240
+      color: '#ec4899',
+      angle: 180
     },
     {
       name: 'Earthy',
       flavors: ['Woody', 'Tobacco', 'Cedar', 'Mushroom'],
-      color: 'bg-green-700',
-      angle: 300
+      color: '#059669',
+      angle: 225
+    },
+    {
+      name: 'Herbal',
+      flavors: ['Mint', 'Basil', 'Thyme', 'Oregano'],
+      color: '#10b981',
+      angle: 270
+    },
+    {
+      name: 'Citrus',
+      flavors: ['Lemon', 'Orange', 'Lime', 'Grapefruit'],
+      color: '#eab308',
+      angle: 315
     }
   ],
   wine: [
     {
       name: 'Fruity',
       flavors: ['Red Berry', 'Black Berry', 'Citrus', 'Stone Fruit'],
-      color: 'bg-red-500',
+      color: '#ef4444',
       angle: 0
     },
     {
       name: 'Floral',
       flavors: ['Violet', 'Rose', 'Elderflower', 'Acacia'],
-      color: 'bg-pink-500',
+      color: '#ec4899',
       angle: 60
     },
     {
       name: 'Herbal',
       flavors: ['Mint', 'Eucalyptus', 'Thyme', 'Sage'],
-      color: 'bg-green-500',
+      color: '#10b981',
       angle: 120
     },
     {
       name: 'Earthy',
       flavors: ['Mineral', 'Wet Stone', 'Forest Floor', 'Truffle'],
-      color: 'bg-gray-600',
+      color: '#6b7280',
       angle: 180
     },
     {
       name: 'Spicy',
       flavors: ['Black Pepper', 'White Pepper', 'Clove', 'Cinnamon'],
-      color: 'bg-orange-600',
+      color: '#ea580c',
       angle: 240
     },
     {
       name: 'Oak',
       flavors: ['Vanilla', 'Toast', 'Smoke', 'Cedar'],
-      color: 'bg-amber-700',
+      color: '#d97706',
       angle: 300
     }
   ],
@@ -94,37 +106,37 @@ const flavorProfiles: Record<string, FlavorCategory[]> = {
     {
       name: 'Sweet',
       flavors: ['Honey', 'Caramel', 'Vanilla', 'Maple'],
-      color: 'bg-yellow-500',
+      color: '#f59e0b',
       angle: 0
     },
     {
       name: 'Fruity',
       flavors: ['Apple', 'Pear', 'Orange', 'Cherry'],
-      color: 'bg-red-500',
+      color: '#ef4444',
       angle: 60
     },
     {
       name: 'Spicy',
       flavors: ['Cinnamon', 'Nutmeg', 'Pepper', 'Ginger'],
-      color: 'bg-orange-600',
+      color: '#ea580c',
       angle: 120
     },
     {
       name: 'Smoky',
       flavors: ['Peat', 'Charcoal', 'Tobacco', 'Leather'],
-      color: 'bg-gray-700',
+      color: '#4b5563',
       angle: 180
     },
     {
       name: 'Nutty',
       flavors: ['Almond', 'Walnut', 'Pecan', 'Hazelnut'],
-      color: 'bg-amber-600',
+      color: '#d97706',
       angle: 240
     },
     {
       name: 'Woody',
       flavors: ['Oak', 'Cedar', 'Pine', 'Birch'],
-      color: 'bg-green-700',
+      color: '#059669',
       angle: 300
     }
   ],
@@ -132,37 +144,37 @@ const flavorProfiles: Record<string, FlavorCategory[]> = {
     {
       name: 'Malty',
       flavors: ['Bread', 'Biscuit', 'Caramel', 'Chocolate'],
-      color: 'bg-amber-600',
+      color: '#d97706',
       angle: 0
     },
     {
       name: 'Hoppy',
       flavors: ['Citrus', 'Pine', 'Floral', 'Herbal'],
-      color: 'bg-green-500',
+      color: '#10b981',
       angle: 60
     },
     {
       name: 'Fruity',
       flavors: ['Apple', 'Banana', 'Berry', 'Tropical'],
-      color: 'bg-red-500',
+      color: '#ef4444',
       angle: 120
     },
     {
       name: 'Spicy',
       flavors: ['Pepper', 'Clove', 'Coriander', 'Ginger'],
-      color: 'bg-orange-600',
+      color: '#ea580c',
       angle: 180
     },
     {
       name: 'Roasted',
       flavors: ['Coffee', 'Chocolate', 'Burnt', 'Smoky'],
-      color: 'bg-gray-700',
+      color: '#4b5563',
       angle: 240
     },
     {
       name: 'Sour',
       flavors: ['Tart', 'Acidic', 'Vinegar', 'Lactic'],
-      color: 'bg-yellow-400',
+      color: '#eab308',
       angle: 300
     }
   ]
@@ -175,9 +187,84 @@ const FlavorWheel: React.FC<FlavorWheelProps> = ({
 }) => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [wheelRotation, setWheelRotation] = useState(0);
   const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
 
   const categories = flavorProfiles[category] || flavorProfiles.coffee;
+
+  // Función para obtener el color de la categoría actual
+  const getCategoryColor = (categoryName: string) => {
+    const category = categories.find(cat => cat.name === categoryName);
+    return category?.color || '#3b82f6';
+  };
+
+  // Función para generar el estilo del círculo según el nivel
+  const getCircleStyle = (currentScore: number, buttonLevel: number, categoryName: string) => {
+    const categoryColor = getCategoryColor(categoryName);
+    const isSelected = currentScore >= buttonLevel;
+    const intensity = isSelected ? (buttonLevel / 5) : 0;
+    
+    // Convertir color hex a RGB para manipular opacidad
+    const hexToRgb = (hex: string) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : { r: 59, g: 130, b: 246 }; // fallback azul
+    };
+
+    const rgb = hexToRgb(categoryColor);
+    
+    if (isSelected) {
+      // Calcular opacidad y saturación basada en el nivel
+      const baseOpacity = 0.4 + (intensity * 0.6); // 0.4 a 1.0
+      const glowOpacity = 0.2 + (intensity * 0.3); // 0.2 a 0.5
+      const shadowIntensity = 4 + (intensity * 16); // 4px a 20px
+      const scaleEffect = 0.98 + (intensity * 0.08); // 0.98 a 1.06
+      
+      return {
+        background: `radial-gradient(circle at 30% 30%, 
+          rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${baseOpacity + 0.2}) 0%, 
+          rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${baseOpacity}) 50%, 
+          rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${baseOpacity - 0.1}) 100%)`,
+        borderColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.8 + intensity * 0.2})`,
+        borderWidth: '2px',
+        boxShadow: `
+          0 0 ${shadowIntensity}px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${glowOpacity}),
+          inset 0 2px 4px rgba(255, 255, 255, ${0.1 + intensity * 0.2}),
+          inset 0 -1px 2px rgba(0, 0, 0, 0.1)
+        `,
+        transform: `scale(${scaleEffect})`,
+        transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        filter: `saturate(${0.8 + intensity * 0.4}) brightness(${0.9 + intensity * 0.2})`
+      };
+    } else {
+      return {
+        background: `radial-gradient(circle at 30% 30%, 
+          rgba(255, 255, 255, 0.15) 0%, 
+          rgba(255, 255, 255, 0.08) 50%, 
+          rgba(255, 255, 255, 0.05) 100%)`,
+        borderColor: 'rgba(156, 163, 175, 0.3)',
+        borderWidth: '2px',
+        boxShadow: `
+          inset 0 2px 4px rgba(0, 0, 0, 0.1),
+          0 1px 2px rgba(0, 0, 0, 0.05)
+        `,
+        transform: 'scale(1)',
+        transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        filter: 'saturate(0.6) brightness(0.8)'
+      };
+    }
+  };
+
+  // Calcular el ángulo necesario para posicionar una categoría en las 6 en punto (180°)
+  const calculateRotationTo6OClock = (categoryIndex: number) => {
+    const categoryAngle = categories[categoryIndex].angle;
+    // Para posicionar en las 6 en punto, necesitamos rotar 180° - ángulo de la categoría
+    const targetAngle = 180 - categoryAngle;
+    return targetAngle;
+  };
 
   const updateFlavorScore = (flavor: string, score: number) => {
     const newFlavors = { ...selectedFlavors };
@@ -201,15 +288,44 @@ const FlavorWheel: React.FC<FlavorWheelProps> = ({
 
   const toggleWheel = () => {
     setIsFlipped(!isFlipped);
+    setWheelRotation(prev => prev + 180);
+  };
+
+  const handleCategoryClick = (categoryName: string, index: number) => {
+    setActiveCategory(activeCategory === categoryName ? null : categoryName);
+    
+    // Calcular la rotación necesaria para posicionar este botón en las 6 en punto
+    const rotationTo6OClock = calculateRotationTo6OClock(index);
+    setWheelRotation(rotationTo6OClock);
+  };
+
+  // Crear path SVG para cada segmento de la rueda
+  const createWheelSegment = (startAngle: number, endAngle: number, radius: number, innerRadius: number) => {
+    const startAngleRad = (startAngle * Math.PI) / 180;
+    const endAngleRad = (endAngle * Math.PI) / 180;
+    
+    const x1 = Math.cos(startAngleRad) * radius;
+    const y1 = Math.sin(startAngleRad) * radius;
+    const x2 = Math.cos(endAngleRad) * radius;
+    const y2 = Math.sin(endAngleRad) * radius;
+    
+    const x3 = Math.cos(endAngleRad) * innerRadius;
+    const y3 = Math.sin(endAngleRad) * innerRadius;
+    const x4 = Math.cos(startAngleRad) * innerRadius;
+    const y4 = Math.sin(startAngleRad) * innerRadius;
+    
+    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+    
+    return `M ${x4} ${y4} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${x4} ${y4} Z`;
   };
 
   return (
     <div className="card p-md">
       <h3 className="text-h4 font-heading font-semibold text-text-primary mb-md">Flavor Profile</h3>
 
-      {/* Circular Flavor Wheel */}
-      <div className="relative max-w-sm mx-auto mb-lg">
-        {/* 3D Wheel Container */}
+      {/* Rueda de Sabores Auténtica */}
+      <div className="relative max-w-md mx-auto mb-lg">
+        {/* Contenedor 3D de la Rueda */}
         <div
           className="relative aspect-square w-full preserve-3d transition-transform duration-700 ease-in-out"
           style={{
@@ -217,187 +333,317 @@ const FlavorWheel: React.FC<FlavorWheelProps> = ({
             perspective: '1000px'
           }}
         >
-          {/* Front Side - User Tasting */}
+          {/* Lado Frontal - Tasting del Usuario */}
           <div className="absolute inset-0 backface-hidden">
-            <div className="relative w-full h-full rounded-full bg-gray-200 dark:bg-gray-800">
-              {/* Wheel Segments */}
-              {categories.map((cat, index) => {
-                const isSelected = getCategorySelectedCount(cat.name) > 0;
-                const isHovered = hoveredSegment === cat.name;
-                return (
-                  <button
-                    key={cat.name}
-                    className={`
-                      absolute top-0 left-1/2 w-1/2 h-1/2 origin-bottom-left transition-all duration-300 ease-in-out
-                      ${cat.color} hover:brightness-110
-                      ${isSelected ? 'brightness-110 ring-4 ring-white/50' : ''}
-                      ${isHovered ? 'scale-105' : ''}
-                    `}
-                    style={{
-                      clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%)',
-                      transform: `rotate(${cat.angle}deg)`,
-                      transformOrigin: '0% 100%'
-                    }}
-                    onClick={() => setActiveCategory(activeCategory === cat.name ? null : cat.name)}
-                    onMouseEnter={() => setHoveredSegment(cat.name)}
-                    onMouseLeave={() => setHoveredSegment(null)}
-                  >
-                    {/* Segment Label */}
-                    <span
-                      className="absolute text-white text-xs font-bold pointer-events-none"
-                      style={{
-                        top: '20%',
-                        left: '70%',
-                        transform: `rotate(${cat.angle + 18}deg)`,
-                        transformOrigin: 'center'
-                      }}
-                    >
-                      {cat.name}
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="relative w-full h-full">
+              {/* SVG de la Rueda */}
+              <svg
+                 viewBox="-150 -150 300 300"
+                 className="w-full h-full drop-shadow-2xl"
+                 style={{ 
+                   filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.25))',
+                   transform: `rotate(${wheelRotation}deg)`,
+                   transition: 'transform 1s cubic-bezier(0.4, 0, 0.2, 1)'
+                 }}
+               >
+                 {/* Definiciones de gradientes */}
+                 <defs>
+                   {categories.map((cat, index) => (
+                     <radialGradient key={`gradient-${index}`} id={`gradient-${index}`} cx="0%" cy="0%" r="100%">
+                       <stop offset="0%" stopColor={cat.color} stopOpacity="0.9" />
+                       <stop offset="70%" stopColor={cat.color} stopOpacity="1" />
+                       <stop offset="100%" stopColor={cat.color} stopOpacity="0.8" />
+                     </radialGradient>
+                   ))}
+                   
+                   {/* Filtros para efectos */}
+                   <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                     <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                     <feMerge> 
+                       <feMergeNode in="coloredBlur"/>
+                       <feMergeNode in="SourceGraphic"/>
+                     </feMerge>
+                   </filter>
+                   
+                   {/* Filtro de sombra interna para profundidad */}
+                   <filter id="innerShadow" x="-50%" y="-50%" width="200%" height="200%">
+                     <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+                     <feOffset dx="2" dy="2" result="offset"/>
+                     <feFlood floodColor="rgba(0,0,0,0.3)"/>
+                     <feComposite in2="offset" operator="in"/>
+                     <feComposite in2="SourceGraphic" operator="over"/>
+                   </filter>
+                 </defs>
 
-              {/* Center Information */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/5 h-3/5 bg-background-light dark:bg-background-dark rounded-full flex flex-col items-center justify-center text-center p-3 shadow-inner">
-                <h3 className="text-sm font-bold text-primary">Your Notes</h3>
-                <span className="text-xs text-text-secondary">
-                  {Object.keys(selectedFlavors).length} flavors selected
-                </span>
-              </div>
+                 {/* Anillo exterior decorativo */}
+                 <circle
+                   cx="0"
+                   cy="0"
+                   r="145"
+                   fill="none"
+                   stroke="rgba(255, 255, 255, 0.2)"
+                   strokeWidth="1"
+                   className="animate-pulse"
+                 />
+
+                 {/* Segmentos de la Rueda */}
+                 {categories.map((cat, index) => {
+                   const segmentAngle = 360 / categories.length;
+                   const startAngle = cat.angle - segmentAngle / 2;
+                   const endAngle = cat.angle + segmentAngle / 2;
+                   const isSelected = getCategorySelectedCount(cat.name) > 0;
+                   const isHovered = hoveredSegment === cat.name;
+                   
+                   return (
+                     <g key={cat.name}>
+                       {/* Segmento Principal */}
+                       <path
+                         d={createWheelSegment(startAngle, endAngle, 140, 45)}
+                         fill={`url(#gradient-${index})`}
+                         stroke="rgba(255, 255, 255, 0.3)"
+                         strokeWidth="2"
+                         className={`
+                           cursor-pointer transition-all duration-300 ease-in-out
+                           ${isHovered ? 'brightness-110' : ''}
+                           ${isSelected ? 'brightness-125' : ''}
+                         `}
+                         style={{
+                           filter: isHovered ? 'url(#glow) brightness(1.1) saturate(1.2) url(#innerShadow)' : isSelected ? 'brightness(1.15) saturate(1.1) url(#innerShadow)' : 'url(#innerShadow)',
+                           transform: isHovered ? 'scale(1.02)' : 'scale(1)',
+                           transformOrigin: 'center'
+                         }}
+                         onClick={() => handleCategoryClick(cat.name, index)}
+                         onMouseEnter={() => setHoveredSegment(cat.name)}
+                         onMouseLeave={() => setHoveredSegment(null)}
+                       />
+                       
+                       {/* Líneas divisorias entre segmentos */}
+                       <line
+                         x1={Math.cos((startAngle * Math.PI) / 180) * 45}
+                         y1={Math.sin((startAngle * Math.PI) / 180) * 45}
+                         x2={Math.cos((startAngle * Math.PI) / 180) * 140}
+                         y2={Math.sin((startAngle * Math.PI) / 180) * 140}
+                         stroke="rgba(255, 255, 255, 0.4)"
+                         strokeWidth="1"
+                         className="pointer-events-none"
+                       />
+                       
+                       {/* Texto del Segmento */}
+                       <text
+                         x={Math.cos((cat.angle * Math.PI) / 180) * 92}
+                         y={Math.sin((cat.angle * Math.PI) / 180) * 92}
+                         textAnchor="middle"
+                         dominantBaseline="middle"
+                         className="fill-white text-sm font-bold pointer-events-none select-none"
+                         style={{
+                           filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5))',
+                           fontSize: '12px'
+                         }}
+                       >
+                         {cat.name}
+                       </text>
+                     </g>
+                   );
+                 })}
+
+                 {/* Centro de la Rueda - Eje */}
+                 <g>
+                   {/* Eje principal */}
+                   <circle
+                     cx="0"
+                     cy="0"
+                     r="40"
+                     fill="linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(200,200,200,0.8) 100%)"
+                     stroke="rgba(255, 255, 255, 0.6)"
+                     strokeWidth="3"
+                     className="drop-shadow-lg"
+                   />
+                   
+                   {/* Círculo interior animado */}
+                   <circle
+                     cx="0"
+                     cy="0"
+                     r="25"
+                     fill="rgba(255, 255, 255, 0.1)"
+                     className="animate-pulse"
+                   />
+                   
+                   {/* Puntos decorativos del eje */}
+                   {[0, 90, 180, 270].map((angle, i) => (
+                     <circle
+                       key={i}
+                       cx={Math.cos((angle * Math.PI) / 180) * 30}
+                       cy={Math.sin((angle * Math.PI) / 180) * 30}
+                       r="3"
+                       fill="rgba(255, 255, 255, 0.7)"
+                       className="animate-spin"
+                       style={{ animationDuration: '4s', animationDelay: `${i * 0.5}s` }}
+                     />
+                   ))}
+                 </g>
+               </svg>
             </div>
           </div>
 
-          {/* Back Side - Community View */}
-          <div className="absolute inset-0 backface-hidden rotate-y-180">
-            <div className="relative w-full h-full rounded-full bg-gray-200 dark:bg-gray-800">
-              {/* Community Wheel Segments */}
-              {categories.map((cat, index) => {
-                const isSelected = getCategorySelectedCount(cat.name) > 0;
-                const isHovered = hoveredSegment === cat.name;
-                return (
-                  <div
-                    key={`community-${cat.name}`}
-                    className={`
-                      absolute top-0 left-1/2 w-1/2 h-1/2 origin-bottom-left
-                      ${cat.color}/50 hover:brightness-110
-                    `}
-                    style={{
-                      clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%)',
-                      transform: `rotate(${cat.angle}deg)`,
-                      transformOrigin: '0% 100%'
-                    }}
-                  >
-                    {/* Community Segment Label */}
-                    <span
-                      className="absolute text-white/70 text-xs font-bold pointer-events-none"
-                      style={{
-                        top: '20%',
-                        left: '70%',
-                        transform: `rotate(${cat.angle + 18}deg)`,
-                        transformOrigin: 'center'
-                      }}
-                    >
-                      {cat.name}
-                    </span>
+          {/* Lado Trasero - Información Adicional */}
+          <div className="absolute inset-0 backface-hidden" style={{ transform: 'rotateY(180deg)' }}>
+            <div className="w-full h-full bg-gradient-to-br from-surface-secondary to-surface-tertiary rounded-full border-4 border-border-primary flex items-center justify-center">
+              <div className="text-center p-lg">
+                <h4 className="text-h5 font-heading font-semibold text-text-primary mb-sm">Flavor Analysis</h4>
+                <p className="text-body-sm text-text-secondary">
+                  Total flavors selected: {Object.keys(selectedFlavors).length}
+                </p>
+                <div className="mt-md">
+                  <div className="text-xs text-text-tertiary">
+                    Intensity Average: {Object.keys(selectedFlavors).length > 0 
+                      ? (Object.values(selectedFlavors).reduce((a, b) => a + b, 0) / Object.keys(selectedFlavors).length).toFixed(1)
+                      : '0.0'}
                   </div>
-                );
-              })}
-
-              {/* Community Center Information */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/5 h-3/5 bg-background-light dark:bg-background-dark rounded-full flex flex-col items-center justify-center text-center p-3 shadow-inner">
-                <h3 className="text-sm font-bold text-gray-500">Community</h3>
-                <span className="text-xs text-text-secondary">
-                  Average Notes
-                </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Toggle Button */}
-        <div className="flex justify-center items-center gap-4 mt-4">
-          <span className={`text-sm font-medium ${!isFlipped ? 'text-primary' : 'text-text-secondary'}`}>
-            Your Tasting
-          </span>
-          <button
-            onClick={toggleWheel}
-            className={`
-              relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
-              transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-              ${isFlipped ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-700'}
-            `}
-          >
-            <span className="sr-only">Toggle Community View</span>
-            <span
-              className="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-gray-300 shadow ring-0 transition duration-200 ease-in-out"
-              style={{ transform: isFlipped ? 'translateX(1.25rem)' : 'translateX(0)' }}
-            ></span>
-          </button>
-          <span className={`text-sm font-medium ${isFlipped ? 'text-primary' : 'text-text-secondary'}`}>
-            Community
-          </span>
-        </div>
+        {/* Botón de Alternancia */}
+        <button
+          onClick={toggleWheel}
+          className="absolute top-4 right-4 bg-primary-500 hover:bg-primary-600 text-white p-sm rounded-full shadow-lg transition-all duration-300 hover:scale-110 active:scale-95"
+          style={{
+            background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+            boxShadow: '0 8px 25px rgba(59, 130, 246, 0.3)'
+          }}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </button>
       </div>
 
-      {/* Active Category Flavors */}
-      {activeCategory && !isFlipped && (
-        <div className="border-t border-border-primary pt-md animate-fade-in-up">
-          <h4 className="text-lg font-body font-medium text-text-primary mb-sm">
+      {/* Sabores de la Categoría Activa */}
+      {activeCategory && (
+        <div className="mb-lg">
+          <h4 className="text-h5 font-heading font-semibold text-text-primary mb-sm">
             {activeCategory} Flavors
           </h4>
-          <div className="space-y-sm">
+          <div className="grid grid-cols-2 gap-sm">
             {categories
               .find(cat => cat.name === activeCategory)
               ?.flavors.map((flavor) => {
-                const score = getFlavorScore(flavor);
+                const currentScore = getFlavorScore(flavor);
                 return (
-                  <div key={flavor} className="flex items-center justify-between">
-                    <span className="text-text-primary font-body font-medium">{flavor}</span>
-                    <div className="flex items-center space-x-xs">
-                      {[1, 2, 3, 4, 5].map((value) => (
+                  <div key={flavor} className="bg-surface-secondary rounded-lg p-sm hover:bg-surface-tertiary transition-colors duration-200">
+                    <div className="flex items-center justify-between mb-xs">
+                      <span className="text-body-sm font-medium text-text-primary">{flavor}</span>
+                      <span className="text-xs text-text-secondary font-semibold">
+                        {currentScore}/5
+                      </span>
+                    </div>
+                    <div className="flex gap-xs justify-center">
+                      {[1, 2, 3, 4, 5].map((score) => (
                         <button
-                          key={value}
-                          onClick={() => updateFlavorScore(flavor, score === value ? 0 : value)}
-                          className={`
-                            w-8 h-8 rounded-full border-2 transition-all duration-200
-                            ${score >= value
-                              ? 'bg-primary-500 border-primary-500 text-white'
-                              : 'border-border-default bg-background-app hover:border-primary-300'
+                          key={score}
+                          onClick={() => updateFlavorScore(flavor, currentScore === score ? 0 : score)}
+                          className="w-8 h-8 rounded-full border-2 relative overflow-hidden group"
+                          style={getCircleStyle(currentScore, score, activeCategory)}
+                          onMouseEnter={(e) => {
+                            const categoryColor = getCategoryColor(activeCategory);
+                            const rgb = (() => {
+                              const hexToRgb = (hex: string) => {
+                                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                                return result ? {
+                                  r: parseInt(result[1], 16),
+                                  g: parseInt(result[2], 16),
+                                  b: parseInt(result[3], 16)
+                                } : { r: 59, g: 130, b: 246 };
+                              };
+                              return hexToRgb(categoryColor);
+                            })();
+                            
+                            if (currentScore < score) {
+                              // Preview del nivel al hacer hover
+                              e.currentTarget.style.background = `radial-gradient(circle at 30% 30%, 
+                                rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3) 0%, 
+                                rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2) 50%, 
+                                rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`;
+                              e.currentTarget.style.borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`;
+                              e.currentTarget.style.transform = 'scale(1.05)';
+                            } else {
+                              // Efecto de brillo en niveles seleccionados
+                              e.currentTarget.style.filter = `saturate(1.2) brightness(1.1)`;
+                              e.currentTarget.style.transform = `scale(${1.02 + (score / 5) * 0.08})`;
                             }
-                          `}
+                          }}
+                          onMouseLeave={(e) => {
+                            const originalStyle = getCircleStyle(currentScore, score, activeCategory);
+                            Object.assign(e.currentTarget.style, originalStyle);
+                          }}
                         >
-                          <span className="text-caption font-body font-medium">{value}</span>
+                          {/* Efecto de brillo interno mejorado */}
+                          {currentScore >= score && (
+                            <div 
+                              className="absolute inset-0 rounded-full opacity-30"
+                              style={{
+                                background: `linear-gradient(135deg, rgba(255,255,255,0.6) 0%, transparent 50%, rgba(255,255,255,0.3) 100%)`,
+                                animation: 'pulse 2s infinite'
+                              }}
+                            />
+                          )}
+                          
+                          {/* Número del nivel */}
+                          <span 
+                            className={`text-xs font-bold relative z-10 transition-colors duration-300 ${
+                              currentScore >= score ? 'text-white drop-shadow-sm' : 'text-gray-400'
+                            }`}
+                          >
+                            {score}
+                          </span>
+                          
+                          {/* Efecto de ondas al hacer clic */}
+                          <div className="absolute inset-0 rounded-full opacity-0 group-active:opacity-100 group-active:animate-ping bg-white/30" />
                         </button>
                       ))}
                     </div>
+                    
+                    {/* Barra de progreso visual */}
+                    {currentScore > 0 && (
+                      <div className="mt-xs">
+                        <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all duration-500 ease-out"
+                            style={{
+                              width: `${(currentScore / 5) * 100}%`,
+                              background: `linear-gradient(90deg, ${getCategoryColor(activeCategory)}80 0%, ${getCategoryColor(activeCategory)} 100%)`,
+                              boxShadow: `0 0 8px ${getCategoryColor(activeCategory)}40`
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
-              })
-            }
+              })}
           </div>
         </div>
       )}
 
-      {/* Selected Flavors Summary */}
-      {Object.keys(selectedFlavors).length > 0 && !isFlipped && (
-        <div className="border-t border-border-primary pt-md mt-md">
-          <h4 className="text-lg font-body font-medium text-text-primary mb-sm">Selected Flavors</h4>
+      {/* Resumen de Sabores Seleccionados */}
+      {Object.keys(selectedFlavors).length > 0 && (
+        <div className="bg-surface-secondary rounded-lg p-md">
+          <h4 className="text-h5 font-heading font-semibold text-text-primary mb-sm">
+            Selected Flavors
+          </h4>
           <div className="flex flex-wrap gap-xs">
             {Object.entries(selectedFlavors).map(([flavor, score]) => (
-              <div
+              <span
                 key={flavor}
-                className="flex items-center space-x-xs px-sm py-xs bg-primary-100 text-primary-800 rounded-full text-small font-body"
+                className="inline-flex items-center gap-xs bg-primary-100 text-primary-800 px-sm py-xs rounded-full text-xs font-medium"
               >
-                <span>{flavor}</span>
-                <span className="font-body font-medium">({score})</span>
-                <button
-                  onClick={() => updateFlavorScore(flavor, 0)}
-                  className="ml-xs text-primary-600 hover:text-primary-800"
-                >
-                  ×
-                </button>
-              </div>
+                {flavor}
+                <span className="bg-primary-200 text-primary-900 px-xs rounded-full text-xs">
+                  {score}
+                </span>
+              </span>
             ))}
           </div>
         </div>

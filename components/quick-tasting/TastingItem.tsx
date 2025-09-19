@@ -170,24 +170,39 @@ const TastingItem: React.FC<TastingItemProps> = ({
         </div>
         
         {/* Overall Score */}
-        <div className="text-center font-body flex-shrink-0">
-          <div className="text-xs tablet:text-small font-body text-text-secondary mb-1">Overall Score</div>
-          <div className="flex flex-col items-center space-y-1.5">
-            <input
-              type="range"
-              min="1"
-              max="100"
-              value={localScore}
-              onChange={(e) => handleScoreChange(parseInt(e.target.value))}
-              className="w-28 mobile:w-32 tablet:w-40 h-2.5 mobile:h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-              style={{
-                background: `linear-gradient(to right, #fbbf24 0%, #fbbf24 ${localScore}%, #e5e7eb ${localScore}%, #e5e7eb 100%)`
-              }}
-            />
-            <div className="text-center">
-              <div className="text-base mobile:text-lg tablet:text-xl font-bold text-primary-600">{localScore}</div>
+        <div className="text-center font-body flex-shrink-0 px-3 py-4">
+          <div className="text-xs tablet:text-sm font-medium text-neutral-400 mb-4 tracking-widest uppercase opacity-70">Overall Score</div>
+          <div className="flex flex-col items-center space-y-5">
+            <div className="relative w-40 mobile:w-44 tablet:w-52">
+              <input
+                type="range"
+                min="1"
+                max="100"
+                value={localScore}
+                onChange={(e) => handleScoreChange(parseInt(e.target.value))}
+                className="w-full h-px bg-neutral-200 rounded-full appearance-none cursor-pointer slider-ultra-thin shadow-none border-0"
+                style={{
+                  background: `linear-gradient(to right, 
+                    #d4d4d4 0%, 
+                    #a3a3a3 ${localScore}%, 
+                    #e5e5e5 ${localScore}%, 
+                    #e5e5e5 100%)`
+                }}
+              />
+              <div className="absolute -top-1.5 left-0 w-full h-4 pointer-events-none flex items-center">
+                <div 
+                  className="absolute w-2 h-2 bg-white rounded-full shadow-sm border border-neutral-300 transition-all duration-200 ease-out"
+                  style={{ 
+                    left: `calc(${((localScore - 1) / 99) * 100}% - 4px)`,
+                    borderColor: localScore > 80 ? '#737373' : localScore > 60 ? '#a3a3a3' : localScore > 40 ? '#d4d4d4' : '#e5e5e5'
+                  }}
+                />
+              </div>
+            </div>
+            <div className="text-center space-y-1.5">
+              <div className="text-2xl mobile:text-3xl tablet:text-4xl font-thin text-neutral-600 tracking-tight leading-none">{localScore}</div>
               {localScore > 0 && (
-                <div className="text-xs mobile:text-xs tablet:text-small font-body font-medium text-text-primary animate-fade-in leading-tight">
+                <div className="text-xs mobile:text-sm tablet:text-sm font-normal text-neutral-400 animate-fade-in leading-relaxed tracking-wide opacity-80">
                   {getScoreLabel(localScore)}
                 </div>
               )}
