@@ -16,6 +16,8 @@ export default function Home() {
         <title>Flavatix - Taste the World, One Sip at a Time</title>
         <meta name="description" content="The world's most pivotal tasting app for coffee and drinks. Discover, analyze, and share your tasting experiences with our user-friendly platform." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/images/flavicon.png" />
+        <link rel="apple-touch-icon" href="/images/flavicon.png" />
       </Head>
 
       <main className={`${inter.variable} ${crimsonText.variable} min-h-screen`}>
@@ -26,10 +28,12 @@ export default function Home() {
           <div className="relative z-10 px-md py-2xl mx-auto max-w-4xl text-center">
             {/* Logo/Brand Area */}
             <div className="mb-lg">
-              <div className="inline-flex items-center justify-center w-20 h-20 mb-md bg-gradient-primary rounded-full shadow-primary">
-                <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
+              <div className="inline-flex items-center justify-center w-20 h-20 mb-md bg-gradient-primary rounded-full shadow-primary overflow-hidden">
+                <img
+                  src="/images/flavicon.png"
+                  alt="Flavatix Logo"
+                  className="w-12 h-12 object-contain"
+                />
               </div>
               
               {/* App Name */}
