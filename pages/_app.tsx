@@ -4,6 +4,7 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ToastContainer } from 'react-toastify'
 import { AuthProvider } from '../contexts/AuthContext'
+import GlobalInspirationBox from '../components/GlobalInspirationBox'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -20,7 +21,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400&display=swap" rel="stylesheet" />
       </Head>
-      <Component {...pageProps} />
+      <GlobalInspirationBox>
+        <Component {...pageProps} />
+      </GlobalInspirationBox>
       <ToastContainer
         position="top-right"
         autoClose={5000}
