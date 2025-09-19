@@ -439,7 +439,9 @@ export default function SocialPage() {
           <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
             {posts.length === 0 ? (
               <div className="p-8 text-center">
-                <div className="text-6xl mb-4">🍷</div>
+                <div className="mb-4">
+                  <span className="material-symbols-outlined text-6xl text-orange-500">local_bar</span>
+                </div>
                 <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">No tastings yet</h3>
                 <p className="text-zinc-600 dark:text-zinc-400 mb-4">
                   Be the first to share your tasting experience!
