@@ -148,9 +148,9 @@ const TastingHistoryList: React.FC<TastingHistoryListProps> = ({
             ? 'No se encontraron catas con los filtros aplicados.'
             : 'Aún no has realizado ninguna cata. ¡Comienza tu primera sesión!'}
         </p>
-        <button 
+        <button
           onClick={() => window.location.href = '/quick-tasting'}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors"
         >
           Comenzar nueva cata
         </button>
