@@ -1,6 +1,6 @@
 .hero {
   position: relative;
-  background-image: url('/coffee-bg.png');
+  background-image: url('https://kobuclkvlacdwvxmakvq.supabase.co/storage/v1/object/public/images/coffee-bg.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
