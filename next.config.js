@@ -2,12 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    appDir: false,
-  },
+  output: 'export',
+  trailingSlash: true,
+
   images: {
-    domains: ['kobuclkvlacdwvxmakvq.supabase.co']
-  }
+    domains: ['kobuclkvlacdwvxmakvq.supabase.co'],
+    unoptimized: true
+  },
+
 }
 
 module.exports = nextConfig
