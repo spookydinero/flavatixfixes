@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getSupabaseClient } from '../../lib/supabase';
 import FlavorWheel from './FlavorWheel';
 import TastingItem from './TastingItem';
+import CompetitionRanking from './CompetitionRanking';
 import { toast } from '../../lib/toast';
 import { Utensils } from 'lucide-react';
 
@@ -17,6 +18,12 @@ interface QuickTasting {
   created_at: string;
   updated_at: string;
   completed_at?: string;
+  mode: string;
+  rank_participants?: boolean;
+  ranking_type?: string | null;
+  is_blind_participants?: boolean;
+  is_blind_items?: boolean;
+  is_blind_attributes?: boolean;
 }
 
 interface TastingItemData {
@@ -29,6 +36,8 @@ interface TastingItemData {
   photo_url?: string;
   created_at: string;
   updated_at: string;
+  correct_answers?: any;
+  include_in_ranking?: boolean;
 }
 
 interface QuickTastingSessionProps {
@@ -67,8 +76,14 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   };
 
   const addNewItem = async () => {
+    // Only allow adding items in study mode or quick mode
+    if (session.mode === 'competition') {
+      toast.error('Cannot add items in competition mode');
+      return;
+    }
+
     const itemName = `${session.category.charAt(0).toUpperCase() + session.category.slice(1)} ${items.length + 1}`;
-    
+
     try {
       const { data, error } = await supabase
         .from('quick_tasting_items')
@@ -149,7 +164,10 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               {session.session_name}
             </h2>
             <p className="text-text-secondary">
-              Category: {session.category.charAt(0).toUpperCase() + session.category.slice(1)}
+              Category: {session.category.charAt(0).toUpperCase() + session.category.slice(1)} •
+              Mode: {session.mode.charAt(0).toUpperCase() + session.mode.slice(1)}
+              {session.rank_participants && ' • Ranked Competition'}
+              {(session.is_blind_participants || session.is_blind_items || session.is_blind_attributes) && ' • Blind Tasting'}
             </p>
           </div>
           <div className="mt-4 md:mt-0 flex items-center space-x-4">
@@ -173,12 +191,14 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             <div className="card p-md">
               <div className="flex items-center justify-between mb-sm">
                 <h3 className="text-h4 font-heading font-semibold text-text-primary">Items</h3>
-                <button
-                  onClick={addNewItem}
-                className="btn-primary"
-                >
-                  Add Item
-                </button>
+                {(session.mode === 'study' || session.mode === 'quick') && (
+                  <button
+                    onClick={addNewItem}
+                    className="btn-primary"
+                  >
+                    Add Item
+                  </button>
+                )}
               </div>
               
               <div className="flex flex-wrap gap-xs mb-sm">
@@ -213,6 +233,8 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               category={session.category}
               userId={session.user_id}
               onUpdate={(updates: Partial<TastingItemData>) => updateItem(currentItem.id, updates)}
+              isBlindItems={session.is_blind_items}
+              isBlindAttributes={session.is_blind_attributes}
             />
           ) : (
             <div className="card p-lg text-center">
@@ -220,17 +242,22 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                 <Utensils size={64} className="text-text-secondary" />
               </div>
               <h3 className="text-h3 font-heading font-semibold text-text-primary mb-2">
-                No Items Yet
+                {session.mode === 'competition' ? 'Waiting for Items' : 'No Items Yet'}
               </h3>
               <p className="text-text-secondary mb-md">
-                Add your first item to start tasting!
+                {session.mode === 'competition'
+                  ? 'Items should be preloaded for competition mode.'
+                  : 'Add your first item to start tasting!'
+                }
               </p>
-              <button
-                onClick={addNewItem}
-                className="btn-primary"
-              >
-                Add First Item
-              </button>
+              {(session.mode === 'study' || session.mode === 'quick') && (
+                <button
+                  onClick={addNewItem}
+                  className="btn-primary"
+                >
+                  Add First Item
+                </button>
+              )}
             </div>
           )}
 
@@ -244,6 +271,15 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               className="form-input w-full h-32 resize-none"
             />
           </div>
+
+          {/* Competition Ranking */}
+          {session.rank_participants && (
+            <CompetitionRanking
+              tastingId={session.id}
+              isRankingEnabled={true}
+              currentUserId={session.user_id}
+            />
+          )}
         </div>
 
         {/* Right Column - Flavor Wheel */}

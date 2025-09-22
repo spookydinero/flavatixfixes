@@ -99,7 +99,8 @@ const QuickTastingPage: React.FC = () => {
         .insert({
           user_id: user.id,
           category,
-          session_name: `${category.charAt(0).toUpperCase() + category.slice(1)} Tasting`
+          session_name: `${category.charAt(0).toUpperCase() + category.slice(1)} Tasting`,
+          mode: 'quick'
         })
         .select()
         .single();
@@ -264,6 +265,10 @@ const QuickTastingPage: React.FC = () => {
           <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/dashboard">
             <span className="material-symbols-outlined">home</span>
             <span className="text-xs font-medium">Home</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/create-tasting">
+            <span className="material-symbols-outlined">add_circle</span>
+            <span className="text-xs font-medium">Create</span>
           </a>
           <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/quick-tasting">
             <span className="material-symbols-outlined">local_bar</span>

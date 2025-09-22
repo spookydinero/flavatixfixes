@@ -111,6 +111,12 @@ export type Database = {
           created_at: string;
           updated_at: string;
           completed_at: string | null;
+          mode: string;
+          rank_participants: boolean;
+          ranking_type: string | null;
+          is_blind_participants: boolean;
+          is_blind_items: boolean;
+          is_blind_attributes: boolean;
         };
         Insert: {
           id?: string;
@@ -124,6 +130,12 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
           completed_at?: string | null;
+          mode?: string;
+          rank_participants?: boolean;
+          ranking_type?: string | null;
+          is_blind_participants?: boolean;
+          is_blind_items?: boolean;
+          is_blind_attributes?: boolean;
         };
         Update: {
           id?: string;
@@ -137,6 +149,12 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
           completed_at?: string | null;
+          mode?: string;
+          rank_participants?: boolean;
+          ranking_type?: string | null;
+          is_blind_participants?: boolean;
+          is_blind_items?: boolean;
+          is_blind_attributes?: boolean;
         };
       };
       quick_tasting_items: {
@@ -150,6 +168,8 @@ export type Database = {
           photo_url: string | null;
           created_at: string;
           updated_at: string;
+          correct_answers: any | null;
+          include_in_ranking: boolean;
         };
         Insert: {
           id?: string;
@@ -161,6 +181,8 @@ export type Database = {
           photo_url?: string | null;
           created_at?: string;
           updated_at?: string;
+          correct_answers?: any | null;
+          include_in_ranking?: boolean;
         };
         Update: {
           id?: string;
@@ -172,6 +194,34 @@ export type Database = {
           photo_url?: string | null;
           created_at?: string;
           updated_at?: string;
+          correct_answers?: any | null;
+          include_in_ranking?: boolean;
+        };
+      };
+      tasting_participants: {
+        Row: {
+          id: string;
+          tasting_id: string;
+          user_id: string;
+          score: number | null;
+          rank: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tasting_id: string;
+          user_id: string;
+          score?: number | null;
+          rank?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tasting_id?: string;
+          user_id?: string;
+          score?: number | null;
+          rank?: number | null;
+          created_at?: string;
         };
       };
     };

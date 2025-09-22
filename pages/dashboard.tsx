@@ -104,13 +104,24 @@ export default function Dashboard() {
                 <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-4">Quick Start</h3>
                 <div className="space-y-3">
                   <button
-                    onClick={() => router.push('/quick-tasting')}
+                    onClick={() => router.push('/create-tasting')}
                     className="w-full flex items-center gap-3 p-3 bg-primary text-white rounded-lg hover:bg-orange-600 transition-colors"
+                  >
+                    <span className="material-symbols-outlined">add_circle</span>
+                    <div className="text-left">
+                      <div className="font-medium">Create Tasting Session</div>
+                      <div className="text-sm opacity-90">Study or Competition mode</div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => router.push('/quick-tasting')}
+                    className="w-full flex items-center gap-3 p-3 bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-white rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors"
                   >
                     <span className="material-symbols-outlined">local_bar</span>
                     <div className="text-left">
-                      <div className="font-medium">Start Quick Tasting</div>
-                      <div className="text-sm opacity-90">Begin your flavor journey</div>
+                      <div className="font-medium">Quick Tasting</div>
+                      <div className="text-sm opacity-75">Standard tasting workflow</div>
                     </div>
                   </button>
 
@@ -195,6 +206,10 @@ export default function Dashboard() {
             <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/dashboard">
               <span className="material-symbols-outlined">home</span>
               <span className="text-xs font-bold">Home</span>
+            </a>
+            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/create-tasting">
+              <span className="material-symbols-outlined">add_circle</span>
+              <span className="text-xs font-medium">Create</span>
             </a>
             <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/quick-tasting">
               <span className="material-symbols-outlined">local_bar</span>

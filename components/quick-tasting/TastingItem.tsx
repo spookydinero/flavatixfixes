@@ -20,6 +20,8 @@ interface TastingItemProps {
   category: string;
   userId: string;
   onUpdate: (updates: Partial<TastingItemData>) => void;
+  isBlindItems?: boolean;
+  isBlindAttributes?: boolean;
 }
 
 const TastingItem: React.FC<TastingItemProps> = ({
@@ -27,6 +29,8 @@ const TastingItem: React.FC<TastingItemProps> = ({
   category,
   userId,
   onUpdate,
+  isBlindItems = false,
+  isBlindAttributes = false,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [localNotes, setLocalNotes] = useState(item.notes || '');
@@ -162,9 +166,12 @@ const TastingItem: React.FC<TastingItemProps> = ({
         <div className="flex items-center space-x-sm min-w-0 flex-1">
           <div className="flex items-center justify-center w-10 h-10 tablet:w-12 tablet:h-12 flex-shrink-0">{getCategoryIcon(category)}</div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary truncate">{item.item_name}</h3>
+            <h3 className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary truncate">
+              {isBlindItems ? `Item ${item.id.slice(-4)}` : item.item_name}
+            </h3>
             <p className="text-xs tablet:text-small font-body text-text-secondary">
               {category.charAt(0).toUpperCase() + category.slice(1)} Tasting
+              {isBlindItems && ' • Blind Tasting'}
             </p>
           </div>
         </div>
@@ -212,49 +219,51 @@ const TastingItem: React.FC<TastingItemProps> = ({
       </div>
 
       {/* Photo Section */}
-      <div className="mb-md">
-        <div className="flex flex-col tablet:flex-row tablet:items-center tablet:justify-between gap-xs mb-sm">
-          <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary">Photo</h4>
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isUploading}
-            className="btn-primary text-xs tablet:text-small disabled:opacity-50 min-w-touch min-h-touch px-sm py-xs tablet:px-md tablet:py-sm self-start tablet:self-auto"
-          >
-            {isUploading ? 'Uploading...' : item.photo_url ? 'Change Photo' : 'Add Photo'}
-          </button>
-        </div>
-        
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handlePhotoUpload}
-          className="hidden"
-        />
-        
-        {item.photo_url ? (
-          <div className="relative overflow-hidden rounded-lg">
-            <img
-              src={item.photo_url}
-              alt={item.item_name}
-              className="w-full h-40 tablet:h-48 object-cover"
-            />
+      {!isBlindItems && (
+        <div className="mb-md">
+          <div className="flex flex-col tablet:flex-row tablet:items-center tablet:justify-between gap-xs mb-sm">
+            <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary">Photo</h4>
             <button
-              onClick={removePhoto}
-              className="absolute top-xs right-xs min-w-touch min-h-touch w-9 h-9 tablet:w-11 tablet:h-11 bg-error text-white rounded-full hover:bg-error/90 transition-colors flex items-center justify-center text-sm tablet:text-lg font-bold touch-manipulation"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="btn-primary text-xs tablet:text-small disabled:opacity-50 min-w-touch min-h-touch px-sm py-xs tablet:px-md tablet:py-sm self-start tablet:self-auto"
             >
-              ×
+              {isUploading ? 'Uploading...' : item.photo_url ? 'Change Photo' : 'Add Photo'}
             </button>
           </div>
-        ) : (
-          <div className="w-full h-40 tablet:h-48 border-2 border-dashed border-border-default rounded-lg flex items-center justify-center bg-background-app">
-            <div className="text-center font-body px-sm">
-              <Camera size={32} className="text-text-secondary mb-xs mx-auto tablet:w-12 tablet:h-12" />
-              <p className="text-sm tablet:text-body font-body text-text-secondary">No photo added</p>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            className="hidden"
+          />
+
+          {item.photo_url ? (
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src={item.photo_url}
+                alt={item.item_name}
+                className="w-full h-40 tablet:h-48 object-cover"
+              />
+              <button
+                onClick={removePhoto}
+                className="absolute top-xs right-xs min-w-touch min-h-touch w-9 h-9 tablet:w-11 tablet:h-11 bg-error text-white rounded-full hover:bg-error/90 transition-colors flex items-center justify-center text-sm tablet:text-lg font-bold touch-manipulation"
+              >
+                ×
+              </button>
             </div>
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="w-full h-40 tablet:h-48 border-2 border-dashed border-border-default rounded-lg flex items-center justify-center bg-background-app">
+              <div className="text-center font-body px-sm">
+                <Camera size={32} className="text-text-secondary mb-xs mx-auto tablet:w-12 tablet:h-12" />
+                <p className="text-sm tablet:text-body font-body text-text-secondary">No photo added</p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Notes Section */}
       <div>
@@ -268,7 +277,7 @@ const TastingItem: React.FC<TastingItemProps> = ({
       </div>
 
       {/* Flavor Summary */}
-      {item.flavor_scores && Object.keys(item.flavor_scores).length > 0 && (
+      {item.flavor_scores && Object.keys(item.flavor_scores).length > 0 && !isBlindAttributes && (
         <div className="mt-md pt-md border-t border-border-primary">
           <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Flavor Profile</h4>
           <div className="flex flex-wrap gap-1 tablet:gap-xs">
