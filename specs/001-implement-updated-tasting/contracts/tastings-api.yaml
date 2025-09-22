@@ -1,0 +1,451 @@
+openapi: 3.0.3
+info:
+  title: FlavorWheel Tastings API
+  version: 1.0.0
+  description: API for managing tasting sessions with Quick, Study, and Competition modes
+
+servers:
+  - url: /api
+    description: Local development server
+
+paths:
+  /tastings/create:
+    post:
+      summary: Create a new tasting session
+      description: Create a tasting session with specified mode, categories, and settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - mode
+                - category
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+                  description: User creating the tasting
+                mode:
+                  type: string
+                  enum: [quick, study, competition]
+                  description: Tasting mode
+                tasting_type:
+                  type: string
+                  enum: [beer, spirits, wine, other]
+                  description: Beverage type (required for quick mode)
+                study_approach:
+                  type: string
+                  enum: [predefined, collaborative]
+                  description: Study Mode approach (required for study mode)
+                category:
+                  type: string
+                  description: Tasting category/theme
+                session_name:
+                  type: string
+                  description: Optional custom session name
+                notes:
+                  type: string
+                  description: Session notes
+                rank_participants:
+                  type: boolean
+                  description: Enable participant ranking (competition mode)
+                ranking_type:
+                  type: string
+                  enum: [overall_score, average_score, weighted_score]
+                  description: Ranking calculation method
+                is_blind_participants:
+                  type: boolean
+                  description: Hide participant identities
+                is_blind_items:
+                  type: boolean
+                  description: Hide item details
+                is_blind_attributes:
+                  type: boolean
+                  description: Hide flavor attributes
+                expected_participants:
+                  type: integer
+                  minimum: 1
+                  description: Expected participant count (competition mode)
+                categories:
+                  type: array
+                  maxItems: 10
+                  items:
+                    type: object
+                    required:
+                      - category_name
+                      - parameter_type
+                    properties:
+                      category_name:
+                        type: string
+                        minLength: 1
+                      parameter_type:
+                        type: string
+                        enum: [exact_answer, subjective_input, contains_x, multiple_choice, sliding_scale]
+                      options:
+                        type: array
+                        items:
+                          type: string
+                        description: Required for multiple_choice type
+                      is_required:
+                        type: boolean
+                        default: true
+                      display_order:
+                        type: integer
+                        default: 0
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - item_name
+                    properties:
+                      item_name:
+                        type: string
+                        minLength: 1
+                      correct_answers:
+                        type: object
+                        description: Category answers for competition mode
+                        additionalProperties:
+                          oneOf:
+                            - type: string
+                            - type: object
+                              properties:
+                                min:
+                                  type: integer
+                                  minimum: 1
+                                  maximum: 100
+                                max:
+                                  type: integer
+                                  minimum: 1
+                                  maximum: 100
+      responses:
+        '201':
+          description: Tasting session created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasting:
+                    $ref: '#/components/schemas/Tasting'
+                  categories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TastingItem'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /tastings/{tastingId}/suggestions:
+    post:
+      summary: Suggest an item for Collaborative Study Mode
+      parameters:
+        - name: tastingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - participant_id
+                - item_name
+              properties:
+                participant_id:
+                  type: string
+                  format: uuid
+                item_name:
+                  type: string
+                  minLength: 1
+      responses:
+        '201':
+          description: Item suggestion created
+        '403':
+          description: User not authorized to suggest items
+
+  /tastings/{tastingId}/suggestions/{suggestionId}/moderate:
+    post:
+      summary: Approve or reject an item suggestion
+      parameters:
+        - name: tastingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: suggestionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - moderator_id
+                - action
+              properties:
+                moderator_id:
+                  type: string
+                  format: uuid
+                action:
+                  type: string
+                  enum: [approve, reject]
+      responses:
+        '200':
+          description: Suggestion moderated successfully
+        '403':
+          description: User not authorized to moderate
+
+  /tastings/{tastingId}/categories:
+    post:
+      summary: Add categories to a tasting session
+      parameters:
+        - name: tastingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              maxItems: 10
+              items:
+                $ref: '#/components/schemas/CategoryInput'
+      responses:
+        '201':
+          description: Categories added successfully
+        '400':
+          description: Invalid category data or limit exceeded
+
+  /tastings/{tastingId}/participants:
+    post:
+      summary: Join a competition tasting
+      parameters:
+        - name: tastingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Successfully joined tasting
+        '409':
+          description: Already participating
+
+  /tastings/{tastingId}/progress:
+    get:
+      summary: Get host progress view
+      parameters:
+        - name: tastingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Progress data retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  participants:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        user_name:
+                          type: string
+                        completed_items:
+                          type: integer
+                        total_score:
+                          type: integer
+                        rank:
+                          type: integer
+                  total_items:
+                    type: integer
+                  completed_sessions:
+                    type: integer
+
+  /tastings/{tastingId}/answers:
+    post:
+      summary: Submit participant answers
+      parameters:
+        - name: tastingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - participant_id
+                - item_id
+                - answers
+              properties:
+                participant_id:
+                  type: string
+                  format: uuid
+                item_id:
+                  type: string
+                  format: uuid
+                answers:
+                  type: object
+                  description: Category answers keyed by category_id
+                  additionalProperties:
+                    oneOf:
+                      - type: string
+                      - type: integer
+                        minimum: 1
+                        maximum: 100
+      responses:
+        '201':
+          description: Answers submitted successfully
+
+components:
+  schemas:
+    Tasting:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        mode:
+          type: string
+          enum: [quick, study, competition]
+        tasting_type:
+          type: string
+          enum: [beer, spirits, wine, other]
+        study_approach:
+          type: string
+          enum: [predefined, collaborative]
+        category:
+          type: string
+        session_name:
+          type: string
+        rank_participants:
+          type: boolean
+        is_blind_participants:
+          type: boolean
+        is_blind_items:
+          type: boolean
+        is_blind_attributes:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tasting_id:
+          type: string
+          format: uuid
+        category_name:
+          type: string
+        parameter_type:
+          type: string
+          enum: [exact_answer, subjective_input, contains_x, multiple_choice, sliding_scale]
+        options:
+          type: array
+          items:
+            type: string
+        is_required:
+          type: boolean
+        display_order:
+          type: integer
+
+    CategoryInput:
+      type: object
+      required:
+        - category_name
+        - parameter_type
+      properties:
+        category_name:
+          type: string
+          minLength: 1
+        parameter_type:
+          type: string
+          enum: [exact_answer, subjective_input, contains_x, multiple_choice, sliding_choice, sliding_scale]
+        options:
+          type: array
+          items:
+            type: string
+        is_required:
+          type: boolean
+          default: true
+        display_order:
+          type: integer
+          default: 0
+
+    TastingItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tasting_id:
+          type: string
+          format: uuid
+        item_name:
+          type: string
+        include_in_ranking:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
