@@ -94,3 +94,4 @@ describe('GET /api/tastings/{tastingId}/suggestions', () => {
     expect(response.status).toBe(404);
   });
 });
+

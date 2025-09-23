@@ -294,3 +294,4 @@ async function simulateHostResponsive(tastingId, hostId) {
   // Implementation would simulate host reconnecting
   return { simulated: true };
 }
+

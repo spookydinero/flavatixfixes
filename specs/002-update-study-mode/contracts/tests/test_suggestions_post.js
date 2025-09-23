@@ -120,3 +120,4 @@ describe('POST /api/tastings/{tastingId}/suggestions', () => {
     expect(response.status).toBe(404);
   });
 });
+

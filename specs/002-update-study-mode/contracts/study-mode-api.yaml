@@ -234,3 +234,4 @@ components:
             suggestions_count:
               type: integer
               description: Number of suggestions made by this participant
+

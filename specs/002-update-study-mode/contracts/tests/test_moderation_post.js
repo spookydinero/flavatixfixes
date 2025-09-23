@@ -172,3 +172,4 @@ describe('POST /api/tastings/{tastingId}/suggestions/{suggestionId}/moderate', (
     expect(data).toHaveProperty('moderated_at');
   });
 });
+

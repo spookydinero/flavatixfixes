@@ -155,3 +155,4 @@ This data model extends the existing tasting system to support flexible Study Mo
 - Moderators subscribe to suggestion status changes
 - All participants subscribe to new approved items
 - Role-based filtering for appropriate updates
+

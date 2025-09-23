@@ -237,3 +237,4 @@ curl -X PUT /api/tastings/{id}/participants/{participantId}/role \
 - ✅ Database constraints prevent invalid states
 - ✅ Comprehensive E2E test suite passes
 - ✅ User acceptance testing with real collaborative sessions
+
