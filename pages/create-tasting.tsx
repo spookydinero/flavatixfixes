@@ -120,6 +120,11 @@ const CreateTastingPage: React.FC = () => {
       return;
     }
 
+    if (form.mode === 'study' && form.study_approach === 'predefined' && form.items.length === 0) {
+      toast.error('Pre-defined study mode requires at least one preloaded item');
+      return;
+    }
+
     if (form.mode === 'study' && !form.study_approach) {
       toast.error('Please select a study approach (Pre-defined or Collaborative)');
       return;
@@ -143,7 +148,7 @@ const CreateTastingPage: React.FC = () => {
           is_blind_participants: form.is_blind_participants,
           is_blind_items: form.is_blind_items,
           is_blind_attributes: form.is_blind_attributes,
-          items: form.mode === 'competition' ? form.items.map(item => ({
+          items: (form.mode === 'competition' || (form.mode === 'study' && form.study_approach === 'predefined')) ? form.items.map(item => ({
             item_name: item.item_name,
             correct_answers: item.correct_answers,
             include_in_ranking: item.include_in_ranking
@@ -160,7 +165,7 @@ const CreateTastingPage: React.FC = () => {
       toast.success('Tasting session created successfully!');
 
       // Navigate to the tasting session
-      router.push('/quick-tasting');
+      router.push(`/tasting/${data.id}`);
 
     } catch (error) {
       console.error('Error creating tasting:', error);
@@ -390,11 +395,11 @@ const CreateTastingPage: React.FC = () => {
               </div>
             )}
 
-            {/* Items Management (Competition Mode) */}
-            {form.mode === 'competition' && (
+            {/* Items Management (Competition Mode and Pre-defined Study Mode) */}
+            {((form.mode === 'competition') || (form.mode === 'study' && form.study_approach === 'predefined')) && (
               <div className="card p-md">
                 <div className="flex items-center justify-between mb-md">
-                  <h2 className="text-h3 font-heading font-semibold text-text-primary">Competition Items</h2>
+                  <h2 className="text-h3 font-heading font-semibold text-text-primary">{form.mode === 'competition' ? 'Competition Items' : 'Study Items'}</h2>
                   <button
                     type="button"
                     onClick={addItem}
@@ -407,7 +412,10 @@ const CreateTastingPage: React.FC = () => {
 
                 {form.items.length === 0 ? (
                   <p className="text-text-secondary text-center py-lg">
-                    Add items to compete on. Each item can have correct answers for scoring.
+                    {form.mode === 'competition' 
+                      ? 'Add items to compete on. Each item can have correct answers for scoring.'
+                      : 'Add items for participants to evaluate. Items will be pre-loaded for the tasting.'
+                    }
                   </p>
                 ) : (
                   <div className="space-y-md">

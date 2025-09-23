@@ -10,6 +10,7 @@ type TastingMode = 'study' | 'competition' | 'quick';
 interface CreateTastingRequest {
   user_id: string;
   mode: TastingMode;
+  study_approach?: string;
   category: string;
   session_name?: string;
   notes?: string;
@@ -34,6 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const {
       user_id,
       mode,
+      study_approach,
       category,
       session_name,
       notes,
@@ -66,9 +68,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Competition mode requires at least one item' });
     }
 
-    // Study mode should not have preloaded items
-    if (mode === 'study' && items.length > 0) {
-      return res.status(400).json({ error: 'Study mode should not have preloaded items' });
+    // Study mode validation based on approach
+    if (mode === 'study') {
+      if (study_approach === 'collaborative' && items.length > 0) {
+        return res.status(400).json({ error: 'Collaborative study mode should not have preloaded items' });
+      }
+      if (study_approach === 'predefined' && items.length === 0) {
+        return res.status(400).json({ error: 'Pre-defined study mode requires at least one item' });
+      }
     }
 
     // Create the tasting session
@@ -80,6 +87,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         session_name: session_name || `${category.charAt(0).toUpperCase() + category.slice(1)} ${mode === 'competition' ? 'Competition' : mode === 'study' ? 'Study' : 'Quick Tasting'}`,
         notes,
         mode,
+        study_approach: mode === 'study' ? study_approach : null,
         rank_participants,
         ranking_type: rank_participants ? ranking_type : null,
         is_blind_participants,
@@ -96,8 +104,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     let createdItems = [];
 
-    // Add items for competition mode
-    if (mode === 'competition' && items.length > 0) {
+    // Add items for competition mode and pre-defined study mode
+    if ((mode === 'competition' && items.length > 0) || (mode === 'study' && study_approach === 'predefined' && items.length > 0)) {
       const itemsToInsert = items.map(item => ({
         tasting_id: tasting.id,
         item_name: item.item_name,

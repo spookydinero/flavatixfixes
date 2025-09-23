@@ -2,8 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  output: 'export',
-  trailingSlash: true,
+  // output: 'export', // Commented out for development to allow API routes
+  // trailingSlash: true,
 
   images: {
     domains: ['kobuclkvlacdwvxmakvq.supabase.co'],
