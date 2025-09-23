@@ -81,9 +81,9 @@
 - [x] T029 [P] Unit tests for suggestion validation in tests/unit/test_suggestion_validation.js
 - [x] T030 Performance tests for real-time updates (<100ms latency)
 - [x] T031 [P] Update component documentation for new Study Mode features
-- [ ] T032 Accessibility audit for role indicators and collaborative UI
-- [ ] T033 Manual testing of all quickstart scenarios
-- [ ] T034 Code cleanup and remove study mode feature flags
+- [x] T032 Accessibility audit for role indicators and collaborative UI
+- [x] T033 Manual testing of all quickstart scenarios
+- [x] T034 Code cleanup and remove study mode feature flags
 
 ## Dependencies
 - Tests (T004-T010) before implementation (T011-T022)
