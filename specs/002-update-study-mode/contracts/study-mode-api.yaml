@@ -1,0 +1,236 @@
+openapi: 3.0.3
+info:
+  title: FlavorWheel Study Mode API
+  version: 1.0.0
+  description: API for Study Mode collaborative features and role management
+
+servers:
+  - url: /api
+    description: Local development server
+
+paths:
+  /tastings/{tastingId}/suggestions:
+    post:
+      summary: Submit an item suggestion for Collaborative Study Mode
+      parameters:
+        - name: tastingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - participant_id
+                - item_name
+              properties:
+                participant_id:
+                  type: string
+                  format: uuid
+                  description: ID of the participant making the suggestion
+                item_name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  description: Name of the suggested item
+      responses:
+        '201':
+          description: Suggestion created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemSuggestion'
+        '400':
+          description: Invalid suggestion data
+        '403':
+          description: User not authorized to suggest items
+        '404':
+          description: Tasting session not found or not collaborative mode
+
+    get:
+      summary: Get suggestions for a tasting session
+      description: Retrieve pending suggestions (moderators) or user's own suggestions (participants)
+      parameters:
+        - name: tastingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+            description: Filter by suggestion status
+      responses:
+        '200':
+          description: Suggestions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemSuggestion'
+        '403':
+          description: User not authorized to view suggestions
+
+  /tastings/{tastingId}/suggestions/{suggestionId}/moderate:
+    post:
+      summary: Approve or reject an item suggestion
+      parameters:
+        - name: tastingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: suggestionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - moderator_id
+                - action
+              properties:
+                moderator_id:
+                  type: string
+                  format: uuid
+                  description: ID of the moderator taking action
+                action:
+                  type: string
+                  enum: [approve, reject]
+                  description: Moderation action to take
+      responses:
+        '200':
+          description: Suggestion moderated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemSuggestion'
+        '400':
+          description: Invalid moderation action
+        '403':
+          description: User not authorized to moderate suggestions
+        '404':
+          description: Suggestion not found
+        '409':
+          description: Suggestion already moderated
+
+  /tastings/{tastingId}/participants/{participantId}/role:
+    put:
+      summary: Update participant role (host only)
+      description: Allow hosts to change participant roles in Study Mode sessions
+      parameters:
+        - name: tastingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: participantId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+              properties:
+                role:
+                  type: string
+                  enum: [host, participant, both]
+                  description: New role for the participant
+      responses:
+        '200':
+          description: Participant role updated successfully
+        '400':
+          description: Invalid role or role conflict
+        '403':
+          description: User not authorized to change roles
+        '404':
+          description: Participant not found
+
+components:
+  schemas:
+    ItemSuggestion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        participant_id:
+          type: string
+          format: uuid
+        suggested_item_name:
+          type: string
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        moderated_by:
+          type: string
+          format: uuid
+        moderated_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        participant:
+          type: object
+          properties:
+            full_name:
+              type: string
+            username:
+              type: string
+
+    StudyModeTasting:
+      allOf:
+        - $ref: '#/components/schemas/Tasting'
+        - type: object
+          properties:
+            study_approach:
+              type: string
+              enum: [predefined, collaborative]
+              description: Study Mode approach
+            suggestions_count:
+              type: integer
+              description: Number of pending suggestions (collaborative mode)
+            approved_items_count:
+              type: integer
+              description: Number of approved items from suggestions
+
+    ParticipantWithRole:
+      allOf:
+        - $ref: '#/components/schemas/Participant'
+        - type: object
+          properties:
+            role:
+              type: string
+              enum: [host, participant, both]
+            can_moderate:
+              type: boolean
+            can_add_items:
+              type: boolean
+            suggestions_count:
+              type: integer
+              description: Number of suggestions made by this participant

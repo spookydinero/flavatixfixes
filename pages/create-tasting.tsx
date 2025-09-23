@@ -4,6 +4,7 @@ import { getSupabaseClient } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/lib/toast';
 import { ChevronLeft, Users, Trophy, BookOpen, Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
+import { StudyModeSelector, StudyApproach } from '@/components/quick-tasting/StudyModeSelector';
 
 type TastingMode = 'study' | 'competition' | 'quick';
 
@@ -17,6 +18,7 @@ interface TastingItem {
 
 interface CreateTastingForm {
   mode: TastingMode;
+  study_approach: StudyApproach | null;
   category: string;
   session_name: string;
   rank_participants: boolean;
@@ -38,6 +40,7 @@ const CreateTastingPage: React.FC = () => {
 
   const [form, setForm] = useState<CreateTastingForm>({
     mode: 'study',
+    study_approach: null,
     category: '',
     session_name: '',
     rank_participants: false,
@@ -61,6 +64,8 @@ const CreateTastingPage: React.FC = () => {
     setForm(prev => ({
       ...prev,
       mode,
+      // Reset study approach when switching away from study mode
+      study_approach: mode === 'study' ? prev.study_approach : null,
       // Reset ranking when switching away from competition
       rank_participants: mode === 'competition' ? prev.rank_participants : false,
       // Clear items for study mode
@@ -115,49 +120,43 @@ const CreateTastingPage: React.FC = () => {
       return;
     }
 
+    if (form.mode === 'study' && !form.study_approach) {
+      toast.error('Please select a study approach (Pre-defined or Collaborative)');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      // Create the tasting session
-      const { data: tasting, error: tastingError } = await supabase
-        .from('quick_tastings')
-        .insert({
+      const response = await fetch('/api/tastings/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           user_id: user.id,
+          mode: form.mode,
+          study_approach: form.study_approach,
           category: form.category,
-          session_name: form.session_name || `${form.category.charAt(0).toUpperCase() + form.category.slice(1)} Study`,
-          notes: form.notes || null
-        } as any)
-        .select()
-        .single();
+          session_name: form.session_name || `${form.category.charAt(0).toUpperCase() + form.category.slice(1)} ${form.mode === 'study' ? 'Study' : form.mode === 'competition' ? 'Competition' : 'Tasting'}`,
+          notes: form.notes || null,
+          rank_participants: form.rank_participants,
+          ranking_type: form.ranking_type,
+          is_blind_participants: form.is_blind_participants,
+          is_blind_items: form.is_blind_items,
+          is_blind_attributes: form.is_blind_attributes,
+          items: form.mode === 'competition' ? form.items.map(item => ({
+            item_name: item.item_name,
+            correct_answers: item.correct_answers,
+            include_in_ranking: item.include_in_ranking
+          })) : []
+        })
+      });
 
-      if (tastingError) {
-        console.error('Error creating tasting:', tastingError);
-        throw new Error(tastingError.message || 'Failed to create tasting session');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create tasting session');
       }
 
-      const tastingData = tasting as any;
-
-      // If competition mode and there are items, create them
-      if (form.mode === 'competition' && form.items.length > 0) {
-        const itemsToInsert = form.items.map(item => ({
-          tasting_id: tastingData.id,
-          item_name: item.item_name,
-          correct_answers: item.correct_answers || null,
-          include_in_ranking: item.include_in_ranking
-        }));
-
-        const { error: itemsError } = await supabase
-          .from('quick_tasting_items')
-          .insert(itemsToInsert as any);
-
-        if (itemsError) {
-          console.error('Error creating tasting items:', itemsError);
-          // Clean up the tasting if items creation failed
-          await supabase.from('quick_tastings').delete().eq('id', tastingData.id);
-          throw new Error('Failed to create tasting items');
-        }
-      }
-
+      const data = await response.json();
       toast.success('Tasting session created successfully!');
 
       // Navigate to the tasting session
@@ -264,6 +263,18 @@ const CreateTastingPage: React.FC = () => {
                 </button>
               </div>
             </div>
+
+            {/* Study Mode Approach Selection */}
+            {form.mode === 'study' && (
+              <div className="card p-md">
+                <StudyModeSelector
+                  selectedApproach={form.study_approach}
+                  onApproachChange={(approach) =>
+                    setForm(prev => ({ ...prev, study_approach: approach }))
+                  }
+                />
+              </div>
+            )}
 
             {/* Basic Settings */}
             <div className="card p-md">

@@ -117,6 +117,7 @@ export type Database = {
           is_blind_participants: boolean;
           is_blind_items: boolean;
           is_blind_attributes: boolean;
+          study_approach: string | null;
         };
         Insert: {
           id?: string;
@@ -136,6 +137,7 @@ export type Database = {
           is_blind_participants?: boolean;
           is_blind_items?: boolean;
           is_blind_attributes?: boolean;
+          study_approach?: string | null;
         };
         Update: {
           id?: string;
@@ -155,6 +157,7 @@ export type Database = {
           is_blind_participants?: boolean;
           is_blind_items?: boolean;
           is_blind_attributes?: boolean;
+          study_approach?: string | null;
         };
       };
       quick_tasting_items: {
@@ -203,24 +206,62 @@ export type Database = {
           id: string;
           tasting_id: string;
           user_id: string;
+          role: string;
           score: number | null;
           rank: number | null;
+          can_moderate: boolean;
+          can_add_items: boolean;
           created_at: string;
         };
         Insert: {
           id?: string;
           tasting_id: string;
           user_id: string;
+          role?: string;
           score?: number | null;
           rank?: number | null;
+          can_moderate?: boolean;
+          can_add_items?: boolean;
           created_at?: string;
         };
         Update: {
           id?: string;
           tasting_id?: string;
           user_id?: string;
+          role?: string;
           score?: number | null;
           rank?: number | null;
+          can_moderate?: boolean;
+          can_add_items?: boolean;
+          created_at?: string;
+        };
+      };
+      tasting_item_suggestions: {
+        Row: {
+          id: string;
+          participant_id: string;
+          suggested_item_name: string;
+          status: string;
+          moderated_by: string | null;
+          moderated_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          participant_id: string;
+          suggested_item_name: string;
+          status?: string;
+          moderated_by?: string | null;
+          moderated_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          participant_id?: string;
+          suggested_item_name?: string;
+          status?: string;
+          moderated_by?: string | null;
+          moderated_at?: string | null;
           created_at?: string;
         };
       };

@@ -41,46 +41,46 @@
 - Paths shown below assume Next.js web application structure
 
 ## Phase 3.1: Setup
-- [ ] T001 Database migration script execution for Study Mode schema changes
-- [ ] T002 [P] Update TypeScript types for new database fields and tables
-- [ ] T003 [P] Configure real-time Supabase subscriptions for collaborative features
+- [x] T001 Database migration script execution for Study Mode schema changes
+- [x] T002 [P] Update TypeScript types for new database fields and tables
+- [x] T003 [P] Configure real-time Supabase subscriptions for collaborative features
 
-## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
+## Phase 3.2: Tests First (TDD) ✅ COMPLETE - Tests written and will fail until implementation
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
-- [ ] T004 [P] Contract test POST /api/tastings/{id}/suggestions in specs/002-update-study-mode/contracts/tests/test_suggestions_post.js
-- [ ] T005 [P] Contract test GET /api/tastings/{id}/suggestions in specs/002-update-study-mode/contracts/tests/test_suggestions_get.js
-- [ ] T006 [P] Contract test POST /api/tastings/{id}/suggestions/{id}/moderate in specs/002-update-study-mode/contracts/tests/test_moderation_post.js
-- [ ] T007 [P] Integration test Pre-defined Study Mode workflow in tests/integration/test_study_mode_predefined.js
-- [ ] T008 [P] Integration test Collaborative Study Mode workflow in tests/integration/test_study_mode_collaborative.js
-- [ ] T009 [P] Integration test role management and permissions in tests/integration/test_role_management.js
-- [ ] T010 [P] Integration test host unresponsiveness handling in tests/integration/test_host_unresponsive.js
+- [x] T004 [P] Contract test POST /api/tastings/{id}/suggestions in specs/002-update-study-mode/contracts/tests/test_suggestions_post.js
+- [x] T005 [P] Contract test GET /api/tastings/{id}/suggestions in specs/002-update-study-mode/contracts/tests/test_suggestions_get.js
+- [x] T006 [P] Contract test POST /api/tastings/{id}/suggestions/{id}/moderate in specs/002-update-study-mode/contracts/tests/test_moderation_post.js
+- [x] T007 [P] Integration test Pre-defined Study Mode workflow in tests/integration/test_study_mode_predefined.js
+- [x] T008 [P] Integration test Collaborative Study Mode workflow in tests/integration/test_study_mode_collaborative.js
+- [x] T009 [P] Integration test role management and permissions in tests/integration/test_role_management.js
+- [x] T010 [P] Integration test host unresponsiveness handling in tests/integration/test_host_unresponsive.js
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
-- [ ] T011 [P] tasting_item_suggestions model and service functions in lib/studyModeService.ts
-- [ ] T012 [P] Role management utilities and permission checks in lib/roleService.ts
-- [ ] T013 [P] StudyModeSelector component for approach selection in components/quick-tasting/StudyModeSelector.tsx
-- [ ] T014 [P] ItemSuggestions component for collaborative interface in components/quick-tasting/ItemSuggestions.tsx
-- [ ] T015 [P] RoleIndicator component for user status display in components/quick-tasting/RoleIndicator.tsx
-- [ ] T016 [P] ModerationDashboard component for host controls in components/quick-tasting/ModerationDashboard.tsx
-- [ ] T017 POST /api/tastings/{id}/suggestions endpoint implementation
-- [ ] T018 GET /api/tastings/{id}/suggestions endpoint implementation
-- [ ] T019 POST /api/tastings/{id}/suggestions/{id}/moderate endpoint implementation
-- [ ] T020 PUT /api/tastings/{id}/participants/{id}/role endpoint implementation
-- [ ] T021 Enhanced tasting creation with study_approach parameter in pages/create-tasting.tsx
-- [ ] T022 Update QuickTastingSession for role-based UI in components/quick-tasting/QuickTastingSession.tsx
+- [x] T011 [P] tasting_item_suggestions model and service functions in lib/studyModeService.ts
+- [x] T012 [P] Role management utilities and permission checks in lib/roleService.ts
+- [x] T013 [P] StudyModeSelector component for approach selection in components/quick-tasting/StudyModeSelector.tsx
+- [x] T014 [P] ItemSuggestions component for collaborative interface in components/quick-tasting/ItemSuggestions.tsx
+- [x] T015 [P] RoleIndicator component for user status display in components/quick-tasting/RoleIndicator.tsx
+- [x] T016 [P] ModerationDashboard component for host controls in components/quick-tasting/ModerationDashboard.tsx
+- [x] T017 POST /api/tastings/{id}/suggestions endpoint implementation
+- [x] T018 GET /api/tastings/{id}/suggestions endpoint implementation
+- [x] T019 POST /api/tastings/{id}/suggestions/{id}/moderate endpoint implementation
+- [x] T020 PUT /api/tastings/{id}/participants/{id}/role endpoint implementation
+- [x] T021 Enhanced tasting creation with study_approach parameter in pages/create-tasting.tsx
+- [x] T022 Update QuickTastingSession for role-based UI in components/quick-tasting/QuickTastingSession.tsx
 
 ## Phase 3.4: Integration
-- [ ] T023 Connect role service to Supabase real-time subscriptions
-- [ ] T024 Implement suggestion status change broadcasts
-- [ ] T025 Add participant role change notifications
-- [ ] T026 Integrate collaborative item approval workflow
-- [ ] T027 Add host unresponsiveness detection and fallback UI
+- [x] T023 Connect role service to Supabase real-time subscriptions
+- [x] T024 Implement suggestion status change broadcasts
+- [x] T025 Add participant role change notifications
+- [x] T026 Integrate collaborative item approval workflow
+- [x] T027 Add host unresponsiveness detection and fallback UI
 
 ## Phase 3.5: Polish
-- [ ] T028 [P] Unit tests for role permission logic in tests/unit/test_role_permissions.js
-- [ ] T029 [P] Unit tests for suggestion validation in tests/unit/test_suggestion_validation.js
-- [ ] T030 Performance tests for real-time updates (<100ms latency)
-- [ ] T031 [P] Update component documentation for new Study Mode features
+- [x] T028 [P] Unit tests for role permission logic in tests/unit/test_role_permissions.js
+- [x] T029 [P] Unit tests for suggestion validation in tests/unit/test_suggestion_validation.js
+- [x] T030 Performance tests for real-time updates (<100ms latency)
+- [x] T031 [P] Update component documentation for new Study Mode features
 - [ ] T032 Accessibility audit for role indicators and collaborative UI
 - [ ] T033 Manual testing of all quickstart scenarios
 - [ ] T034 Code cleanup and remove study mode feature flags

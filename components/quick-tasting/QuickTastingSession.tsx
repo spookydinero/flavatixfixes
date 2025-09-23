@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { getSupabaseClient } from '../../lib/supabase';
+import { roleService } from '../../lib/roleService';
+import { studyModeService } from '../../lib/studyModeService';
 import FlavorWheel from './FlavorWheel';
 import TastingItem from './TastingItem';
 import CompetitionRanking from './CompetitionRanking';
+import RoleIndicator from './RoleIndicator';
+import ModerationDashboard from './ModerationDashboard';
+import ItemSuggestions from './ItemSuggestions';
 import { toast } from '../../lib/toast';
-import { Utensils } from 'lucide-react';
+import { Utensils, Settings } from 'lucide-react';
 
 interface QuickTasting {
   id: string;
@@ -19,6 +24,7 @@ interface QuickTasting {
   updated_at: string;
   completed_at?: string;
   mode: string;
+  study_approach?: string | null;
   rank_participants?: boolean;
   ranking_type?: string | null;
   is_blind_participants?: boolean;
@@ -42,22 +48,48 @@ interface TastingItemData {
 
 interface QuickTastingSessionProps {
   session: QuickTasting;
+  userId: string;
   onSessionComplete: (session: QuickTasting) => void;
 }
 
 const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   session,
+  userId,
   onSessionComplete,
 }) => {
   const [items, setItems] = useState<TastingItemData[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionNotes, setSessionNotes] = useState(session.notes || '');
+  const [userRole, setUserRole] = useState<'host' | 'participant' | 'both' | null>(null);
+  const [userPermissions, setUserPermissions] = useState<any>({});
+  const [showModerationDashboard, setShowModerationDashboard] = useState(false);
+  const [showItemSuggestions, setShowItemSuggestions] = useState(false);
   const supabase = getSupabaseClient() as any;
 
   useEffect(() => {
     loadTastingItems();
-  }, [session.id]);
+    loadUserRole();
+  }, [session.id, userId]);
+
+  const loadUserRole = async () => {
+    try {
+      const permissions = await roleService.getUserPermissions(session.id, userId);
+      setUserPermissions(permissions);
+      setUserRole(permissions.role);
+    } catch (error) {
+      console.error('Error loading user role:', error);
+      // User might not be a participant yet, try to add them
+      try {
+        await roleService.addParticipant(session.id, userId);
+        const permissions = await roleService.getUserPermissions(session.id, userId);
+        setUserPermissions(permissions);
+        setUserRole(permissions.role);
+      } catch (addError) {
+        console.error('Error adding user as participant:', addError);
+      }
+    }
+  };
 
   const loadTastingItems = async () => {
     try {
@@ -76,9 +108,20 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   };
 
   const addNewItem = async () => {
-    // Only allow adding items in study mode or quick mode
+    // Check permissions based on mode
     if (session.mode === 'competition') {
       toast.error('Cannot add items in competition mode');
+      return;
+    }
+
+    if (session.mode === 'study' && session.study_approach === 'collaborative') {
+      toast.error('In collaborative mode, suggest items instead of adding them directly');
+      setShowItemSuggestions(true);
+      return;
+    }
+
+    if (session.mode === 'study' && !userPermissions.canAddItems) {
+      toast.error('You do not have permission to add items');
       return;
     }
 
@@ -166,11 +209,50 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             <p className="text-text-secondary">
               Category: {session.category.charAt(0).toUpperCase() + session.category.slice(1)} •
               Mode: {session.mode.charAt(0).toUpperCase() + session.mode.slice(1)}
+              {session.mode === 'study' && session.study_approach && ` • ${session.study_approach.charAt(0).toUpperCase() + session.study_approach.slice(1)}`}
               {session.rank_participants && ' • Ranked Competition'}
               {(session.is_blind_participants || session.is_blind_items || session.is_blind_attributes) && ' • Blind Tasting'}
             </p>
+            {userRole && (
+              <div className="mt-2">
+                <RoleIndicator
+                  role={userRole}
+                  userId={userId}
+                  currentUserId={userId}
+                  size="sm"
+                />
+              </div>
+            )}
           </div>
           <div className="mt-4 md:mt-0 flex items-center space-x-4">
+            {/* Moderation Controls for Hosts */}
+            {userPermissions.canModerate && (
+              <button
+                onClick={() => setShowModerationDashboard(!showModerationDashboard)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-colors ${
+                  showModerationDashboard
+                    ? 'bg-purple-100 text-purple-800'
+                    : 'bg-white text-purple-600 border border-purple-200 hover:bg-purple-50'
+                }`}
+              >
+                <Settings size={16} />
+                Moderate
+              </button>
+            )}
+
+            {/* Item Suggestions for Collaborative Study Mode */}
+            {session.mode === 'study' && session.study_approach === 'collaborative' && (
+              <button
+                onClick={() => setShowItemSuggestions(!showItemSuggestions)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-colors ${
+                  showItemSuggestions
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'bg-white text-blue-600 border border-blue-200 hover:bg-blue-50'
+                }`}
+              >
+                💡 Suggestions
+              </button>
+            )}
             <div className="text-center">
               <div className="text-h2 font-heading font-bold text-primary-600">{completedItems}</div>
               <div className="text-small font-body text-text-secondary">Completed</div>
@@ -183,6 +265,32 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         </div>
       </div>
 
+      {/* Moderation Dashboard */}
+      {showModerationDashboard && userPermissions.canModerate && (
+        <div className="mb-lg">
+          <ModerationDashboard
+            tastingId={session.id}
+            userId={userId}
+            onRoleSwitch={(role) => {
+              // Handle role switching between moderating and participating
+              console.log('Role switched to:', role);
+            }}
+          />
+        </div>
+      )}
+
+      {/* Item Suggestions */}
+      {showItemSuggestions && session.mode === 'study' && session.study_approach === 'collaborative' && (
+        <div className="mb-lg">
+          <ItemSuggestions
+            tastingId={session.id}
+            userId={userId}
+            canAddItems={userPermissions.canAddItems}
+            canModerate={userPermissions.canModerate}
+          />
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
         {/* Left Column - Item Management */}
         <div className="space-y-6">
@@ -191,7 +299,8 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             <div className="card p-md">
               <div className="flex items-center justify-between mb-sm">
                 <h3 className="text-h4 font-heading font-semibold text-text-primary">Items</h3>
-                {(session.mode === 'study' || session.mode === 'quick') && (
+                {((session.mode === 'study' && session.study_approach !== 'collaborative' && userPermissions.canAddItems) ||
+                  (session.mode === 'quick')) && (
                   <button
                     onClick={addNewItem}
                     className="btn-primary"
