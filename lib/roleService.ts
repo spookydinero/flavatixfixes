@@ -9,6 +9,7 @@ type TastingParticipantUpdate = Database['public']['Tables']['tasting_participan
 export type ParticipantRole = 'host' | 'participant' | 'both';
 
 export interface RolePermissions {
+  role: ParticipantRole;
   canModerate: boolean;
   canAddItems: boolean;
   canManageSession: boolean;
@@ -36,6 +37,7 @@ export class RoleService {
    */
   private roleDefaults: Record<ParticipantRole, RolePermissions> = {
     host: {
+      role: 'host',
       canModerate: true,
       canAddItems: false, // Host manages items directly in pre-defined mode
       canManageSession: true,
@@ -43,6 +45,7 @@ export class RoleService {
       canParticipateInTasting: false, // Host focuses on moderation
     },
     participant: {
+      role: 'participant',
       canModerate: false,
       canAddItems: true, // Can suggest items in collaborative mode
       canManageSession: false,
@@ -50,6 +53,7 @@ export class RoleService {
       canParticipateInTasting: true,
     },
     both: {
+      role: 'both',
       canModerate: true,
       canAddItems: true, // Can both moderate and suggest
       canManageSession: true,
@@ -75,7 +79,7 @@ export class RoleService {
       .single();
 
     if (existing) {
-      return this.enrichParticipantWithPermissions(existing);
+      return this.enrichParticipantWithPermissions(existing as TastingParticipant);
     }
 
     // Check if tasting exists and get its mode
@@ -92,9 +96,9 @@ export class RoleService {
     // Determine role based on context
     let role: ParticipantRole;
 
-    if (userId === tasting.user_id) {
+    if (userId === (tasting as any).user_id) {
       // Creator of the session gets 'both' role in study mode
-      role = tasting.mode === 'study' ? 'both' : 'host';
+      role = (tasting as any).mode === 'study' ? 'both' : 'host';
     } else {
       // Other participants get default role
       role = requestedRole || 'participant';
@@ -104,7 +108,7 @@ export class RoleService {
     await this.validateRoleAssignment(tastingId, role);
 
     // Get permissions for the role
-    const permissions = this.getPermissionsForRole(role, tasting);
+    const permissions = this.getPermissionsForRole(role, tasting as any);
 
     const participantData: TastingParticipantInsert = {
       tasting_id: tastingId,
@@ -116,7 +120,7 @@ export class RoleService {
 
     const { data, error } = await this.supabase
       .from('tasting_participants')
-      .insert(participantData)
+      .insert(participantData as any)
       .select()
       .single();
 
@@ -165,7 +169,7 @@ export class RoleService {
       .single();
 
     // Update role and permissions
-    const permissions = this.getPermissionsForRole(newRole, tasting);
+    const permissions = this.getPermissionsForRole(newRole, tasting as any);
 
     const updateData: TastingParticipantUpdate = {
       role: newRole,
@@ -175,13 +179,15 @@ export class RoleService {
 
     const { data, error } = await this.supabase
       .from('tasting_participants')
-      .update(updateData)
+      // @ts-ignore - Supabase type inference issue with complex queries
+      .update(updateData as any)
       .eq('id', participantId)
       .eq('tasting_id', tastingId)
       .select()
       .single();
 
-    const updatedParticipant = this.enrichParticipantWithPermissions(data);
+    // @ts-ignore - Supabase type inference issue
+    const updatedParticipant = this.enrichParticipantWithPermissions(data as TastingParticipant);
 
     // Broadcast the role change in real-time
     this.broadcastRoleChange(tastingId, participantId, newRole);
@@ -229,11 +235,12 @@ export class RoleService {
     }
 
     return {
-      canModerate: data.can_moderate,
-      canAddItems: data.can_add_items,
-      canManageSession: data.role === 'host' || data.role === 'both',
-      canViewAllSuggestions: data.can_moderate,
-      canParticipateInTasting: data.role === 'participant' || data.role === 'both',
+      role: (data as any).role as ParticipantRole,
+      canModerate: (data as any).can_moderate,
+      canAddItems: (data as any).can_add_items,
+      canManageSession: (data as any).role === 'host' || (data as any).role === 'both',
+      canViewAllSuggestions: (data as any).can_moderate,
+      canParticipateInTasting: (data as any).role === 'participant' || (data as any).role === 'both',
     };
   }
 
@@ -247,7 +254,7 @@ export class RoleService {
   ): Promise<boolean> {
     try {
       const permissions = await this.getUserPermissions(tastingId, userId);
-      return permissions[action];
+      return Boolean(permissions[action]);
     } catch {
       return false;
     }
@@ -308,6 +315,7 @@ export class RoleService {
    */
   private enrichParticipantWithPermissions(participant: TastingParticipant): ParticipantWithRole {
     const permissions = {
+      role: participant.role as ParticipantRole,
       canModerate: participant.can_moderate,
       canAddItems: participant.can_add_items,
       canManageSession: participant.role === 'host' || participant.role === 'both',
@@ -358,7 +366,7 @@ export class RoleService {
       .single();
 
     if (currentHost) {
-      await this.updateParticipantRole(tastingId, currentHost.id, 'participant', currentHostUserId);
+      await this.updateParticipantRole(tastingId, (currentHost as any).id, 'participant', currentHostUserId);
     }
 
     // Update new host to host role
@@ -370,7 +378,7 @@ export class RoleService {
       .single();
 
     if (newHost) {
-      await this.updateParticipantRole(tastingId, newHost.id, 'host', currentHostUserId);
+      await this.updateParticipantRole(tastingId, (newHost as any).id, 'host', currentHostUserId);
     }
   }
 

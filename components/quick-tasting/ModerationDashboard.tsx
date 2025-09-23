@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { studyModeService, SuggestionWithParticipant } from '@/lib/studyModeService';
-import { roleService, ParticipantWithRole } from '@/lib/roleService';
+import { roleService, ParticipantWithRole, ParticipantRole } from '@/lib/roleService';
 import { studyModeRealtime } from '@/lib/studyModeRealtime';
 import { RoleIndicator } from './RoleIndicator';
 import toast from 'react-hot-toast';
@@ -217,9 +217,9 @@ export const ModerationDashboard: React.FC<ModerationDashboardProps> = ({
                           {suggestion.suggested_item_name}
                         </div>
                         <div className="text-sm text-text-secondary">
-                          by {suggestion.participant?.profile?.full_name ||
-                              suggestion.participant?.profile?.username ||
-                              'Anonymous'}
+                          by {suggestion.participant?.profiles?.full_name ||
+                             suggestion.participant?.profiles?.username ||
+                             'Anonymous'}
                         </div>
                       </div>
 
@@ -266,7 +266,7 @@ export const ModerationDashboard: React.FC<ModerationDashboardProps> = ({
                         {participant.profile?.full_name || participant.profile?.username || 'Anonymous'}
                       </div>
                       <RoleIndicator
-                        role={participant.role}
+                        role={participant.role as ParticipantRole}
                         userId={participant.user_id}
                         currentUserId={userId}
                         size="sm"

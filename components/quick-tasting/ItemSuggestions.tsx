@@ -61,7 +61,7 @@ export const ItemSuggestions: React.FC<ItemSuggestionsProps> = ({
         return;
       }
 
-      await studyModeService.submitSuggestion(tastingId, participant.id, newSuggestion.trim());
+      await studyModeService.submitSuggestion(tastingId, (participant as any).id, newSuggestion.trim());
       setNewSuggestion('');
       toast.success('Suggestion submitted!');
       loadSuggestions(); // Refresh list
@@ -186,8 +186,8 @@ export const ItemSuggestions: React.FC<ItemSuggestionsProps> = ({
                   </div>
 
                   <div className="text-sm text-text-secondary">
-                    Suggested by {suggestion.participant?.profile?.full_name ||
-                                 suggestion.participant?.profile?.username ||
+                    Suggested by {suggestion.participant?.profiles?.full_name ||
+                                 suggestion.participant?.profiles?.username ||
                                  'Anonymous'}
                   </div>
 

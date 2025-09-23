@@ -163,13 +163,16 @@ export class StudyModeRealtime {
    * Clean up all subscriptions
    */
   cleanup(): void {
-    for (const [channelName, channel] of this.channels) {
-      this.supabase.removeChannel(channel);
+    for (const channelName of Array.from(this.channels.keys())) {
+      const channel = this.channels.get(channelName);
+      if (channel) {
+        channel.unsubscribe();
+      }
     }
     this.channels.clear();
 
     // Clean up all heartbeat monitoring
-    for (const tastingId of this.heartbeatIntervals.keys()) {
+    for (const tastingId of Array.from(this.heartbeatIntervals.keys())) {
       this.stopHeartbeatMonitoring(tastingId);
     }
   }

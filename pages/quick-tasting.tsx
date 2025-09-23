@@ -245,6 +245,7 @@ const QuickTastingPage: React.FC = () => {
             {currentStep === 'session' && currentSession && (
               <QuickTastingSession
                 session={currentSession as any}
+                userId={user!.id}
                 onSessionComplete={(data) => handleSessionComplete(data as any)}
               />
             )}

@@ -5,9 +5,9 @@ import { studyModeService } from '../../lib/studyModeService';
 import FlavorWheel from './FlavorWheel';
 import TastingItem from './TastingItem';
 import CompetitionRanking from './CompetitionRanking';
-import RoleIndicator from './RoleIndicator';
-import ModerationDashboard from './ModerationDashboard';
-import ItemSuggestions from './ItemSuggestions';
+import { RoleIndicator } from './RoleIndicator';
+import { ModerationDashboard } from './ModerationDashboard';
+import { ItemSuggestions } from './ItemSuggestions';
 import { toast } from '../../lib/toast';
 import { Utensils, Settings } from 'lucide-react';
 

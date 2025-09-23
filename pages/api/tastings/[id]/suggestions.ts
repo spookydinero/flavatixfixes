@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { studyModeService } from '@/lib/studyModeService';
+import { getSupabaseClient } from '@/lib/supabase';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id: tastingId } = req.query;
@@ -97,7 +98,7 @@ async function handlePostSuggestion(
     return res.status(404).json({ error: 'Participant not found' });
   }
 
-  if (participant.user_id !== userId) {
+  if ((participant as any).user_id !== userId) {
     return res.status(403).json({
       error: 'You can only submit suggestions for yourself'
     });
