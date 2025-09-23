@@ -165,7 +165,7 @@ const CreateTastingPage: React.FC = () => {
       toast.success('Tasting session created successfully!');
 
       // Navigate to the tasting session
-      router.push(`/tasting/${data.id}`);
+      router.push(`/tasting/${data.tasting.id}`);
 
     } catch (error) {
       console.error('Error creating tasting:', error);

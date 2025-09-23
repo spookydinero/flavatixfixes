@@ -50,6 +50,14 @@ const TastingSessionPage: React.FC = () => {
   const loadSession = async () => {
     if (!id || typeof id !== 'string' || !user) return;
 
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      setError('Invalid tasting session ID format');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
@@ -64,6 +72,8 @@ const TastingSessionPage: React.FC = () => {
       if (sessionError) {
         if (sessionError.code === 'PGRST116') {
           setError('Tasting session not found');
+        } else if (sessionError.message?.includes('invalid input syntax for type uuid')) {
+          setError('Invalid tasting session ID format');
         } else {
           throw sessionError;
         }
