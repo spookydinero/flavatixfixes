@@ -61,6 +61,12 @@ const CreateTastingPage: React.FC = () => {
   }, [user, loading, router]);
 
   const handleModeChange = (mode: TastingMode) => {
+    if (mode === 'quick') {
+      // For quick tasting, redirect directly to the quick tasting page
+      router.push('/quick-tasting');
+      return;
+    }
+
     setForm(prev => ({
       ...prev,
       mode,
