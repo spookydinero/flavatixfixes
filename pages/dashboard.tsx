@@ -130,45 +130,72 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Quick Actions */}
-            <div className="space-y-4">
-              <div className="bg-white dark:bg-zinc-800/50 p-4 rounded-lg">
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-4">Quick Start</h3>
-                <div className="space-y-3">
+            {/* Profile Overview */}
+            {profile && (
+              <div className="bg-white dark:bg-zinc-800/50 p-4 rounded-lg mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0">
+                    {profile.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt={profile.full_name || 'Profile'}
+                        className="w-16 h-16 rounded-full object-cover border-2 border-primary"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold text-xl">
+                        {(profile.full_name || user?.email || '?')[0].toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-bold text-zinc-900 dark:text-white truncate">
+                      {profile.full_name || 'No name set'}
+                    </h3>
+                    {profile.username && (
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">@{profile.username}</p>
+                    )}
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">{user?.email}</p>
+                  </div>
                   <button
-                    onClick={() => router.push('/create-tasting')}
-                    className="w-full flex items-center gap-3 p-3 bg-primary text-white rounded-lg hover:bg-orange-600 transition-colors"
+                    onClick={() => setActiveTab('profile')}
+                    className="text-primary hover:underline text-sm font-medium"
                   >
-                    <span className="material-symbols-outlined">add_circle</span>
-                    <div className="text-left">
-                      <div className="font-medium">Create Tasting Session</div>
-                      <div className="text-sm opacity-90">Study or Competition mode</div>
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => router.push('/quick-tasting')}
-                    className="w-full flex items-center gap-3 p-3 bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-white rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors"
-                  >
-                    <span className="material-symbols-outlined">local_bar</span>
-                    <div className="text-left">
-                      <div className="font-medium">Quick Tasting</div>
-                      <div className="text-sm opacity-75">Standard tasting workflow</div>
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => router.push('/history')}
-                    className="w-full flex items-center gap-3 p-3 bg-zinc-100 dark:bg-zinc-700 text-zinc-900 dark:text-white rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors"
-                  >
-                    <span className="material-symbols-outlined">history</span>
-                    <div className="text-left">
-                      <div className="font-medium">View History</div>
-                      <div className="text-sm opacity-75">Your past tastings</div>
-                    </div>
+                    View Profile
                   </button>
                 </div>
+                {tastingStats && (
+                  <div className="mt-4 grid grid-cols-3 gap-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-primary">{tastingStats.totalTastings}</div>
+                      <div className="text-xs text-zinc-600 dark:text-zinc-400">Tastings</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-primary">
+                        {tastingStats.averageScore ? tastingStats.averageScore.toFixed(1) : '0.0'}
+                      </div>
+                      <div className="text-xs text-zinc-600 dark:text-zinc-400">Avg Score</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-primary">{profile.reviews_count || 0}</div>
+                      <div className="text-xs text-zinc-600 dark:text-zinc-400">Reviews</div>
+                    </div>
+                  </div>
+                )}
               </div>
+            )}
+
+            {/* Quick Actions */}
+            <div className="space-y-4">
+              <button
+                onClick={() => router.push('/history')}
+                className="w-full flex items-center gap-3 p-4 bg-white dark:bg-zinc-800/50 text-zinc-900 dark:text-white rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+              >
+                <span className="material-symbols-outlined">history</span>
+                <div className="text-left">
+                  <div className="font-medium">View History</div>
+                  <div className="text-sm text-zinc-600 dark:text-zinc-400">Your past tastings</div>
+                </div>
+              </button>
 
               {/* Recent Tasting Summary */}
               {latestTasting && (
