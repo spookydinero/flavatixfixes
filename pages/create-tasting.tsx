@@ -194,7 +194,7 @@ const CreateTastingPage: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen">
+    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen pb-20">
       <main id="main-content">
         <div className="container mx-auto px-md py-lg max-w-4xl">
           {/* Header */}
@@ -516,6 +516,32 @@ const CreateTastingPage: React.FC = () => {
           </form>
         </div>
       </main>
+
+      {/* Bottom Navigation */}
+      <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200 bg-background-light dark:border-zinc-800 dark:bg-background-dark">
+        <nav className="flex justify-around p-2">
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/dashboard">
+            <span className="material-symbols-outlined">home</span>
+            <span className="text-xs font-medium">Home</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/create-tasting">
+            <span className="material-symbols-outlined">add_circle</span>
+            <span className="text-xs font-bold">Create</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/quick-tasting">
+            <span className="material-symbols-outlined">local_bar</span>
+            <span className="text-xs font-medium">Tasting</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/social">
+            <span className="material-symbols-outlined">diversity_3</span>
+            <span className="text-xs font-medium">Social</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/history">
+            <span className="material-symbols-outlined">analytics</span>
+            <span className="text-xs font-medium">Analytics</span>
+          </a>
+        </nav>
+      </footer>
     </div>
   );
 };
