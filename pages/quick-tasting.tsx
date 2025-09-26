@@ -235,19 +235,13 @@ const QuickTastingPage: React.FC = () => {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            {currentStep === 'session' && !currentSession && (
-              <CategorySelector
-                onCategorySelect={handleCategorySelect}
-                isLoading={isLoading}
-              />
-            )}
-
-            {currentStep === 'session' && currentSession && (
+            {currentStep === 'session' && (
               <QuickTastingSession
                 session={currentSession as any}
                 userId={user!.id}
                 onSessionComplete={(data) => handleSessionComplete(data as any)}
                 onSessionUpdate={(data) => setCurrentSession(data as any)}
+                onSessionCreate={(data) => setCurrentSession(data as any)}
               />
             )}
 

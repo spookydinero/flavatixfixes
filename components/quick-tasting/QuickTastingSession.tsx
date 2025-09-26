@@ -56,10 +56,11 @@ interface TastingItemData {
 }
 
 interface QuickTastingSessionProps {
-  session: QuickTasting;
+  session: QuickTasting | null;
   userId: string;
   onSessionComplete: (session: QuickTasting) => void;
   onSessionUpdate?: (session: QuickTasting) => void;
+  onSessionCreate?: (session: QuickTasting) => void;
 }
 
 const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
@@ -67,6 +68,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   userId,
   onSessionComplete,
   onSessionUpdate,
+  onSessionCreate,
 }) => {
   const [items, setItems] = useState<TastingItemData[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -230,6 +232,61 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const hasItems = items.length > 0;
   const completedItems = items.filter(item => item.overall_score !== null).length;
 
+  if (!session) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="card p-md mb-lg">
+          <div className="text-center mb-md">
+            <h2 className="text-h2 font-heading font-bold text-text-primary mb-sm">
+              Start Quick Tasting
+            </h2>
+            <p className="text-text-secondary">
+              Select a category to begin your tasting session
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <div className="flex items-center space-x-2">
+              <label className="text-text-secondary font-medium">Category:</label>
+              <select
+                value=""
+                onChange={async (e) => {
+                  const category = e.target.value;
+                  if (!category || !onSessionCreate) return;
+                  try {
+                    const { data, error } = await supabase
+                      .from('quick_tastings')
+                      .insert({
+                        user_id: userId,
+                        category,
+                        session_name: `${category.charAt(0).toUpperCase() + category.slice(1)} Tasting`,
+                        mode: 'quick'
+                      })
+                      .select()
+                      .single();
+
+                    if (error) throw error;
+                    onSessionCreate(data);
+                  } catch (error) {
+                    console.error('Error creating session:', error);
+                    toast.error('Failed to create session');
+                  }
+                }}
+                className="form-input"
+              >
+                <option value="">Select a category</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto">
       {/* Session Header */}
@@ -261,7 +318,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               {session.rank_participants && ' • Ranked Competition'}
               {(session.is_blind_participants || session.is_blind_items || session.is_blind_attributes) && ' • Blind Tasting'}
             </p>
-            {userRole && (
+            {userRole && session.mode !== 'quick' && (
               <div className="mt-2">
                 <RoleIndicator
                   role={userRole}
