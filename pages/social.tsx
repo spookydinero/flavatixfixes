@@ -576,17 +576,17 @@ export default function SocialPage() {
               <span className="material-symbols-outlined">home</span>
               <span className="text-xs font-medium">Home</span>
             </a>
-            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/quick-tasting">
-              <span className="material-symbols-outlined">local_bar</span>
-              <span className="text-xs font-medium">Tasting</span>
+            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/create-tasting">
+              <span className="material-symbols-outlined">add_circle</span>
+              <span className="text-xs font-medium">Create</span>
             </a>
             <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/social">
               <span className="material-symbols-outlined">diversity_3</span>
-              <span className="text-xs font-bold">Social</span>
+              <span className="text-xs font-bold">Review</span>
             </a>
-            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/history">
-              <span className="material-symbols-outlined">analytics</span>
-              <span className="text-xs font-medium">Analytics</span>
+            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/flavor-wheels">
+              <span className="material-symbols-outlined">donut_large</span>
+              <span className="text-xs font-medium">Flavor Wheels</span>
             </a>
           </nav>
         </footer>
