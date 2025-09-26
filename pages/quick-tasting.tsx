@@ -181,7 +181,7 @@ const QuickTastingPage: React.FC = () => {
     router.push('/dashboard');
   };
 
-  if (loading) {
+  if (loading || isLoading) {
     return (
       <div className="min-h-screen bg-background-app p-sm">
         <main id="main-content" className="flex items-center justify-center">
