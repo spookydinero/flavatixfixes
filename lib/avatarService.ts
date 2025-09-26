@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface AvatarUploadResult {
   success: boolean;
@@ -185,7 +185,7 @@ export class AvatarService {
       // Extract filename from URL
       const urlParts = avatarUrl.split('/');
       const fileName = urlParts[urlParts.length - 1];
-      const filePath = `${userId}/${fileName}`;
+      const filePath = `avatars/${fileName}`;
 
       const { error } = await supabase.storage
         .from(this.BUCKET_NAME)

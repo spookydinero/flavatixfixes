@@ -8,12 +8,12 @@ import ProfileEditForm from '../components/profile/ProfileEditForm';
 import { getUserTastingStats, getLatestTasting } from '../lib/historyService';
 
 export default function Dashboard() {
-  const { user, loading, signOut } = useAuth();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [activeTab, setActiveTab] = useState<'profile' | 'edit'>('profile');
-  const [tastingStats, setTastingStats] = useState<any>(null);
-  const [latestTasting, setLatestTasting] = useState<any>(null);
-  const router = useRouter();
+   const { user, loading, signOut } = useAuth();
+   const [profile, setProfile] = useState<UserProfile | null>(null);
+   const [activeTab, setActiveTab] = useState<'home' | 'profile' | 'edit'>('home');
+   const [tastingStats, setTastingStats] = useState<any>(null);
+   const [latestTasting, setLatestTasting] = useState<any>(null);
+   const router = useRouter();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -83,12 +83,44 @@ export default function Dashboard() {
     <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200">
       <div className="flex h-screen flex-col">
         <header className="flex items-center border-b border-zinc-200 dark:border-zinc-700 p-4">
-          <h1 className="flex-1 text-center text-xl font-bold">Dashboard</h1>
-          <div className="w-10"></div>
-        </header>
+           <h1 className="flex-1 text-center text-xl font-bold">
+             {activeTab === 'home' ? 'Dashboard' : 'Profile'}
+           </h1>
+           <button
+             onClick={handleLogout}
+             className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+           >
+             Logout
+           </button>
+         </header>
 
         <main className="flex-1 overflow-y-auto">
-          <div className="p-6">
+           {/* Main Tab Navigation */}
+           <div className="flex border-b border-zinc-200 dark:border-zinc-700">
+             <button
+               onClick={() => setActiveTab('home')}
+               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                 activeTab === 'home'
+                   ? 'border-primary text-primary'
+                   : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+               }`}
+             >
+               Home
+             </button>
+             <button
+               onClick={() => setActiveTab('profile')}
+               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                 activeTab === 'profile' || activeTab === 'edit'
+                   ? 'border-primary text-primary'
+                   : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+               }`}
+             >
+               Profile
+             </button>
+           </div>
+
+           {activeTab === 'home' && (
+             <div className="p-6">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
                 Welcome back, {profile?.full_name || user?.email}!
@@ -197,7 +229,50 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-          </div>
+            </div>
+          )}
+
+          {(activeTab === 'profile' || activeTab === 'edit') && (
+            <div className="p-6">
+              {/* Profile Tab Navigation */}
+              <div className="flex border-b border-zinc-200 dark:border-zinc-700 mb-6">
+                <button
+                  onClick={() => setActiveTab('profile')}
+                  className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                    activeTab === 'profile'
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                  }`}
+                >
+                  View Profile
+                </button>
+                <button
+                  onClick={() => setActiveTab('edit')}
+                  className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                    activeTab === 'edit'
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                  }`}
+                >
+                  Edit Profile
+                </button>
+              </div>
+
+              {/* Profile Content */}
+              <div className="max-w-2xl mx-auto">
+                {activeTab === 'profile' && (
+                  <ProfileDisplay profile={profile} authEmail={user.email} />
+                )}
+
+                {activeTab === 'edit' && (
+                  <ProfileEditForm
+                    profile={profile}
+                    onProfileUpdate={handleProfileUpdate}
+                  />
+                )}
+              </div>
+            </div>
+          )}
         </main>
 
         {/* Bottom Navigation */}
@@ -222,10 +297,6 @@ export default function Dashboard() {
             <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/history">
               <span className="material-symbols-outlined">analytics</span>
               <span className="text-xs font-medium">Analytics</span>
-            </a>
-            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/profile">
-              <span className="material-symbols-outlined">person</span>
-              <span className="text-xs font-medium">Profile</span>
             </a>
           </nav>
         </footer>

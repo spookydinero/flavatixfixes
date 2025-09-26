@@ -283,10 +283,6 @@ const QuickTastingPage: React.FC = () => {
             <span className="material-symbols-outlined">analytics</span>
             <span className="text-xs font-medium">Analytics</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/profile">
-            <span className="material-symbols-outlined">person</span>
-            <span className="text-xs font-medium">Profile</span>
-          </a>
         </nav>
       </footer>
     </div>
