@@ -528,12 +528,12 @@ const CreateTastingPage: React.FC = () => {
             <span className="material-symbols-outlined">add_circle</span>
             <span className="text-xs font-bold">Create</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/review">
-            <span className="material-symbols-outlined">diversity_3</span>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/social">
+            <span className="material-symbols-outlined">wheel</span>
             <span className="text-xs font-medium">Review</span>
           </a>
           <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/flavor-wheels">
-            <span className="material-symbols-outlined">analytics</span>
+            <span className="material-symbols-outlined">donut_large</span>
             <span className="text-xs font-medium">Flavor Wheels</span>
           </a>
         </nav>

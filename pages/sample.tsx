@@ -252,7 +252,7 @@ export default function SamplePage() {
               <span className="text-xs font-medium">Create</span>
             </a>
             <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/social">
-              <span className="material-symbols-outlined">diversity_3</span>
+              <span className="material-symbols-outlined">wheel</span>
               <span className="text-xs font-medium">Review</span>
             </a>
             <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/flavor-wheels">
