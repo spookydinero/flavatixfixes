@@ -10,6 +10,21 @@ const nextConfig = {
     unoptimized: true
   },
 
+  async redirects() {
+    return [
+      {
+        source: '/review',
+        destination: '/social',
+        permanent: true,
+      },
+      {
+        source: '/history',
+        destination: '/flavor-wheels',
+        permanent: true,
+      },
+    ]
+  },
+
 }
 
 module.exports = nextConfig
