@@ -45,7 +45,7 @@ const QuickTastingPage: React.FC = () => {
   const router = useRouter();
   const { user, loading, refreshSession } = useAuth();
   const supabase = getSupabaseClient() as any;
-  const [currentStep, setCurrentStep] = useState<TastingStep>('category');
+  const [currentStep, setCurrentStep] = useState<TastingStep>('session');
   const [currentSession, setCurrentSession] = useState<QuickTastingWithNull | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -143,7 +143,7 @@ const QuickTastingPage: React.FC = () => {
 
   const handleStartNewSession = () => {
     setCurrentSession(null);
-    setCurrentStep('category');
+    setCurrentStep('session');
   };
 
   const handleGoToDashboard = () => {
@@ -189,27 +189,27 @@ const QuickTastingPage: React.FC = () => {
           <div className="mb-lg">
             <div className="flex items-center justify-center space-x-sm">
               <div className={`flex items-center ${
-                currentStep === 'category' ? 'text-primary-600' :
+                currentStep === 'session' && !currentSession ? 'text-primary-600' :
                 currentStep === 'session' || currentStep === 'summary' ? 'text-primary-400' : 'text-text-secondary'
               }`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                  currentStep === 'category' ? 'border-primary-600 bg-primary-600 text-white' :
+                  currentStep === 'session' && !currentSession ? 'border-primary-600 bg-primary-600 text-white' :
                   currentStep === 'session' || currentStep === 'summary' ? 'border-primary-400 bg-primary-400 text-white' :
                   'border-border-default'
                 }`}>
                   1
                 </div>
-                <span className="ml-xs font-body font-medium">Category</span>
+                <span className="ml-xs font-body font-medium">Setup</span>
               </div>
               <div className={`w-8 h-0.5 ${
                 currentStep === 'session' || currentStep === 'summary' ? 'bg-primary-400' : 'bg-border-default'
               }`}></div>
               <div className={`flex items-center ${
-                currentStep === 'session' ? 'text-primary-600' :
+                currentStep === 'session' && currentSession ? 'text-primary-600' :
                 currentStep === 'summary' ? 'text-primary-400' : 'text-text-secondary'
               }`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                  currentStep === 'session' ? 'border-primary-600 bg-primary-600 text-white' :
+                  currentStep === 'session' && currentSession ? 'border-primary-600 bg-primary-600 text-white' :
                   currentStep === 'summary' ? 'border-primary-400 bg-primary-400 text-white' :
                   'border-border-default'
                 }`}>
@@ -235,7 +235,7 @@ const QuickTastingPage: React.FC = () => {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            {currentStep === 'category' && (
+            {currentStep === 'session' && !currentSession && (
               <CategorySelector
                 onCategorySelect={handleCategorySelect}
                 isLoading={isLoading}
@@ -247,6 +247,7 @@ const QuickTastingPage: React.FC = () => {
                 session={currentSession as any}
                 userId={user!.id}
                 onSessionComplete={(data) => handleSessionComplete(data as any)}
+                onSessionUpdate={(data) => setCurrentSession(data as any)}
               />
             )}
 

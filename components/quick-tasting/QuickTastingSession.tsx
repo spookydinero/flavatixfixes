@@ -11,6 +11,15 @@ import { ItemSuggestions } from './ItemSuggestions';
 import { toast } from '../../lib/toast';
 import { Utensils, Settings } from 'lucide-react';
 
+const categories = [
+  { id: 'coffee', name: 'Coffee' },
+  { id: 'tea', name: 'Tea' },
+  { id: 'wine', name: 'Wine' },
+  { id: 'spirits', name: 'Spirits' },
+  { id: 'beer', name: 'Beer' },
+  { id: 'chocolate', name: 'Chocolate' },
+];
+
 interface QuickTasting {
   id: string;
   user_id: string;
@@ -50,12 +59,14 @@ interface QuickTastingSessionProps {
   session: QuickTasting;
   userId: string;
   onSessionComplete: (session: QuickTasting) => void;
+  onSessionUpdate?: (session: QuickTasting) => void;
 }
 
 const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   session,
   userId,
   onSessionComplete,
+  onSessionUpdate,
 }) => {
   const [items, setItems] = useState<TastingItemData[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -168,6 +179,28 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     }
   };
 
+  const handleCategoryChange = async (newCategory: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('quick_tastings')
+        .update({ category: newCategory })
+        .eq('id', session.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const updatedSession = { ...session, category: newCategory };
+      if (onSessionUpdate) {
+        onSessionUpdate(updatedSession);
+      }
+      toast.success('Category updated!');
+    } catch (error) {
+      console.error('Error updating category:', error);
+      toast.error('Failed to update category');
+    }
+  };
+
   const completeSession = async () => {
     setIsLoading(true);
     try {
@@ -206,8 +239,23 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             <h2 className="text-h2 font-heading font-bold text-text-primary mb-2">
               {session.session_name}
             </h2>
+            <div className="flex items-center space-x-4 mb-2">
+              <div className="flex items-center space-x-2">
+                <label className="text-text-secondary font-medium">Category:</label>
+                <select
+                  value={session.category}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  className="form-input text-sm"
+                >
+                  {categories.map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
             <p className="text-text-secondary">
-              Category: {session.category.charAt(0).toUpperCase() + session.category.slice(1)} •
               Mode: {session.mode.charAt(0).toUpperCase() + session.mode.slice(1)}
               {session.mode === 'study' && session.study_approach && ` • ${session.study_approach.charAt(0).toUpperCase() + session.study_approach.slice(1)}`}
               {session.rank_participants && ' • Ranked Competition'}
