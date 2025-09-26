@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface FlavorCategory {
   name: string;
@@ -11,6 +12,10 @@ interface FlavatixProps {
   category: string;
   selectedFlavors: Record<string, number>;
   onFlavorSelect: (flavors: Record<string, number>) => void;
+}
+
+interface MobileFlavorWheelProps extends FlavatixProps {
+  isMobile?: boolean;
 }
 
 const flavorProfiles: Record<string, FlavorCategory[]> = {
@@ -180,6 +185,131 @@ const flavorProfiles: Record<string, FlavorCategory[]> = {
   ]
 };
 
+// Mobile detection hook
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  return isMobile;
+};
+
+// Mobile-optimized Flavor Category Component
+const MobileFlavorCategory: React.FC<{
+  category: FlavorCategory;
+  selectedFlavors: Record<string, number>;
+  onFlavorSelect: (flavors: Record<string, number>) => void;
+  isExpanded: boolean;
+  onToggle: () => void;
+}> = ({ category, selectedFlavors, onFlavorSelect, isExpanded, onToggle }) => {
+  const updateFlavorScore = (flavor: string, score: number) => {
+    const newFlavors = { ...selectedFlavors };
+    if (score === 0) {
+      delete newFlavors[flavor];
+    } else {
+      newFlavors[flavor] = score;
+    }
+    onFlavorSelect(newFlavors);
+  };
+
+  const getFlavorScore = (flavor: string): number => {
+    return selectedFlavors[flavor] || 0;
+  };
+
+  const selectedCount = category.flavors.filter(flavor => getFlavorScore(flavor) > 0).length;
+
+  return (
+    <div className="border border-border-default rounded-lg overflow-hidden mb-sm">
+      {/* Category Header */}
+      <button
+        onClick={onToggle}
+        className="w-full p-md flex items-center justify-between bg-surface-secondary hover:bg-surface-tertiary transition-colors"
+        style={{ backgroundColor: `${category.color}15` }}
+      >
+        <div className="flex items-center gap-sm">
+          <div
+            className="w-4 h-4 rounded-full"
+            style={{ backgroundColor: category.color }}
+          />
+          <span className="font-heading font-semibold text-text-primary">
+            {category.name}
+          </span>
+          {selectedCount > 0 && (
+            <span className="bg-primary-100 text-primary-800 px-xs py-xs rounded-full text-xs font-medium">
+              {selectedCount}
+            </span>
+          )}
+        </div>
+        {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+      </button>
+
+      {/* Category Flavors */}
+      {isExpanded && (
+        <div className="p-md space-y-sm">
+          {category.flavors.map((flavor) => {
+            const currentScore = getFlavorScore(flavor);
+            return (
+              <div key={flavor} className="space-y-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-body font-medium text-text-primary">{flavor}</span>
+                  <span className="text-sm text-text-secondary font-semibold">
+                    {currentScore}/5
+                  </span>
+                </div>
+                
+                {/* Mobile-optimized rating buttons */}
+                <div className="flex gap-xs">
+                  {[1, 2, 3, 4, 5].map((score) => (
+                    <button
+                      key={score}
+                      onClick={() => updateFlavorScore(flavor, currentScore === score ? 0 : score)}
+                      className={`
+                        flex-1 h-12 rounded-lg border-2 font-bold text-sm transition-all duration-200
+                        ${currentScore >= score
+                          ? 'border-transparent text-white shadow-lg'
+                          : 'border-border-default text-text-secondary hover:border-primary-400'
+                        }
+                      `}
+                      style={{
+                        backgroundColor: currentScore >= score ? category.color : 'transparent',
+                        opacity: currentScore >= score ? 0.8 + (score / 5) * 0.2 : 1,
+                        transform: currentScore >= score ? 'scale(0.98)' : 'scale(1)',
+                      }}
+                    >
+                      {score}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Progress bar */}
+                {currentScore > 0 && (
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{
+                        width: `${(currentScore / 5) * 100}%`,
+                        backgroundColor: category.color,
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Flavatix: React.FC<FlavatixProps> = ({
   category,
   selectedFlavors,
@@ -189,6 +319,8 @@ const Flavatix: React.FC<FlavatixProps> = ({
   const [isFlipped, setIsFlipped] = useState(false);
   const [wheelRotation, setWheelRotation] = useState(0);
   const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const isMobile = useIsMobile();
 
   const categories = flavorProfiles[category] || flavorProfiles.coffee;
 
@@ -299,6 +431,16 @@ const Flavatix: React.FC<FlavatixProps> = ({
     setWheelRotation(rotationTo6OClock);
   };
 
+  const toggleCategoryExpansion = (categoryName: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryName)) {
+      newExpanded.delete(categoryName);
+    } else {
+      newExpanded.add(categoryName);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
   // Crear path SVG para cada segmento de la rueda
   const createWheelSegment = (startAngle: number, endAngle: number, radius: number, innerRadius: number) => {
     const startAngleRad = (startAngle * Math.PI) / 180;
@@ -319,6 +461,52 @@ const Flavatix: React.FC<FlavatixProps> = ({
     return `M ${x4} ${y4} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${x4} ${y4} Z`;
   };
 
+  // Mobile Layout
+  if (isMobile) {
+    return (
+      <div className="card p-md">
+        <h3 className="text-h4 font-heading font-semibold text-text-primary mb-md">Flavor Profile</h3>
+        
+        {/* Mobile Category List */}
+        <div className="space-y-sm">
+          {categories.map((cat) => (
+            <MobileFlavorCategory
+              key={cat.name}
+              category={cat}
+              selectedFlavors={selectedFlavors}
+              onFlavorSelect={onFlavorSelect}
+              isExpanded={expandedCategories.has(cat.name)}
+              onToggle={() => toggleCategoryExpansion(cat.name)}
+            />
+          ))}
+        </div>
+
+        {/* Selected Flavors Summary */}
+        {Object.keys(selectedFlavors).length > 0 && (
+          <div className="mt-lg bg-surface-secondary rounded-lg p-md">
+            <h4 className="text-h5 font-heading font-semibold text-text-primary mb-sm">
+              Selected Flavors ({Object.keys(selectedFlavors).length})
+            </h4>
+            <div className="flex flex-wrap gap-xs">
+              {Object.entries(selectedFlavors).map(([flavor, score]) => (
+                <span
+                  key={flavor}
+                  className="inline-flex items-center gap-xs bg-primary-100 text-primary-800 px-sm py-xs rounded-full text-xs font-medium"
+                >
+                  {flavor}
+                  <span className="bg-primary-200 text-primary-900 px-xs rounded-full text-xs font-bold">
+                    {score}
+                  </span>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Desktop Layout (Original)
   return (
     <div className="card p-md">
       <h3 className="text-h4 font-heading font-semibold text-text-primary mb-md">Flavor Profile</h3>

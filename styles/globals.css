@@ -353,3 +353,128 @@ textarea {
 .animate-fade-in-up {
   animation: fade-in-up 0.5s ease-out;
 }
+
+/* Mobile-optimized styles */
+.mobile-container {
+  padding: 1rem;
+}
+
+.mobile-touch {
+  /* Ensure touch targets are at least 44px */
+  min-height: 44px;
+}
+
+.min-w-touch {
+  min-width: 44px;
+}
+
+.min-h-touch {
+  min-height: 44px;
+}
+
+/* Mobile-first responsive breakpoints */
+@media (max-width: 767px) {
+  .mobile\:w-44 {
+    width: 11rem;
+  }
+  
+  .mobile\:text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+  
+  .mobile\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+
+/* Tablet breakpoint */
+@media (min-width: 768px) {
+  .tablet\:p-md {
+    padding: 1.5rem;
+  }
+  
+  .tablet\:flex-row {
+    flex-direction: row;
+  }
+  
+  .tablet\:items-center {
+    align-items: center;
+  }
+  
+  .tablet\:justify-between {
+    justify-content: space-between;
+  }
+  
+  .tablet\:w-12 {
+    width: 3rem;
+  }
+  
+  .tablet\:h-12 {
+    height: 3rem;
+  }
+  
+  .tablet\:text-h4 {
+    font-size: var(--font-size-h4);
+  }
+  
+  .tablet\:text-small {
+    font-size: var(--font-size-small);
+  }
+  
+  .tablet\:text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+  
+  .tablet\:text-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+  
+  .tablet\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  
+  .tablet\:w-52 {
+    width: 13rem;
+  }
+  
+  .tablet\:h-48 {
+    height: 12rem;
+  }
+  
+  .tablet\:px-md {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
+  .tablet\:py-sm {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  .tablet\:self-auto {
+    align-self: auto;
+  }
+}
+
+/* Enhanced touch interactions for mobile */
+@media (hover: none) and (pointer: coarse) {
+  /* Mobile devices - enhance touch targets */
+  button, input[type="button"], input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Remove hover effects on touch devices */
+  .hover\:bg-surface-tertiary:hover {
+    background-color: inherit;
+  }
+  
+  .hover\:border-primary-400:hover {
+    border-color: inherit;
+  }
+}

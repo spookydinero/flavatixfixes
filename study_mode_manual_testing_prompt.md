@@ -394,3 +394,4 @@ Create these test accounts in your authentication system:
 **Environment**: Development server with migrated database
 
 **Begin with Scenario 1: Pre-defined Study Mode** 🚀
+
