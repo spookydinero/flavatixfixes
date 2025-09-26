@@ -55,6 +55,37 @@ const QuickTastingPage: React.FC = () => {
     }
   }, [user, loading, router]);
 
+  useEffect(() => {
+    if (!loading && user && !currentSession && !isLoading) {
+      // Create default session with coffee category
+      const createDefaultSession = async () => {
+        setIsLoading(true);
+        try {
+          const { data, error } = await supabase
+            .from('quick_tastings')
+            .insert({
+              user_id: user.id,
+              category: 'coffee',
+              session_name: 'Coffee Tasting',
+              mode: 'quick'
+            })
+            .select()
+            .single();
+
+          if (error) throw error;
+          setCurrentSession(data);
+        } catch (error) {
+          console.error('Error creating default session:', error);
+          toast.error('Failed to start tasting session');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      createDefaultSession();
+    }
+  }, [user, loading, currentSession, isLoading, supabase]);
+
   const handleCategorySelect = async (category: string) => {
     if (!user) {
       toast.error('Please log in to continue');
