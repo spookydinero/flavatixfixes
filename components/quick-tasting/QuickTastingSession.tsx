@@ -6,7 +6,7 @@ import FlavorWheel from './FlavorWheel';
 import TastingItem from './TastingItem';
 import CompetitionRanking from './CompetitionRanking';
 import { RoleIndicator } from './RoleIndicator';
-import { ModerationDashboard } from './ModerationDashboard';
+import { EditTastingDashboard } from './EditTastingDashboard';
 import { ItemSuggestions } from './ItemSuggestions';
 import { toast } from '../../lib/toast';
 import { Utensils, Settings } from 'lucide-react';
@@ -132,7 +132,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const [sessionNotes, setSessionNotes] = useState(session.notes || '');
   const [userRole, setUserRole] = useState<'host' | 'participant' | 'both' | null>(null);
   const [userPermissions, setUserPermissions] = useState<any>({});
-  const [showModerationDashboard, setShowModerationDashboard] = useState(false);
+  const [showEditTastingDashboard, setShowEditTastingDashboard] = useState(false);
   const [showItemSuggestions, setShowItemSuggestions] = useState(false);
   const supabase = getSupabaseClient() as any;
 
@@ -331,20 +331,18 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             )}
           </div>
           <div className="mt-4 md:mt-0 flex items-center space-x-4">
-            {/* Moderation Controls for Hosts */}
-            {userPermissions.canModerate && (
-              <button
-                onClick={() => setShowModerationDashboard(!showModerationDashboard)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-colors ${
-                  showModerationDashboard
-                    ? 'bg-purple-100 text-purple-800'
-                    : 'bg-white text-purple-600 border border-purple-200 hover:bg-purple-50'
-                }`}
-              >
-                <Settings size={16} />
-                Moderate
-              </button>
-            )}
+            {/* Edit Tasting Controls */}
+            <button
+              onClick={() => setShowEditTastingDashboard(!showEditTastingDashboard)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-colors ${
+                showEditTastingDashboard
+                  ? 'bg-purple-100 text-purple-800'
+                  : 'bg-white text-purple-600 border border-purple-200 hover:bg-purple-50'
+              }`}
+            >
+              <Settings size={16} />
+              Edit Tasting
+            </button>
 
             {/* Item Suggestions for Collaborative Study Mode */}
             {session.mode === 'study' && session.study_approach === 'collaborative' && (
@@ -371,16 +369,12 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         </div>
       </div>
 
-      {/* Moderation Dashboard */}
-      {showModerationDashboard && userPermissions.canModerate && (
+      {/* Edit Tasting Dashboard */}
+      {showEditTastingDashboard && (
         <div className="mb-lg">
-          <ModerationDashboard
-            tastingId={session.id}
-            userId={userId}
-            onRoleSwitch={(role) => {
-              // Handle role switching between moderating and participating
-              console.log('Role switched to:', role);
-            }}
+          <EditTastingDashboard
+            session={session}
+            onSessionUpdate={onSessionUpdate}
           />
         </div>
       )}
