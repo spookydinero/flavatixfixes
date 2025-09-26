@@ -467,7 +467,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                       onClick={() => setCurrentItemIndex(index)}
                       onDoubleClick={() => startEditingItemName(item)}
                       className={`
-                        px-sm py-xs rounded-lg text-small font-body font-medium transition-colors min-h-touch group relative
+                        px-sm py-xs rounded-lg text-small font-body font-medium transition-colors min-h-touch flex items-center gap-1
                         ${currentItemIndex === index
                           ? 'bg-primary text-white'
                           : item.overall_score !== null
@@ -476,13 +476,13 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                         }
                       `}
                     >
-                      {item.item_name}
+                      <span className="flex-1 text-left">{item.item_name}</span>
                       {item.overall_score !== null && (
-                        <span className="ml-xs">✓</span>
+                        <span>✓</span>
                       )}
                       <Edit
-                        size={12}
-                        className="ml-xs opacity-0 group-hover:opacity-100 transition-opacity absolute right-1 top-1/2 transform -translate-y-1/2"
+                        size={14}
+                        className="flex-shrink-0 hover:text-primary-600"
                         onClick={(e) => {
                           e.stopPropagation();
                           startEditingItemName(item);
