@@ -10,7 +10,7 @@ import { getUserTastingStats, getLatestTasting } from '../lib/historyService';
 export default function Dashboard() {
    const { user, loading, signOut } = useAuth();
    const [profile, setProfile] = useState<UserProfile | null>(null);
-   const [activeTab, setActiveTab] = useState<'home' | 'profile' | 'edit'>('home');
+   const [activeTab, setActiveTab] = useState<'home' | 'edit'>('home');
    const [tastingStats, setTastingStats] = useState<any>(null);
    const [latestTasting, setLatestTasting] = useState<any>(null);
    const router = useRouter();
@@ -60,7 +60,7 @@ export default function Dashboard() {
 
   const handleProfileUpdate = async (updatedProfile: UserProfile) => {
     setProfile(updatedProfile);
-    setActiveTab('profile');
+    setActiveTab('home');
     toast.success('Profile updated successfully!');
   };
 
@@ -108,14 +108,14 @@ export default function Dashboard() {
                Home
              </button>
              <button
-               onClick={() => setActiveTab('profile')}
+               onClick={() => setActiveTab('edit')}
                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                 activeTab === 'profile' || activeTab === 'edit'
+                 activeTab === 'edit'
                    ? 'border-primary text-primary'
                    : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
                }`}
              >
-               Profile
+               Edit Profile
              </button>
            </div>
 
@@ -132,55 +132,134 @@ export default function Dashboard() {
 
             {/* Profile Overview */}
             {profile && (
-              <div className="bg-white dark:bg-zinc-800/50 p-4 rounded-lg mb-6">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0">
+              <div className="bg-white dark:bg-zinc-800/50 p-6 rounded-lg mb-6">
+                {/* Header with Avatar and Basic Info */}
+                <div className="flex items-start space-x-4 mb-6">
+                  <div className="flex-shrink-0 relative">
                     {profile.avatar_url ? (
-                      <img
-                        src={profile.avatar_url}
-                        alt={profile.full_name || 'Profile'}
-                        className="w-16 h-16 rounded-full object-cover border-2 border-primary"
-                      />
+                      <>
+                        <img
+                          src={profile.avatar_url}
+                          alt={profile.full_name || 'Profile'}
+                          className="w-20 h-20 rounded-full object-cover border-2 border-primary"
+                          onError={(e) => {
+                            const target = e.currentTarget as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = target.nextElementSibling as HTMLElement;
+                            if (fallback) fallback.classList.remove('hidden');
+                          }}
+                        />
+                        <div className="hidden w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-semibold text-xl">
+                          {(profile.full_name || user?.email || '?')[0].toUpperCase()}
+                        </div>
+                      </>
                     ) : (
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-bold text-xl">
+                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-semibold text-xl">
                         {(profile.full_name || user?.email || '?')[0].toUpperCase()}
                       </div>
                     )}
                   </div>
+
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold text-zinc-900 dark:text-white truncate">
+                    <h3 className="text-xl font-bold text-zinc-900 dark:text-white truncate">
                       {profile.full_name || 'No name set'}
                     </h3>
                     {profile.username && (
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400">@{profile.username}</p>
+                      <p className="text-zinc-600 dark:text-zinc-400 mb-1">@{profile.username}</p>
                     )}
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">{user?.email}</p>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-sm">{user?.email}</p>
+                    {profile.preferred_category && (
+                      <span className="inline-block px-3 py-1 rounded-full text-sm font-medium mt-2 bg-primary/10 text-primary">
+                        {profile.preferred_category}
+                      </span>
+                    )}
                   </div>
                   <button
-                    onClick={() => setActiveTab('profile')}
+                    onClick={() => setActiveTab('edit')}
                     className="text-primary hover:underline text-sm font-medium"
                   >
-                    View Profile
+                    Edit Profile
                   </button>
                 </div>
-                {tastingStats && (
-                  <div className="mt-4 grid grid-cols-3 gap-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-primary">{tastingStats.totalTastings}</div>
-                      <div className="text-xs text-zinc-600 dark:text-zinc-400">Tastings</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-primary">
-                        {tastingStats.averageScore ? tastingStats.averageScore.toFixed(1) : '0.0'}
-                      </div>
-                      <div className="text-xs text-zinc-600 dark:text-zinc-400">Avg Score</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-primary">{profile.reviews_count || 0}</div>
-                      <div className="text-xs text-zinc-600 dark:text-zinc-400">Reviews</div>
-                    </div>
+
+                {/* Bio */}
+                {profile.bio && (
+                  <div className="mb-6">
+                    <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">About</h4>
+                    <p className="text-zinc-900 dark:text-white leading-relaxed">{profile.bio}</p>
                   </div>
                 )}
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-zinc-50 dark:bg-zinc-700/50 p-4 text-center rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{tastingStats?.totalTastings || profile.tastings_count || 0}</div>
+                    <div className="text-sm text-zinc-600 dark:text-zinc-400">Tastings</div>
+                  </div>
+
+                  <div className="bg-zinc-50 dark:bg-zinc-700/50 p-4 text-center rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{profile.reviews_count || 0}</div>
+                    <div className="text-sm text-zinc-600 dark:text-zinc-400">Reviews</div>
+                  </div>
+
+                  <div className="bg-zinc-50 dark:bg-zinc-700/50 p-4 text-center rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{profile.followers_count || 0}</div>
+                    <div className="text-sm text-zinc-600 dark:text-zinc-400">Followers</div>
+                  </div>
+
+                  <div className="bg-zinc-50 dark:bg-zinc-700/50 p-4 text-center rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{profile.following_count || 0}</div>
+                    <div className="text-sm text-zinc-600 dark:text-zinc-400">Following</div>
+                  </div>
+                </div>
+
+                {/* Additional Info */}
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between items-center">
+                    <span className="text-zinc-600 dark:text-zinc-400">Member since</span>
+                    <span className="text-zinc-900 dark:text-white font-medium">
+                      {new Date(profile.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </span>
+                  </div>
+
+                  {profile.last_tasted_at && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-zinc-600 dark:text-zinc-400">Last tasting</span>
+                      <span className="text-zinc-900 dark:text-white font-medium">
+                        {new Date(profile.last_tasted_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center">
+                    <span className="text-zinc-600 dark:text-zinc-400">Email verified</span>
+                    <div className="flex items-center">
+                      {profile.email_confirmed ? (
+                        <>
+                          <svg className="w-4 h-4 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-green-500 font-medium">Verified</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4 text-yellow-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-yellow-500 font-medium">Pending</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -259,44 +338,13 @@ export default function Dashboard() {
             </div>
           )}
 
-          {(activeTab === 'profile' || activeTab === 'edit') && (
+          {activeTab === 'edit' && (
             <div className="p-6">
-              {/* Profile Tab Navigation */}
-              <div className="flex border-b border-zinc-200 dark:border-zinc-700 mb-6">
-                <button
-                  onClick={() => setActiveTab('profile')}
-                  className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === 'profile'
-                      ? 'border-primary text-primary'
-                      : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
-                  }`}
-                >
-                  View Profile
-                </button>
-                <button
-                  onClick={() => setActiveTab('edit')}
-                  className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === 'edit'
-                      ? 'border-primary text-primary'
-                      : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
-                  }`}
-                >
-                  Edit Profile
-                </button>
-              </div>
-
-              {/* Profile Content */}
               <div className="max-w-2xl mx-auto">
-                {activeTab === 'profile' && (
-                  <ProfileDisplay profile={profile} authEmail={user.email} />
-                )}
-
-                {activeTab === 'edit' && (
-                  <ProfileEditForm
-                    profile={profile}
-                    onProfileUpdate={handleProfileUpdate}
-                  />
-                )}
+                <ProfileEditForm
+                  profile={profile}
+                  onProfileUpdate={handleProfileUpdate}
+                />
               </div>
             </div>
           )}
