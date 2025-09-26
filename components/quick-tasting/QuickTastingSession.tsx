@@ -9,7 +9,7 @@ import { RoleIndicator } from './RoleIndicator';
 import { EditTastingDashboard } from './EditTastingDashboard';
 import { ItemSuggestions } from './ItemSuggestions';
 import { toast } from '../../lib/toast';
-import { Utensils, Settings } from 'lucide-react';
+import { Utensils, Settings, Edit } from 'lucide-react';
 
 const categories = [
   { id: 'coffee', name: 'Coffee' },
@@ -134,6 +134,8 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const [userPermissions, setUserPermissions] = useState<any>({});
   const [showEditTastingDashboard, setShowEditTastingDashboard] = useState(false);
   const [showItemSuggestions, setShowItemSuggestions] = useState(false);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [editingItemName, setEditingItemName] = useState('');
   const supabase = getSupabaseClient() as any;
 
   useEffect(() => {
@@ -228,13 +230,42 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
       if (error) throw error;
 
-      setItems(prev => prev.map(item => 
+      setItems(prev => prev.map(item =>
         item.id === itemId ? { ...item, ...data } : item
       ));
     } catch (error) {
       console.error('Error updating item:', error);
       toast.error('Failed to update item');
     }
+  };
+
+  const startEditingItemName = (item: TastingItemData) => {
+    setEditingItemId(item.id);
+    setEditingItemName(item.item_name);
+  };
+
+  const saveItemName = async () => {
+    if (!editingItemId || editingItemName.trim() === '') return;
+
+    const item = items.find(i => i.id === editingItemId);
+    if (!item || item.item_name === editingItemName.trim()) {
+      setEditingItemId(null);
+      setEditingItemName('');
+      return;
+    }
+
+    try {
+      await updateItem(editingItemId, { item_name: editingItemName.trim() });
+      setEditingItemId(null);
+      setEditingItemName('');
+    } catch (error) {
+      // Error already handled in updateItem
+    }
+  };
+
+  const cancelEditingItemName = () => {
+    setEditingItemId(null);
+    setEditingItemName('');
   };
 
   const handleCategoryChange = async (newCategory: string) => {
@@ -412,24 +443,53 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               
               <div className="flex flex-wrap gap-xs mb-sm">
                 {items.map((item, index) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setCurrentItemIndex(index)}
-                    className={`
-                      px-sm py-xs rounded-lg text-small font-body font-medium transition-colors min-h-touch
-                      ${currentItemIndex === index
-                        ? 'bg-primary text-white'
-                        : item.overall_score !== null
-                        ? 'bg-success/10 text-success hover:bg-success/20'
-                        : 'bg-background-surface text-text-secondary hover:bg-border-default'
-                      }
-                    `}
-                  >
-                    {item.item_name}
-                    {item.overall_score !== null && (
-                      <span className="ml-xs">✓</span>
-                    )}
-                  </button>
+                  editingItemId === item.id ? (
+                    <div key={item.id} className="flex items-center gap-xs">
+                      <input
+                        type="text"
+                        value={editingItemName}
+                        onChange={(e) => setEditingItemName(e.target.value)}
+                        onBlur={saveItemName}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') saveItemName();
+                          if (e.key === 'Escape') cancelEditingItemName();
+                        }}
+                        className="px-sm py-xs rounded-lg text-small font-body font-medium border border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 min-h-touch"
+                        autoFocus
+                      />
+                      {item.overall_score !== null && (
+                        <span className="text-success">✓</span>
+                      )}
+                    </div>
+                  ) : (
+                    <button
+                      key={item.id}
+                      onClick={() => setCurrentItemIndex(index)}
+                      onDoubleClick={() => startEditingItemName(item)}
+                      className={`
+                        px-sm py-xs rounded-lg text-small font-body font-medium transition-colors min-h-touch group relative
+                        ${currentItemIndex === index
+                          ? 'bg-primary text-white'
+                          : item.overall_score !== null
+                          ? 'bg-success/10 text-success hover:bg-success/20'
+                          : 'bg-background-surface text-text-secondary hover:bg-border-default'
+                        }
+                      `}
+                    >
+                      {item.item_name}
+                      {item.overall_score !== null && (
+                        <span className="ml-xs">✓</span>
+                      )}
+                      <Edit
+                        size={12}
+                        className="ml-xs opacity-0 group-hover:opacity-100 transition-opacity absolute right-1 top-1/2 transform -translate-y-1/2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startEditingItemName(item);
+                        }}
+                      />
+                    </button>
+                  )
                 ))}
               </div>
             </div>

@@ -220,31 +220,15 @@ const QuickTastingPage: React.FC = () => {
           <div className="mb-lg">
             <div className="flex items-center justify-center space-x-sm">
               <div className={`flex items-center ${
-                currentStep === 'session' && !currentSession ? 'text-primary-600' :
-                currentStep === 'session' || currentStep === 'summary' ? 'text-primary-400' : 'text-text-secondary'
-              }`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                  currentStep === 'session' && !currentSession ? 'border-primary-600 bg-primary-600 text-white' :
-                  currentStep === 'session' || currentStep === 'summary' ? 'border-primary-400 bg-primary-400 text-white' :
-                  'border-border-default'
-                }`}>
-                  1
-                </div>
-                <span className="ml-xs font-body font-medium">Setup</span>
-              </div>
-              <div className={`w-8 h-0.5 ${
-                currentStep === 'session' || currentStep === 'summary' ? 'bg-primary-400' : 'bg-border-default'
-              }`}></div>
-              <div className={`flex items-center ${
-                currentStep === 'session' && currentSession ? 'text-primary-600' :
+                currentStep === 'session' ? 'text-primary-600' :
                 currentStep === 'summary' ? 'text-primary-400' : 'text-text-secondary'
               }`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                  currentStep === 'session' && currentSession ? 'border-primary-600 bg-primary-600 text-white' :
+                  currentStep === 'session' ? 'border-primary-600 bg-primary-600 text-white' :
                   currentStep === 'summary' ? 'border-primary-400 bg-primary-400 text-white' :
                   'border-border-default'
                 }`}>
-                  2
+                  1
                 </div>
                 <span className="ml-xs font-body font-medium">Tasting</span>
               </div>
@@ -258,7 +242,7 @@ const QuickTastingPage: React.FC = () => {
                   currentStep === 'summary' ? 'border-primary-600 bg-primary-600 text-white' :
                   'border-border-default'
                 }`}>
-                  3
+                  2
                 </div>
                 <span className="ml-xs font-body font-medium">Summary</span>
               </div>
