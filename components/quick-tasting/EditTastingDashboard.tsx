@@ -6,6 +6,7 @@ interface QuickTasting {
   id: string;
   user_id: string;
   category: string;
+  custom_category_name?: string | null;
   session_name?: string;
   notes?: string;
   total_items: number;
@@ -69,17 +70,20 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
   session,
   onSessionUpdate,
 }) => {
+  console.log('EditTastingDashboard render - session.category:', session.category, 'custom_category_name:', session.custom_category_name);
   const [sessionName, setSessionName] = useState(session.session_name || '');
   const [selectedPreset, setSelectedPreset] = useState<string>('');
   const [isBlindTasting, setIsBlindTasting] = useState(
     session.is_blind_participants || session.is_blind_items || session.is_blind_attributes
   );
+  const [customCategoryName, setCustomCategoryName] = useState(session.custom_category_name || '');
   const [isLoading, setIsLoading] = useState(false);
   const supabase = getSupabaseClient() as any;
 
   useEffect(() => {
     setSessionName(session.session_name || '');
     setIsBlindTasting(session.is_blind_participants || session.is_blind_items || session.is_blind_attributes);
+    setCustomCategoryName(session.custom_category_name || '');
   }, [session]);
 
   const updateSession = async (updates: Partial<QuickTasting>) => {
@@ -121,6 +125,74 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
         is_blind_items: preset.is_blind_items,
         is_blind_attributes: preset.is_blind_attributes,
       });
+    }
+  };
+
+  const handleCategoryChange = async (newCategory: string) => {
+    console.log('handleCategoryChange called with newCategory:', newCategory);
+    try {
+      setIsLoading(true);
+      const updates: Partial<QuickTasting> = { category: newCategory };
+
+      // If changing to "other", clear custom category name
+      // If changing away from "other", also clear custom category name
+      if (newCategory === 'other') {
+        updates.custom_category_name = customCategoryName || null;
+      } else {
+        updates.custom_category_name = null;
+        setCustomCategoryName('');
+      }
+
+      console.log('Updates to send:', updates);
+      const { data, error } = await supabase
+        .from('quick_tastings')
+        .update(updates)
+        .eq('id', session.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      console.log('Category update successful, data.category:', data.category, 'data.custom_category_name:', data.custom_category_name);
+      toast.success('Category updated!');
+      if (onSessionUpdate) {
+        onSessionUpdate(data);
+      }
+    } catch (error) {
+      console.error('Error updating category:', error);
+      toast.error('Failed to update category');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCustomCategoryNameChange = async () => {
+    console.log('handleCustomCategoryNameChange called, session.category:', session.category, 'customCategoryName:', customCategoryName, 'trimmed:', customCategoryName.trim());
+    if (session.category === 'other' && customCategoryName.trim()) {
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('quick_tastings')
+          .update({ custom_category_name: customCategoryName.trim() })
+          .eq('id', session.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        console.log('Custom category name updated successfully');
+        toast.success('Custom category name updated!');
+        if (onSessionUpdate) {
+          onSessionUpdate(data);
+        }
+      } catch (error) {
+        console.error('Error updating custom category name:', error);
+        toast.error('Failed to update custom category name');
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      console.log('Not updating custom category name: condition not met');
     }
   };
 
@@ -192,8 +264,9 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
           </label>
           <select
             value={session.category}
-            onChange={(e) => updateSession({ category: e.target.value })}
+            onChange={(e) => handleCategoryChange(e.target.value)}
             className="w-full px-3 py-2 border border-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            disabled={isLoading}
           >
             {categories.map(category => (
               <option key={category.id} value={category.id}>
@@ -202,6 +275,33 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
             ))}
           </select>
         </div>
+
+        {/* Custom Category Name - Only show when "Other" is selected */}
+        {(() => {
+          const shouldShow = session.category === 'other';
+          console.log('Should show custom category input:', shouldShow, 'session.category:', session.category);
+          return shouldShow && (
+            <div>
+              <label className="block text-sm font-medium text-text-primary mb-2">
+                Custom Category Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={customCategoryName}
+                onChange={(e) => setCustomCategoryName(e.target.value)}
+                onBlur={handleCustomCategoryNameChange}
+                onKeyPress={(e) => e.key === 'Enter' && handleCustomCategoryNameChange()}
+                className="w-full px-3 py-2 border border-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="Enter custom category name"
+                disabled={isLoading}
+                required
+              />
+              {session.category === 'other' && !customCategoryName.trim() && (
+                <p className="text-sm text-red-500 mt-1">Custom category name is required when "Other" is selected</p>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Presets */}
         <div>
