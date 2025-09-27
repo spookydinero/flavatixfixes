@@ -25,6 +25,7 @@ interface QuickTasting {
   id: string;
   user_id: string;
   category: string;
+  custom_category_name?: string | null;
   session_name?: string;
   notes?: string;
   total_items: number;
@@ -71,6 +72,13 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   onSessionUpdate,
   onSessionCreate,
 }) => {
+  // Helper function to get the display category name
+  const getDisplayCategoryName = (category: string, customName?: string | null): string => {
+    if (category === 'other' && customName) {
+      return customName;
+    }
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  };
   if (!session) {
     return (
       <div className="max-w-4xl mx-auto">
@@ -336,6 +344,8 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               </div>
             )}
             <p className="text-text-secondary">
+              Category: {getDisplayCategoryName(session.category, session.custom_category_name)}
+              {' • '}
               Mode: {session.mode.charAt(0).toUpperCase() + session.mode.slice(1)}
               {session.mode === 'study' && session.study_approach && ` • ${session.study_approach.charAt(0).toUpperCase() + session.study_approach.slice(1)}`}
               {session.rank_participants && ' • Ranked Competition'}
@@ -540,7 +550,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                   {currentItem.item_name}
                 </div>
                 <div className="text-caption font-body text-text-secondary">
-                  {session.category.charAt(0).toUpperCase() + session.category.slice(1)} Tasting
+                  {getDisplayCategoryName(session.category, session.custom_category_name)} Tasting
                 </div>
               </div>
             </div>

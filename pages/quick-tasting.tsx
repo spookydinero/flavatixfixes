@@ -12,6 +12,7 @@ type QuickTastingWithNull = {
   id: string;
   user_id: string;
   category: string;
+  custom_category_name: string | null;
   session_name: string | null;
   notes: string | null;
   total_items: number;
@@ -29,7 +30,8 @@ const toQuickTasting = (data: QuickTastingWithNull): QuickTasting => ({
   notes: data.notes === null ? undefined : data.notes,
   average_score: data.average_score === null ? undefined : data.average_score,
   completed_at: data.completed_at === null ? undefined : data.completed_at,
-} as QuickTasting);
+  custom_category_name: data.custom_category_name,
+} as any);
 
 const toQuickTastingWithNull = (data: QuickTasting): QuickTastingWithNull => ({
   ...data,
@@ -37,6 +39,7 @@ const toQuickTastingWithNull = (data: QuickTasting): QuickTastingWithNull => ({
   notes: data.notes === undefined ? null : data.notes,
   average_score: data.average_score === undefined ? null : data.average_score,
   completed_at: data.completed_at === undefined ? null : data.completed_at,
+  custom_category_name: (data as any).custom_category_name || null,
 } as QuickTastingWithNull);
 
 type TastingStep = 'category' | 'session' | 'summary';
