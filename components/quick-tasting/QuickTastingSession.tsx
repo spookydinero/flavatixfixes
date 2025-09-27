@@ -8,8 +8,10 @@ import CompetitionRanking from './CompetitionRanking';
 import { RoleIndicator } from './RoleIndicator';
 import { EditTastingDashboard } from './EditTastingDashboard';
 import { ItemSuggestions } from './ItemSuggestions';
+import FlavorProfileScreen from './FlavorProfileScreen';
+import OverallScoreScreen from './OverallScoreScreen';
 import { toast } from '../../lib/toast';
-import { Utensils, Settings } from 'lucide-react';
+import { Utensils, Settings, Play } from 'lucide-react';
 
 const categories = [
   { id: 'coffee', name: 'Coffee' },
@@ -134,6 +136,8 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const [userPermissions, setUserPermissions] = useState<any>({});
   const [showEditTastingDashboard, setShowEditTastingDashboard] = useState(false);
   const [showItemSuggestions, setShowItemSuggestions] = useState(false);
+  const [phase, setPhase] = useState<'setup' | 'tasting'>('setup');
+  const [tastingScreen, setTastingScreen] = useState<'flavor' | 'score'>('flavor');
   const supabase = getSupabaseClient() as any;
 
   useEffect(() => {
@@ -258,6 +262,33 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
       console.error('Error updating category:', error);
       toast.error('Failed to update category');
     }
+  };
+
+  const startTasting = () => {
+    setPhase('tasting');
+    setCurrentItemIndex(0);
+    setTastingScreen('flavor');
+  };
+
+  const handleFlavorNext = () => {
+    setTastingScreen('score');
+  };
+
+  const handleScoreBack = () => {
+    setTastingScreen('flavor');
+  };
+
+  const handleScoreNext = () => {
+    if (currentItemIndex < items.length - 1) {
+      setCurrentItemIndex(currentItemIndex + 1);
+      setTastingScreen('flavor');
+    } else {
+      completeSession();
+    }
+  };
+
+  const handleBackToSetup = () => {
+    setPhase('setup');
   };
 
   const completeSession = async () => {
@@ -388,9 +419,10 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
-        {/* Left Column - Item Management */}
-        <div className="space-y-6">
+      {phase === 'setup' && (
+        <div className="max-w-4xl mx-auto">
+          {/* Item Management */}
+          <div className="space-y-6">
           {/* Item Navigation */}
           {hasItems && (
             <div className="card p-md">
@@ -441,6 +473,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               onUpdate={(updates: Partial<TastingItemData>) => updateItem(currentItem.id, updates)}
               isBlindItems={session.is_blind_items}
               isBlindAttributes={session.is_blind_attributes}
+              showOverallScore={false}
             />
           ) : (
             <div className="card p-lg text-center">
@@ -487,33 +520,50 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             />
           )}
         </div>
-
-        {/* Right Column - Flavor Wheel */}
-        <div className="space-y-6">
-          <FlavorWheel
-            category={session.category}
-            selectedFlavors={currentItem?.flavor_scores || {}}
-            onFlavorSelect={(flavors: Record<string, number>) => {
-              if (currentItem) {
-                updateItem(currentItem.id, { flavor_scores: flavors });
-              }
-            }}
-          />
-        </div>
       </div>
 
-      {/* Complete Session Button */}
-      {hasItems && completedItems > 0 && (
+      {/* Start Tasting Button */}
+      {hasItems && (
         <div className="mt-8 text-center">
           <button
-            onClick={completeSession}
-            disabled={isLoading}
-            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={startTasting}
+            className="btn-primary flex items-center gap-2"
           >
-            {isLoading ? 'Completing...' : 'Complete Session'}
+            <Play size={16} />
+            Start Tasting
           </button>
         </div>
       )}
+    )}
+
+    {/* Tasting Phase */}
+    {phase === 'tasting' && currentItem && (
+      <div>
+        {tastingScreen === 'flavor' && (
+          <FlavorProfileScreen
+            item={currentItem}
+            category={session.category}
+            onFlavorSelect={(flavors) => updateItem(currentItem.id, { flavor_scores: flavors })}
+            onNext={handleFlavorNext}
+            onBack={handleBackToSetup}
+            isFirst={currentItemIndex === 0}
+            isLast={false}
+          />
+        )}
+
+        {tastingScreen === 'score' && (
+          <OverallScoreScreen
+            item={currentItem}
+            category={session.category}
+            onScoreChange={(score) => updateItem(currentItem.id, { overall_score: score })}
+            onNext={handleScoreNext}
+            onBack={handleScoreBack}
+            isFirst={currentItemIndex === 0}
+            isLast={currentItemIndex === items.length - 1}
+          />
+        )}
+      </div>
+    )}
     </div>
   );
 };
