@@ -575,7 +575,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         {/* Overall Score Card */}
         <div className="card p-lg mb-lg">
           <div className="text-center">
-            <div className="text-xs tablet:text-sm font-medium text-neutral-400 mb-8 tracking-widest uppercase opacity-70">
+            <div className="text-xs tablet:text-sm font-medium text-text-primary mb-8 tracking-widest uppercase">
               Overall Score
             </div>
             <div className="flex flex-col items-center space-y-8">
@@ -589,10 +589,10 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                   className="w-full h-px bg-neutral-200 rounded-full appearance-none cursor-pointer slider-ultra-thin shadow-none border-0"
                   style={{
                     background: `linear-gradient(to right,
-                      #d4d4d4 0%,
-                      #a3a3a3 ${currentItem.overall_score || 0}%,
-                      #e5e5e5 ${currentItem.overall_score || 0}%,
-                      #e5e5e5 100%)`
+                      var(--color-neutral-200) 0%,
+                      var(--color-primary-500) ${currentItem.overall_score || 0}%,
+                      var(--color-neutral-200) ${currentItem.overall_score || 0}%,
+                      var(--color-neutral-200) 100%)`
                   }}
                 />
                 <div className="absolute -top-1.5 left-0 w-full h-4 pointer-events-none flex items-center">
@@ -635,7 +635,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                 <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">
                   Selected Flavors
                 </h4>
-                <div className="flex flex-wrap gap-xs justify-center">
+                <div className="flex flex-wrap gap-xs">
                   {Object.entries(currentItem.flavor_scores).map(([flavor, score]) => (
                     <div
                       key={flavor}
