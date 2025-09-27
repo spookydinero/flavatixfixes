@@ -220,27 +220,27 @@ const QuickTastingPage: React.FC = () => {
           <div className="mb-lg">
             <div className="flex items-center justify-center space-x-sm">
               <div className={`flex items-center ${
-                currentStep === 'session' ? 'text-primary-600' :
-                currentStep === 'summary' ? 'text-primary-400' : 'text-text-secondary'
+                currentStep === 'session' ? 'text-neutral-800' :
+                currentStep === 'summary' ? 'text-neutral-600' : 'text-text-secondary'
               }`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                  currentStep === 'session' ? 'border-primary-600 bg-primary-600 text-white' :
-                  currentStep === 'summary' ? 'border-primary-400 bg-primary-400 text-white' :
-                  'border-border-default'
+                  currentStep === 'session' ? 'border-neutral-800 bg-neutral-800 text-white' :
+                  currentStep === 'summary' ? 'border-neutral-600 bg-neutral-600 text-white' :
+                  'border-border-default bg-white text-text-secondary'
                 }`}>
                   1
                 </div>
                 <span className="ml-xs font-body font-medium">Tasting</span>
               </div>
               <div className={`w-8 h-0.5 ${
-                currentStep === 'summary' ? 'bg-primary-400' : 'bg-border-default'
+                currentStep === 'summary' ? 'bg-neutral-600' : 'bg-border-default'
               }`}></div>
               <div className={`flex items-center ${
-                currentStep === 'summary' ? 'text-primary-600' : 'text-text-secondary'
+                currentStep === 'summary' ? 'text-neutral-800' : 'text-text-secondary'
               }`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                  currentStep === 'summary' ? 'border-primary-600 bg-primary-600 text-white' :
-                  'border-border-default'
+                  currentStep === 'summary' ? 'border-neutral-800 bg-neutral-800 text-white' :
+                  'border-border-default bg-white text-text-secondary'
                 }`}>
                   2
                 </div>

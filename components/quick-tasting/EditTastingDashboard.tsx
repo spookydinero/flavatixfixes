@@ -28,6 +28,16 @@ interface EditTastingDashboardProps {
   onSessionUpdate?: (session: QuickTasting) => void;
 }
 
+const categories = [
+  { id: 'coffee', name: 'Coffee' },
+  { id: 'tea', name: 'Tea' },
+  { id: 'wine', name: 'Wine' },
+  { id: 'spirits', name: 'Spirits' },
+  { id: 'beer', name: 'Beer' },
+  { id: 'chocolate', name: 'Chocolate' },
+  { id: 'other', name: 'Other' },
+];
+
 const tastingPresets = [
   {
     id: 'basic',
@@ -173,6 +183,24 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
             className="w-full px-3 py-2 border border-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="Enter tasting name"
           />
+        </div>
+
+        {/* Category */}
+        <div>
+          <label className="block text-sm font-medium text-text-primary mb-2">
+            Category
+          </label>
+          <select
+            value={session.category}
+            onChange={(e) => updateSession({ category: e.target.value })}
+            className="w-full px-3 py-2 border border-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            {categories.map(category => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Presets */}

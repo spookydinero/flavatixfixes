@@ -18,6 +18,7 @@ const categories = [
   { id: 'spirits', name: 'Spirits' },
   { id: 'beer', name: 'Beer' },
   { id: 'chocolate', name: 'Chocolate' },
+  { id: 'other', name: 'Other' },
 ];
 
 interface QuickTasting {
