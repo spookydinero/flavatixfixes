@@ -471,7 +471,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           {currentItem ? (
             <TastingItem
               item={currentItem}
-              category={session.category}
+              category={getDisplayCategoryName(session.category, session.custom_category_name)}
               userId={session.user_id}
               onUpdate={(updates: Partial<TastingItemData>) => updateItem(currentItem.id, updates)}
               isBlindItems={session.is_blind_items}
@@ -561,7 +561,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         {/* Unified Tasting Item */}
         <TastingItem
           item={currentItem}
-          category={session.category}
+          category={getDisplayCategoryName(session.category, session.custom_category_name)}
           userId={session.user_id}
           onUpdate={(updates: Partial<TastingItemData>) => updateItem(currentItem.id, updates)}
           isBlindItems={session.is_blind_items}

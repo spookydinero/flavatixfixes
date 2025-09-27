@@ -7,6 +7,7 @@ interface QuickTasting {
   id: string;
   user_id: string;
   category: string;
+  custom_category_name?: string | null;
   session_name?: string;
   notes?: string;
   total_items: number;
@@ -38,6 +39,14 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
   session,
   onStartNewSession,
 }) => {
+  // Helper function to get the display category name
+  const getDisplayCategoryName = (category: string, customName?: string | null): string => {
+    if (category === 'other' && customName) {
+      return customName;
+    }
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  };
+
   const [items, setItems] = useState<TastingItemData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
@@ -151,7 +160,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
                 {session.session_name}
               </h2>
               <p className="text-text-secondary">
-                {session.category.charAt(0).toUpperCase() + session.category.slice(1)} Tasting Session
+                {getDisplayCategoryName(session.category, (session as any).custom_category_name)} Tasting Session
               </p>
               <p className="text-small font-body text-text-secondary">
                 Completed on {formatDate(session.completed_at || session.updated_at)}

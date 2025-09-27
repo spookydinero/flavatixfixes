@@ -133,12 +133,13 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
       const updates: Partial<QuickTasting> = { category: newCategory };
 
       // If changing to "other", clear custom category name
-      // If changing away from "other", also clear custom category name
+      // If changing away from "other", also clear custom category name and update session name
       if (newCategory === 'other') {
         updates.custom_category_name = customCategoryName || null;
       } else {
         updates.custom_category_name = null;
         setCustomCategoryName('');
+        updates.session_name = `${newCategory.charAt(0).toUpperCase() + newCategory.slice(1)} Tasting`;
       }
 
       const { data, error } = await supabase
@@ -168,7 +169,10 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
         setIsLoading(true);
         const { data, error } = await supabase
           .from('quick_tastings')
-          .update({ custom_category_name: customCategoryName.trim() })
+          .update({
+            custom_category_name: customCategoryName.trim(),
+            session_name: `${customCategoryName.trim()} Tasting`
+          })
           .eq('id', session.id)
           .select()
           .single();
