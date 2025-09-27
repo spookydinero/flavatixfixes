@@ -204,7 +204,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
       return;
     }
 
-    const itemName = `${session.category.charAt(0).toUpperCase() + session.category.slice(1)} ${items.length + 1}`;
+    const itemName = `${getDisplayCategoryName(session.category, session.custom_category_name)} ${items.length + 1}`;
 
     try {
       const { data, error } = await supabase
@@ -273,6 +273,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const startTasting = () => {
     setPhase('tasting');
     setCurrentItemIndex(0);
+    setShowEditTastingDashboard(false);
   };
 
   const handleNextItem = () => {

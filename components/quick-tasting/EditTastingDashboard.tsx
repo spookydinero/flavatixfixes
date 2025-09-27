@@ -85,33 +85,6 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
     setCustomCategoryName(session.custom_category_name || '');
   }, [session]);
 
-  // Auto-save custom category name when it changes and category is 'other'
-  useEffect(() => {
-    if (session.category === 'other' && customCategoryName.trim()) {
-      const saveCustomName = async () => {
-        try {
-          const { data, error } = await supabase
-            .from('quick_tastings')
-            .update({ custom_category_name: customCategoryName.trim() })
-            .eq('id', session.id)
-            .select()
-            .single();
-
-          if (error) throw error;
-
-          if (onSessionUpdate) {
-            onSessionUpdate(data);
-          }
-        } catch (error) {
-          console.error('Error auto-saving custom category name:', error);
-        }
-      };
-
-      const timeoutId = setTimeout(saveCustomName, 500); // Debounce for 500ms
-      return () => clearTimeout(timeoutId);
-    }
-  }, [customCategoryName, session.category, session.id, supabase, onSessionUpdate]);
-
   const updateSession = async (updates: Partial<QuickTasting>) => {
     try {
       setIsLoading(true);
