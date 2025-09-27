@@ -520,20 +520,20 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             />
           )}
         </div>
-      </div>
 
-      {/* Start Tasting Button */}
-      {hasItems && (
-        <div className="mt-8 text-center">
-          <button
-            onClick={startTasting}
-            className="btn-primary flex items-center gap-2"
-          >
-            <Play size={16} />
-            Start Tasting
-          </button>
-        </div>
-      )}
+        {/* Start Tasting Button */}
+        {hasItems && (
+          <div className="mt-8 text-center">
+            <button
+              onClick={startTasting}
+              className="btn-primary flex items-center gap-2"
+            >
+              <Play size={16} />
+              Start Tasting
+            </button>
+          </div>
+        )}
+      </div>
     )}
 
     {/* Tasting Phase */}
