@@ -70,7 +70,6 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
   session,
   onSessionUpdate,
 }) => {
-  console.log('EditTastingDashboard render - session.category:', session.category, 'custom_category_name:', session.custom_category_name);
   const [sessionName, setSessionName] = useState(session.session_name || '');
   const [selectedPreset, setSelectedPreset] = useState<string>('');
   const [isBlindTasting, setIsBlindTasting] = useState(
@@ -85,6 +84,33 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
     setIsBlindTasting(session.is_blind_participants || session.is_blind_items || session.is_blind_attributes);
     setCustomCategoryName(session.custom_category_name || '');
   }, [session]);
+
+  // Auto-save custom category name when it changes and category is 'other'
+  useEffect(() => {
+    if (session.category === 'other' && customCategoryName.trim()) {
+      const saveCustomName = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('quick_tastings')
+            .update({ custom_category_name: customCategoryName.trim() })
+            .eq('id', session.id)
+            .select()
+            .single();
+
+          if (error) throw error;
+
+          if (onSessionUpdate) {
+            onSessionUpdate(data);
+          }
+        } catch (error) {
+          console.error('Error auto-saving custom category name:', error);
+        }
+      };
+
+      const timeoutId = setTimeout(saveCustomName, 500); // Debounce for 500ms
+      return () => clearTimeout(timeoutId);
+    }
+  }, [customCategoryName, session.category, session.id, supabase, onSessionUpdate]);
 
   const updateSession = async (updates: Partial<QuickTasting>) => {
     try {
@@ -129,7 +155,6 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
   };
 
   const handleCategoryChange = async (newCategory: string) => {
-    console.log('handleCategoryChange called with newCategory:', newCategory);
     try {
       setIsLoading(true);
       const updates: Partial<QuickTasting> = { category: newCategory };
@@ -143,7 +168,6 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
         setCustomCategoryName('');
       }
 
-      console.log('Updates to send:', updates);
       const { data, error } = await supabase
         .from('quick_tastings')
         .update(updates)
@@ -153,7 +177,6 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
 
       if (error) throw error;
 
-      console.log('Category update successful, data.category:', data.category, 'data.custom_category_name:', data.custom_category_name);
       toast.success('Category updated!');
       if (onSessionUpdate) {
         onSessionUpdate(data);
@@ -167,7 +190,6 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
   };
 
   const handleCustomCategoryNameChange = async () => {
-    console.log('handleCustomCategoryNameChange called, session.category:', session.category, 'customCategoryName:', customCategoryName, 'trimmed:', customCategoryName.trim());
     if (session.category === 'other' && customCategoryName.trim()) {
       try {
         setIsLoading(true);
@@ -180,7 +202,6 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
 
         if (error) throw error;
 
-        console.log('Custom category name updated successfully');
         toast.success('Custom category name updated!');
         if (onSessionUpdate) {
           onSessionUpdate(data);
@@ -191,8 +212,6 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
       } finally {
         setIsLoading(false);
       }
-    } else {
-      console.log('Not updating custom category name: condition not met');
     }
   };
 
@@ -277,31 +296,27 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
         </div>
 
         {/* Custom Category Name - Only show when "Other" is selected */}
-        {(() => {
-          const shouldShow = session.category === 'other';
-          console.log('Should show custom category input:', shouldShow, 'session.category:', session.category);
-          return shouldShow && (
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                Custom Category Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={customCategoryName}
-                onChange={(e) => setCustomCategoryName(e.target.value)}
-                onBlur={handleCustomCategoryNameChange}
-                onKeyPress={(e) => e.key === 'Enter' && handleCustomCategoryNameChange()}
-                className="w-full px-3 py-2 border border-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="Enter custom category name"
-                disabled={isLoading}
-                required
-              />
-              {session.category === 'other' && !customCategoryName.trim() && (
-                <p className="text-sm text-red-500 mt-1">Custom category name is required when "Other" is selected</p>
-              )}
-            </div>
-          );
-        })()}
+        {session.category === 'other' && (
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-2">
+              Custom Category Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={customCategoryName}
+              onChange={(e) => setCustomCategoryName(e.target.value)}
+              onBlur={handleCustomCategoryNameChange}
+              onKeyPress={(e) => e.key === 'Enter' && handleCustomCategoryNameChange()}
+              className="w-full px-3 py-2 border border-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              placeholder="Enter custom category name"
+              disabled={isLoading}
+              required
+            />
+            {session.category === 'other' && !customCategoryName.trim() && (
+              <p className="text-sm text-red-500 mt-1">Custom category name is required when "Other" is selected</p>
+            )}
+          </div>
+        )}
 
         {/* Presets */}
         <div>
