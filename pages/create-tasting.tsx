@@ -221,6 +221,24 @@ const CreateTastingPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
                 <button
                   type="button"
+                  onClick={() => handleModeChange('quick')}
+                  className={`p-md rounded-lg border-2 transition-all ${
+                    form.mode === 'quick'
+                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
+                      : 'border-border-default hover:border-primary-400'
+                  }`}
+                >
+                  <Users size={32} className={`mx-auto mb-sm ${
+                    form.mode === 'quick' ? 'text-primary-600' : 'text-text-secondary'
+                  }`} />
+                  <h3 className="font-heading font-semibold mb-xs">Quick Tasting</h3>
+                  <p className="text-small text-text-secondary">
+                    Standard quick tasting workflow for immediate use.
+                  </p>
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => handleModeChange('study')}
                   className={`p-md rounded-lg border-2 transition-all ${
                     form.mode === 'study'
@@ -252,24 +270,6 @@ const CreateTastingPage: React.FC = () => {
                   <h3 className="font-heading font-semibold mb-xs">Competition Mode</h3>
                   <p className="text-small text-text-secondary">
                     Preload items with correct answers. Enable participant ranking.
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleModeChange('quick')}
-                  className={`p-md rounded-lg border-2 transition-all ${
-                    form.mode === 'quick'
-                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
-                      : 'border-border-default hover:border-primary-400'
-                  }`}
-                >
-                  <Users size={32} className={`mx-auto mb-sm ${
-                    form.mode === 'quick' ? 'text-primary-600' : 'text-text-secondary'
-                  }`} />
-                  <h3 className="font-heading font-semibold mb-xs">Quick Tasting</h3>
-                  <p className="text-small text-text-secondary">
-                    Standard quick tasting workflow for immediate use.
                   </p>
                 </button>
               </div>

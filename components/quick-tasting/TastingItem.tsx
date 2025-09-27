@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { getSupabaseClient } from '../../lib/supabase';
 import { toast } from '../../lib/toast';
-import { Coffee, Wine, Beer, Utensils, Star, Camera } from 'lucide-react';
+import { Coffee, Wine, Beer, Utensils, Star, Camera, Edit } from 'lucide-react';
 
 interface TastingItemData {
   id: string;
@@ -35,12 +35,16 @@ const TastingItem: React.FC<TastingItemProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [localNotes, setLocalNotes] = useState(item.notes || '');
   const [localScore, setLocalScore] = useState(item.overall_score || 0);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editingName, setEditingName] = useState(item.item_name);
 
   // Reset local state when item changes
   useEffect(() => {
     setLocalNotes(item.notes || '');
     setLocalScore(item.overall_score || 0);
-  }, [item.id]);
+    setEditingName(item.item_name);
+    setIsEditingName(false);
+  }, [item.id, item.item_name]);
 
   const getScoreLabel = (score: number): string => {
     if (score >= 90) return '(Exceptional)';
@@ -116,6 +120,23 @@ const TastingItem: React.FC<TastingItemProps> = ({
     onUpdate({ overall_score: score });
   };
 
+  const startEditingName = () => {
+    setIsEditingName(true);
+    setEditingName(item.item_name);
+  };
+
+  const saveName = () => {
+    if (editingName.trim() && editingName.trim() !== item.item_name) {
+      onUpdate({ item_name: editingName.trim() });
+    }
+    setIsEditingName(false);
+  };
+
+  const cancelEditingName = () => {
+    setEditingName(item.item_name);
+    setIsEditingName(false);
+  };
+
   const removePhoto = async () => {
     if (!item.photo_url) return;
 
@@ -166,9 +187,31 @@ const TastingItem: React.FC<TastingItemProps> = ({
         <div className="flex items-center space-x-sm min-w-0 flex-1">
           <div className="flex items-center justify-center w-10 h-10 tablet:w-12 tablet:h-12 flex-shrink-0">{getCategoryIcon(category)}</div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary truncate">
-              {isBlindItems ? `Item ${item.id.slice(-4)}` : item.item_name}
-            </h3>
+            {isEditingName ? (
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={editingName}
+                  onChange={(e) => setEditingName(e.target.value)}
+                  onBlur={saveName}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') saveName();
+                    if (e.key === 'Escape') cancelEditingName();
+                  }}
+                  className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary bg-transparent border-b border-primary-500 focus:outline-none flex-1"
+                  autoFocus
+                />
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2 group cursor-pointer" onClick={startEditingName}>
+                <h3 className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary truncate">
+                  {isBlindItems ? `Item ${item.id.slice(-4)}` : item.item_name}
+                </h3>
+                {!isBlindItems && (
+                  <Edit size={16} className="text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                )}
+              </div>
+            )}
             <p className="text-xs tablet:text-small font-body text-text-secondary">
               {category.charAt(0).toUpperCase() + category.slice(1)} Tasting
               {isBlindItems && ' • Blind Tasting'}

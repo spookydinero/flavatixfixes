@@ -9,7 +9,7 @@ import { RoleIndicator } from './RoleIndicator';
 import { EditTastingDashboard } from './EditTastingDashboard';
 import { ItemSuggestions } from './ItemSuggestions';
 import { toast } from '../../lib/toast';
-import { Utensils, Settings, Edit } from 'lucide-react';
+import { Utensils, Settings } from 'lucide-react';
 
 const categories = [
   { id: 'coffee', name: 'Coffee' },
@@ -134,8 +134,6 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const [userPermissions, setUserPermissions] = useState<any>({});
   const [showEditTastingDashboard, setShowEditTastingDashboard] = useState(false);
   const [showItemSuggestions, setShowItemSuggestions] = useState(false);
-  const [editingItemId, setEditingItemId] = useState<string | null>(null);
-  const [editingItemName, setEditingItemName] = useState('');
   const supabase = getSupabaseClient() as any;
 
   useEffect(() => {
@@ -239,34 +237,6 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     }
   };
 
-  const startEditingItemName = (item: TastingItemData) => {
-    setEditingItemId(item.id);
-    setEditingItemName(item.item_name);
-  };
-
-  const saveItemName = async () => {
-    if (!editingItemId || editingItemName.trim() === '') return;
-
-    const item = items.find(i => i.id === editingItemId);
-    if (!item || item.item_name === editingItemName.trim()) {
-      setEditingItemId(null);
-      setEditingItemName('');
-      return;
-    }
-
-    try {
-      await updateItem(editingItemId, { item_name: editingItemName.trim() });
-      setEditingItemId(null);
-      setEditingItemName('');
-    } catch (error) {
-      // Error already handled in updateItem
-    }
-  };
-
-  const cancelEditingItemName = () => {
-    setEditingItemId(null);
-    setEditingItemName('');
-  };
 
   const handleCategoryChange = async (newCategory: string) => {
     try {
@@ -365,11 +335,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             {/* Edit Tasting Controls */}
             <button
               onClick={() => setShowEditTastingDashboard(!showEditTastingDashboard)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-colors ${
-                showEditTastingDashboard
-                  ? 'bg-purple-100 text-purple-800'
-                  : 'bg-white text-purple-600 border border-purple-200 hover:bg-purple-50'
-              }`}
+              className="btn-secondary flex items-center gap-2"
             >
               <Settings size={16} />
               Edit Tasting
@@ -443,53 +409,24 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               
               <div className="flex flex-wrap gap-xs mb-sm">
                 {items.map((item, index) => (
-                  editingItemId === item.id ? (
-                    <div key={item.id} className="flex items-center gap-xs">
-                      <input
-                        type="text"
-                        value={editingItemName}
-                        onChange={(e) => setEditingItemName(e.target.value)}
-                        onBlur={saveItemName}
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') saveItemName();
-                          if (e.key === 'Escape') cancelEditingItemName();
-                        }}
-                        className="px-sm py-xs rounded-lg text-small font-body font-medium border border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 min-h-touch"
-                        autoFocus
-                      />
-                      {item.overall_score !== null && (
-                        <span className="text-success">✓</span>
-                      )}
-                    </div>
-                  ) : (
-                    <button
-                      key={item.id}
-                      onClick={() => setCurrentItemIndex(index)}
-                      onDoubleClick={() => startEditingItemName(item)}
-                      className={`
-                        px-sm py-xs rounded-lg text-small font-body font-medium transition-colors min-h-touch flex items-center gap-1
-                        ${currentItemIndex === index
-                          ? 'bg-primary text-white'
-                          : item.overall_score !== null
-                          ? 'bg-success/10 text-success hover:bg-success/20'
-                          : 'bg-background-surface text-text-secondary hover:bg-border-default'
-                        }
-                      `}
-                    >
-                      <span className="flex-1 text-left">{item.item_name}</span>
-                      {item.overall_score !== null && (
-                        <span>✓</span>
-                      )}
-                      <Edit
-                        size={14}
-                        className="flex-shrink-0 hover:text-primary-600"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          startEditingItemName(item);
-                        }}
-                      />
-                    </button>
-                  )
+                  <button
+                    key={item.id}
+                    onClick={() => setCurrentItemIndex(index)}
+                    className={`
+                      px-sm py-xs rounded-lg text-small font-body font-medium transition-colors min-h-touch
+                      ${currentItemIndex === index
+                        ? 'bg-primary text-white'
+                        : item.overall_score !== null
+                        ? 'bg-success/10 text-success hover:bg-success/20'
+                        : 'bg-background-surface text-text-secondary hover:bg-border-default'
+                      }
+                    `}
+                  >
+                    {item.item_name}
+                    {item.overall_score !== null && (
+                      <span className="ml-xs">✓</span>
+                    )}
+                  </button>
                 ))}
               </div>
             </div>
