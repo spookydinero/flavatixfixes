@@ -243,7 +243,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
       ));
     } catch (error) {
       console.error('Error updating item:', error);
-      toast.error('Failed to update item');
+      // Removed toast.error to prevent annoying notifications during typing
     }
   };
 
