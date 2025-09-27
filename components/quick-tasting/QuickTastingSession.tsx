@@ -316,22 +316,24 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             <h2 className="text-h2 font-heading font-bold text-text-primary mb-2">
               {session.session_name}
             </h2>
-            <div className="flex items-center space-x-4 mb-2">
-              <div className="flex items-center space-x-2">
-                <label className="text-text-secondary font-medium">Category:</label>
-                <select
-                  value={session.category}
-                  onChange={(e) => handleCategoryChange(e.target.value)}
-                  className="form-input text-sm"
-                >
-                  {categories.map(category => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
+            {phase === 'setup' && (
+              <div className="flex items-center space-x-4 mb-2">
+                <div className="flex items-center space-x-2">
+                  <label className="text-text-secondary font-medium">Category:</label>
+                  <select
+                    value={session.category}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                    className="form-input text-sm"
+                  >
+                    {categories.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-            </div>
+            )}
             <p className="text-text-secondary">
               Mode: {session.mode.charAt(0).toUpperCase() + session.mode.slice(1)}
               {session.mode === 'study' && session.study_approach && ` • ${session.study_approach.charAt(0).toUpperCase() + session.study_approach.slice(1)}`}
@@ -350,17 +352,19 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             )}
           </div>
           <div className="mt-4 md:mt-0 flex items-center space-x-4">
-            {/* Edit Tasting Controls */}
-            <button
-              onClick={() => setShowEditTastingDashboard(!showEditTastingDashboard)}
-              className="btn-secondary flex items-center gap-2"
-            >
-              <Settings size={16} />
-              Edit Tasting
-            </button>
+            {/* Edit Tasting Controls - Only show in setup phase */}
+            {phase === 'setup' && (
+              <button
+                onClick={() => setShowEditTastingDashboard(!showEditTastingDashboard)}
+                className="btn-secondary flex items-center gap-2"
+              >
+                <Settings size={16} />
+                Edit Tasting
+              </button>
+            )}
 
             {/* Item Suggestions for Collaborative Study Mode */}
-            {session.mode === 'study' && session.study_approach === 'collaborative' && (
+            {session.mode === 'study' && session.study_approach === 'collaborative' && phase === 'setup' && (
               <button
                 onClick={() => setShowItemSuggestions(!showItemSuggestions)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-colors ${
@@ -461,6 +465,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               isBlindItems={session.is_blind_items}
               isBlindAttributes={session.is_blind_attributes}
               showOverallScore={false}
+              showNotesFields={false}
             />
           ) : (
             <div className="card p-lg text-center">
@@ -487,16 +492,6 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             </div>
           )}
 
-          {/* Session Notes */}
-          <div className="card p-md">
-            <h3 className="text-h4 font-heading font-semibold text-text-primary mb-sm">Other Notes</h3>
-            <textarea
-              value={sessionNotes}
-              onChange={(e) => setSessionNotes(e.target.value)}
-              placeholder="Add notes about this tasting session..."
-              className="form-input w-full h-32 resize-none"
-            />
-          </div>
 
           {/* Competition Ranking */}
           {session.rank_participants && (

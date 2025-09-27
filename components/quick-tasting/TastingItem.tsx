@@ -29,6 +29,7 @@ interface TastingItemProps {
   showFlavorWheel?: boolean;
   showEditControls?: boolean;
   showPhotoControls?: boolean;
+  showNotesFields?: boolean;
 }
 
 const TastingItem: React.FC<TastingItemProps> = ({
@@ -42,6 +43,7 @@ const TastingItem: React.FC<TastingItemProps> = ({
   showFlavorWheel = false,
   showEditControls = true,
   showPhotoControls = true,
+  showNotesFields = true,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [localNotes, setLocalNotes] = useState(item.notes || '');
@@ -299,38 +301,43 @@ const TastingItem: React.FC<TastingItemProps> = ({
         </div>
       )}
 
-      {/* Aroma Section */}
-      <div className="mb-md">
-        <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Aroma</h4>
-        <textarea
-          value={localAroma}
-          onChange={(e) => handleAromaChange(e.target.value)}
-          placeholder={`Describe the ${category}'s aroma...`}
-          className="form-input w-full h-20 tablet:h-24 resize-none text-sm tablet:text-base"
-        />
-      </div>
+      {/* Notes Fields - Only show in tasting/review mode */}
+      {showNotesFields && (
+        <>
+          {/* Aroma Section */}
+          <div className="mb-md">
+            <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Aroma</h4>
+            <textarea
+              value={localAroma}
+              onChange={(e) => handleAromaChange(e.target.value)}
+              placeholder={`Describe the ${category}'s aroma...`}
+              className="form-input w-full h-20 tablet:h-24 resize-none text-sm tablet:text-base"
+            />
+          </div>
 
-      {/* Flavor Section */}
-      <div className="mb-md">
-        <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Flavor</h4>
-        <textarea
-          value={localFlavor}
-          onChange={(e) => handleFlavorChange(e.target.value)}
-          placeholder={`Describe the ${category}'s flavor, taste, and mouthfeel...`}
-          className="form-input w-full h-20 tablet:h-24 resize-none text-sm tablet:text-base"
-        />
-      </div>
+          {/* Flavor Section */}
+          <div className="mb-md">
+            <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Flavor</h4>
+            <textarea
+              value={localFlavor}
+              onChange={(e) => handleFlavorChange(e.target.value)}
+              placeholder={`Describe the ${category}'s flavor, taste, and mouthfeel...`}
+              className="form-input w-full h-20 tablet:h-24 resize-none text-sm tablet:text-base"
+            />
+          </div>
 
-      {/* Other Notes Section */}
-      <div>
-        <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Other Notes</h4>
-        <textarea
-          value={localNotes}
-          onChange={(e) => handleNotesChange(e.target.value)}
-          placeholder={`Additional notes about the ${category}...`}
-          className="form-input w-full h-20 tablet:h-24 resize-none text-sm tablet:text-base"
-        />
-      </div>
+          {/* Other Notes Section */}
+          <div>
+            <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Other Notes</h4>
+            <textarea
+              value={localNotes}
+              onChange={(e) => handleNotesChange(e.target.value)}
+              placeholder={`Additional notes about the ${category}...`}
+              className="form-input w-full h-20 tablet:h-24 resize-none text-sm tablet:text-base"
+            />
+          </div>
+        </>
+      )}
 
       {/* Flavor Wheel */}
       {showFlavorWheel && !isBlindAttributes && (
