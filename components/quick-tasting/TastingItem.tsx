@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { getSupabaseClient } from '../../lib/supabase';
 import { toast } from '../../lib/toast';
 import { Coffee, Wine, Beer, Utensils, Star, Camera, Edit } from 'lucide-react';
+import FlavorWheel from './FlavorWheel';
 
 interface TastingItemData {
   id: string;
@@ -23,6 +24,7 @@ interface TastingItemProps {
   isBlindItems?: boolean;
   isBlindAttributes?: boolean;
   showOverallScore?: boolean;
+  showFlavorWheel?: boolean;
 }
 
 const TastingItem: React.FC<TastingItemProps> = ({
@@ -33,6 +35,7 @@ const TastingItem: React.FC<TastingItemProps> = ({
   isBlindItems = false,
   isBlindAttributes = false,
   showOverallScore = true,
+  showFlavorWheel = false,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [localNotes, setLocalNotes] = useState(item.notes || '');
@@ -322,6 +325,18 @@ const TastingItem: React.FC<TastingItemProps> = ({
           className="form-input w-full h-24 tablet:h-32 resize-none text-sm tablet:text-base"
         />
       </div>
+
+      {/* Flavor Wheel */}
+      {showFlavorWheel && !isBlindAttributes && (
+        <div className="mb-md">
+          <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Flavor Profile</h4>
+          <FlavorWheel
+            category={category}
+            selectedFlavors={item.flavor_scores || {}}
+            onFlavorSelect={(flavors) => onUpdate({ flavor_scores: flavors })}
+          />
+        </div>
+      )}
 
       {/* Flavor Summary */}
       {item.flavor_scores && Object.keys(item.flavor_scores).length > 0 && !isBlindAttributes && (

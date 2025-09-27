@@ -8,8 +8,6 @@ import CompetitionRanking from './CompetitionRanking';
 import { RoleIndicator } from './RoleIndicator';
 import { EditTastingDashboard } from './EditTastingDashboard';
 import { ItemSuggestions } from './ItemSuggestions';
-import FlavorProfileScreen from './FlavorProfileScreen';
-import OverallScoreScreen from './OverallScoreScreen';
 import { toast } from '../../lib/toast';
 import { Utensils, Settings, Play } from 'lucide-react';
 
@@ -137,7 +135,6 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const [showEditTastingDashboard, setShowEditTastingDashboard] = useState(false);
   const [showItemSuggestions, setShowItemSuggestions] = useState(false);
   const [phase, setPhase] = useState<'setup' | 'tasting'>('setup');
-  const [tastingScreen, setTastingScreen] = useState<'flavor' | 'score'>('flavor');
   const supabase = getSupabaseClient() as any;
 
   useEffect(() => {
@@ -267,21 +264,11 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const startTasting = () => {
     setPhase('tasting');
     setCurrentItemIndex(0);
-    setTastingScreen('flavor');
   };
 
-  const handleFlavorNext = () => {
-    setTastingScreen('score');
-  };
-
-  const handleScoreBack = () => {
-    setTastingScreen('flavor');
-  };
-
-  const handleScoreNext = () => {
+  const handleNextItem = () => {
     if (currentItemIndex < items.length - 1) {
       setCurrentItemIndex(currentItemIndex + 1);
-      setTastingScreen('flavor');
     } else {
       completeSession();
     }
@@ -538,30 +525,64 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
     {/* Tasting Phase */}
     {phase === 'tasting' && currentItem && (
-      <div>
-        {tastingScreen === 'flavor' && (
-          <FlavorProfileScreen
-            item={currentItem}
-            category={session.category}
-            onFlavorSelect={(flavors) => updateItem(currentItem.id, { flavor_scores: flavors })}
-            onNext={handleFlavorNext}
-            onBack={handleBackToSetup}
-            isFirst={currentItemIndex === 0}
-            isLast={false}
-          />
-        )}
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="card p-md mb-lg">
+          <div className="text-center">
+            <h2 className="text-h2 font-heading font-bold text-text-primary mb-sm">
+              Tasting {currentItem.item_name}
+            </h2>
+            <p className="text-body font-body text-text-secondary mb-md">
+              Rate the flavors and overall impression of <strong>{currentItem.item_name}</strong>
+            </p>
+            <div className="flex items-center justify-center space-x-sm">
+              <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                <span className="text-primary-800 font-bold text-lg">🍷</span>
+              </div>
+              <div className="text-left">
+                <div className="text-small font-body font-medium text-text-primary">
+                  {currentItem.item_name}
+                </div>
+                <div className="text-caption font-body text-text-secondary">
+                  {session.category.charAt(0).toUpperCase() + session.category.slice(1)} Tasting
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        {tastingScreen === 'score' && (
-          <OverallScoreScreen
-            item={currentItem}
-            category={session.category}
-            onScoreChange={(score) => updateItem(currentItem.id, { overall_score: score })}
-            onNext={handleScoreNext}
-            onBack={handleScoreBack}
-            isFirst={currentItemIndex === 0}
-            isLast={currentItemIndex === items.length - 1}
-          />
-        )}
+        {/* Unified Tasting Item */}
+        <TastingItem
+          item={currentItem}
+          category={session.category}
+          userId={session.user_id}
+          onUpdate={(updates: Partial<TastingItemData>) => updateItem(currentItem.id, updates)}
+          isBlindItems={session.is_blind_items}
+          isBlindAttributes={session.is_blind_attributes}
+          showOverallScore={true}
+          showFlavorWheel={true}
+        />
+
+        {/* Navigation */}
+        <div className="flex justify-between items-center mt-lg">
+          <button
+            onClick={handleBackToSetup}
+            className="btn-secondary"
+          >
+            Back to Setup
+          </button>
+          <div className="text-center">
+            <div className="text-small font-body text-text-secondary">
+              Item {currentItemIndex + 1} of {items.length}
+            </div>
+          </div>
+          <button
+            onClick={handleNextItem}
+            className="btn-primary"
+          >
+            {currentItemIndex === items.length - 1 ? 'Complete Tasting' : 'Next Item'}
+          </button>
+        </div>
       </div>
     )}
     </div>
