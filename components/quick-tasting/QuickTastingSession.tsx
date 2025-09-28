@@ -320,6 +320,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const handleNextItem = () => {
     if (currentItemIndex < items.length - 1) {
       setCurrentItemIndex(currentItemIndex + 1);
+      setShowEditTastingDashboard(false); // Close edit dashboard when moving to next item
     } else {
       completeSession();
     }
@@ -643,7 +644,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           isBlindAttributes={session.is_blind_attributes}
           showOverallScore={false}
           showFlavorWheel={false}
-          showEditControls={false}
+          showEditControls={true}
           showPhotoControls={false}
         />
 
