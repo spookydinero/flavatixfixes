@@ -40,38 +40,38 @@
 - Paths based on existing Next.js structure
 
 ## Phase 3.1: Setup
-- [ ] T001 Verify existing dependencies and project structure
-- [ ] T002 [P] Configure testing environment for new components
+- [x] T001 Verify existing dependencies and project structure
+- [x] T002 [P] Configure testing environment for new components
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
-- [ ] T003 [P] Component test for CategoryDropdown in tests/components/CategoryDropdown.test.tsx
-- [ ] T004 [P] Integration test for mode display removal in tests/integration/mode-display-removal.test.tsx
-- [ ] T005 [P] Integration test for category change functionality in tests/integration/category-change.test.tsx
-- [ ] T006 [P] E2E test for complete user workflow in tests/e2e/category-dropdown.spec.ts
+- [x] T003 [P] Component test for CategoryDropdown in tests/components/CategoryDropdown.test.tsx
+- [x] T004 [P] Integration test for mode display removal in tests/integration/mode-display-removal.test.tsx
+- [x] T005 [P] Integration test for category change functionality in tests/integration/category-change.test.tsx
+- [x] T006 [P] E2E test for complete user workflow in tests/e2e/category-dropdown.spec.ts
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
-- [ ] T007 [P] Create CategoryDropdown component in components/quick-tasting/CategoryDropdown.tsx
-- [ ] T008 Remove mode display from QuickTastingSession in components/quick-tasting/QuickTastingSession.tsx
-- [ ] T009 Add category dropdown to session header in components/quick-tasting/QuickTastingSession.tsx
-- [ ] T010 Update session header layout and styling
-- [ ] T011 Integrate CategoryDropdown with existing handleCategoryChange function
-- [ ] T012 Add loading states and error handling for category changes
-- [ ] T013 Ensure mobile responsiveness and accessibility compliance
+- [x] T007 [P] Create CategoryDropdown component in components/quick-tasting/CategoryDropdown.tsx
+- [x] T008 Remove mode display from QuickTastingSession in components/quick-tasting/QuickTastingSession.tsx
+- [x] T009 Add category dropdown to session header in components/quick-tasting/QuickTastingSession.tsx
+- [x] T010 Update session header layout and styling
+- [x] T011 Integrate CategoryDropdown with existing handleCategoryChange function
+- [x] T012 Add loading states and error handling for category changes
+- [x] T013 Ensure mobile responsiveness and accessibility compliance
 
 ## Phase 3.4: Integration
-- [ ] T014 Connect CategoryDropdown to existing session state management
-- [ ] T015 Verify real-time updates work correctly
-- [ ] T016 Test category change persistence across page refreshes
-- [ ] T017 Ensure compatibility with existing item management
+- [x] T014 Connect CategoryDropdown to existing session state management
+- [x] T015 Verify real-time updates work correctly
+- [x] T016 Test category change persistence across page refreshes
+- [x] T017 Ensure compatibility with existing item management
 
 ## Phase 3.5: Polish
-- [ ] T018 [P] Unit tests for CategoryDropdown component logic in tests/unit/CategoryDropdown.test.tsx
-- [ ] T019 [P] Unit tests for session header modifications in tests/unit/QuickTastingSession.test.tsx
-- [ ] T020 Performance validation (< 100ms response time)
-- [ ] T021 [P] Update component documentation
-- [ ] T022 Remove any code duplication
-- [ ] T023 Run manual testing following quickstart.md workflow
+- [x] T018 [P] Unit tests for CategoryDropdown component logic in tests/unit/CategoryDropdown.test.tsx
+- [x] T019 [P] Unit tests for session header modifications in tests/unit/QuickTastingSession.test.tsx
+- [x] T020 Performance validation (< 100ms response time)
+- [x] T021 [P] Update component documentation
+- [x] T022 Remove any code duplication
+- [x] T023 Run manual testing following quickstart.md workflow
 
 ## Dependencies
 - Tests (T003-T006) before implementation (T007-T013)

@@ -8,19 +8,10 @@ import CompetitionRanking from './CompetitionRanking';
 import { RoleIndicator } from './RoleIndicator';
 import { EditTastingDashboard } from './EditTastingDashboard';
 import { ItemSuggestions } from './ItemSuggestions';
+import { CategoryDropdown, CATEGORIES } from './CategoryDropdown';
 import { ItemNavigationDropdown } from './ItemNavigationDropdown';
 import { toast } from '../../lib/toast';
 import { Utensils, Settings, Play, Edit } from 'lucide-react';
-
-const categories = [
-  { id: 'coffee', name: 'Coffee' },
-  { id: 'tea', name: 'Tea' },
-  { id: 'wine', name: 'Wine' },
-  { id: 'spirits', name: 'Spirits' },
-  { id: 'beer', name: 'Beer' },
-  { id: 'chocolate', name: 'Chocolate' },
-  { id: 'other', name: 'Other' },
-];
 
 interface QuickTasting {
   id: string;
@@ -123,7 +114,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                 className="form-input"
               >
                 <option value="">Select a category</option>
-                {categories.map(category => (
+                {CATEGORIES.map(category => (
                   <option key={category.id} value={category.id}>
                     {category.name}
                   </option>
@@ -148,6 +139,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const [phase, setPhase] = useState<'setup' | 'tasting'>(session.mode === 'quick' ? 'tasting' : 'setup');
   const [isEditingSessionName, setIsEditingSessionName] = useState(false);
   const [editingSessionName, setEditingSessionName] = useState(session.session_name || '');
+  const [isChangingCategory, setIsChangingCategory] = useState(false);
   const supabase = getSupabaseClient() as any;
 
   useEffect(() => {
@@ -270,6 +262,9 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
 
   const handleCategoryChange = async (newCategory: string) => {
+    if (newCategory === session.category) return; // No change needed
+
+    setIsChangingCategory(true);
     try {
       const { data, error } = await supabase
         .from('quick_tastings')
@@ -288,6 +283,8 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     } catch (error) {
       console.error('Error updating category:', error);
       toast.error('Failed to update category');
+    } finally {
+      setIsChangingCategory(false);
     }
   };
 
@@ -499,7 +496,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                     onChange={(e) => handleCategoryChange(e.target.value)}
                     className="form-input text-sm"
                   >
-                    {categories.map(category => (
+                    {CATEGORIES.map(category => (
                       <option key={category.id} value={category.id}>
                         {category.name}
                       </option>
@@ -508,14 +505,20 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                 </div>
               </div>
             )}
-            <p className="text-text-secondary">
-              Category: {getDisplayCategoryName(session.category, session.custom_category_name)}
-              {' • '}
-              Mode: {session.mode.charAt(0).toUpperCase() + session.mode.slice(1)}
-              {session.mode === 'study' && session.study_approach && ` • ${session.study_approach.charAt(0).toUpperCase() + session.study_approach.slice(1)}`}
-              {session.rank_participants && ' • Ranked Competition'}
-              {(session.is_blind_participants || session.is_blind_items || session.is_blind_attributes) && ' • Blind Tasting'}
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 space-y-1 sm:space-y-0 text-text-secondary">
+              <span className="text-sm font-medium">Category:</span>
+              <CategoryDropdown
+                category={session.category}
+                onCategoryChange={handleCategoryChange}
+                className="text-sm w-full sm:w-auto"
+                isLoading={isChangingCategory}
+              />
+              <div className="flex flex-wrap items-center space-x-2 text-xs">
+                {session.mode === 'study' && session.study_approach && <span>• {session.study_approach.charAt(0).toUpperCase() + session.study_approach.slice(1)}</span>}
+                {session.rank_participants && <span>• Ranked Competition</span>}
+                {(session.is_blind_participants || session.is_blind_items || session.is_blind_attributes) && <span>• Blind Tasting</span>}
+              </div>
+            </div>
             {userRole && session.mode !== 'quick' && (
               <div className="mt-2">
                 <RoleIndicator
