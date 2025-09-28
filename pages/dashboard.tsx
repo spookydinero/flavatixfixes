@@ -122,10 +122,10 @@ export default function Dashboard() {
            {activeTab === 'home' && (
              <div className="p-6">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
+              <h2 className="text-2xl font-bold text-primary mb-2">
                 Welcome back, {profile?.full_name || user?.email}!
               </h2>
-              <p className="text-zinc-600 dark:text-zinc-400">
+              <p className="text-zinc-600">
                 Ready to explore new flavors?
               </p>
             </div>
