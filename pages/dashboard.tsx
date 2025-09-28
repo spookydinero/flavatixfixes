@@ -80,7 +80,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="bg-background-light font-display text-zinc-900 min-h-screen pb-20">
+    <div className="bg-background-light font-display text-zinc-900 min-h-screen">
       <div className="flex h-screen flex-col">
         <header className="flex items-center border-b border-zinc-200 dark:border-zinc-700 p-4">
            <h1 className="flex-1 text-center text-xl font-bold">
@@ -94,7 +94,7 @@ export default function Dashboard() {
            </button>
          </header>
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto pb-20">
            {/* Main Tab Navigation */}
            <div className="flex border-b border-zinc-200 dark:border-zinc-700">
              <button

@@ -331,6 +331,14 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     setPhase('setup');
   };
 
+  const handlePreviousItem = () => {
+    if (currentItemIndex > 0) {
+      setCurrentItemIndex(currentItemIndex - 1);
+      setShowEditTastingDashboard(false);
+      setShowItemSuggestions(false);
+    }
+  };
+
   const handleAddNextItem = async () => {
     // Add new item and switch to tasting phase
     await addNewItem();
@@ -369,7 +377,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const currentItem = items[currentItemIndex];
   const hasItems = items.length > 0;
   const completedItems = phase === 'tasting'
-    ? currentItemIndex + 1  // In tasting phase, show navigation progress
+    ? currentItemIndex  // In tasting phase, show items completed so far
     : items.filter(item => item.overall_score !== null).length;  // In setup phase, show scored items
 
   return (
@@ -713,12 +721,21 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
         {/* Navigation */}
         <div className="flex justify-between items-center mt-lg">
-          <button
-            onClick={handleBackToSetup}
-            className="btn-secondary"
-          >
-            Back to Setup
-          </button>
+          {currentItemIndex === 0 ? (
+            <button
+              onClick={handleBackToSetup}
+              className="btn-secondary"
+            >
+              Back to Setup
+            </button>
+          ) : (
+            <button
+              onClick={handlePreviousItem}
+              className="btn-secondary"
+            >
+              Previous Item
+            </button>
+          )}
           <div className="text-center">
             <div className="text-small font-body text-text-secondary">
               Item {currentItemIndex + 1} of {items.length}
