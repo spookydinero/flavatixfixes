@@ -321,6 +321,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     if (currentItemIndex < items.length - 1) {
       setCurrentItemIndex(currentItemIndex + 1);
       setShowEditTastingDashboard(false); // Close edit dashboard when moving to next item
+      setShowItemSuggestions(false); // Also close item suggestions
     } else {
       completeSession();
     }
@@ -367,7 +368,9 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
   const currentItem = items[currentItemIndex];
   const hasItems = items.length > 0;
-  const completedItems = items.filter(item => item.overall_score !== null).length;
+  const completedItems = phase === 'tasting'
+    ? currentItemIndex + 1  // In tasting phase, show navigation progress
+    : items.filter(item => item.overall_score !== null).length;  // In setup phase, show scored items
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -472,8 +475,8 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         </div>
       </div>
 
-      {/* Edit Tasting Dashboard */}
-      {showEditTastingDashboard && (
+      {/* Edit Tasting Dashboard - Only show in setup phase */}
+      {showEditTastingDashboard && phase === 'setup' && (
         <div className="mb-lg">
           <EditTastingDashboard
             session={session}
