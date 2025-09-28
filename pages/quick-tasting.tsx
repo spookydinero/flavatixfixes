@@ -69,7 +69,7 @@ const QuickTastingPage: React.FC = () => {
             .insert({
               user_id: user.id,
               category: 'coffee',
-              session_name: 'Coffee Tasting',
+              session_name: 'Quick Tasting',
               mode: 'quick'
             })
             .select()

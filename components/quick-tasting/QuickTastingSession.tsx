@@ -9,7 +9,7 @@ import { RoleIndicator } from './RoleIndicator';
 import { EditTastingDashboard } from './EditTastingDashboard';
 import { ItemSuggestions } from './ItemSuggestions';
 import { toast } from '../../lib/toast';
-import { Utensils, Settings, Play } from 'lucide-react';
+import { Utensils, Settings, Play, Edit } from 'lucide-react';
 
 const categories = [
   { id: 'coffee', name: 'Coffee' },
@@ -106,7 +106,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                       .insert({
                         user_id: userId,
                         category,
-                        session_name: `${category.charAt(0).toUpperCase() + category.slice(1)} Tasting`,
+                        session_name: 'Quick Tasting',
                         mode: 'quick'
                       })
                       .select()
@@ -144,12 +144,18 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const [showEditTastingDashboard, setShowEditTastingDashboard] = useState(false);
   const [showItemSuggestions, setShowItemSuggestions] = useState(false);
   const [phase, setPhase] = useState<'setup' | 'tasting'>('setup');
+  const [isEditingSessionName, setIsEditingSessionName] = useState(false);
+  const [editingSessionName, setEditingSessionName] = useState(session.session_name || '');
   const supabase = getSupabaseClient() as any;
 
   useEffect(() => {
     loadTastingItems();
     loadUserRole();
   }, [session.id, userId]);
+
+  useEffect(() => {
+    setEditingSessionName(session.session_name || '');
+  }, [session.session_name]);
 
   const loadUserRole = async () => {
     try {
@@ -276,6 +282,41 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     setShowEditTastingDashboard(false);
   };
 
+  const startEditingSessionName = () => {
+    setIsEditingSessionName(true);
+    setEditingSessionName(session.session_name || '');
+  };
+
+  const saveSessionName = async () => {
+    if (editingSessionName.trim() && editingSessionName.trim() !== session.session_name) {
+      try {
+        const { data, error } = await supabase
+          .from('quick_tastings')
+          .update({ session_name: editingSessionName.trim() })
+          .eq('id', session.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        const updatedSession = { ...session, session_name: editingSessionName.trim() };
+        if (onSessionUpdate) {
+          onSessionUpdate(updatedSession);
+        }
+        toast.success('Session name updated!');
+      } catch (error) {
+        console.error('Error updating session name:', error);
+        toast.error('Failed to update session name');
+      }
+    }
+    setIsEditingSessionName(false);
+  };
+
+  const cancelEditingSessionName = () => {
+    setEditingSessionName(session.session_name || '');
+    setIsEditingSessionName(false);
+  };
+
   const handleNextItem = () => {
     if (currentItemIndex < items.length - 1) {
       setCurrentItemIndex(currentItemIndex + 1);
@@ -286,6 +327,16 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
   const handleBackToSetup = () => {
     setPhase('setup');
+  };
+
+  const handleAddNextItem = async () => {
+    // Add new item and switch to tasting phase
+    await addNewItem();
+    setPhase('tasting');
+  };
+
+  const handleEndTasting = () => {
+    completeSession();
   };
 
   const completeSession = async () => {
@@ -323,9 +374,29 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
       <div className="card p-md mb-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-h2 font-heading font-bold text-text-primary mb-2">
-              {session.session_name}
-            </h2>
+            {isEditingSessionName ? (
+              <div className="flex items-center space-x-2 mb-2">
+                <input
+                  type="text"
+                  value={editingSessionName}
+                  onChange={(e) => setEditingSessionName(e.target.value)}
+                  onBlur={saveSessionName}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') saveSessionName();
+                    if (e.key === 'Escape') cancelEditingSessionName();
+                  }}
+                  className="text-h2 font-heading font-bold text-text-primary bg-transparent border-b border-primary-500 focus:outline-none flex-1"
+                  autoFocus
+                />
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2 mb-2 group cursor-pointer" onClick={startEditingSessionName}>
+                <h2 className="text-h2 font-heading font-bold text-text-primary">
+                  {session.session_name}
+                </h2>
+                <Edit size={20} className="text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            )}
             {phase === 'setup' && (
               <div className="flex items-center space-x-4 mb-2">
                 <div className="flex items-center space-x-2">
@@ -431,15 +502,6 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             <div className="card p-md">
               <div className="flex items-center justify-between mb-sm">
                 <h3 className="text-h4 font-heading font-semibold text-text-primary">Items</h3>
-                {((session.mode === 'study' && session.study_approach !== 'collaborative' && userPermissions.canAddItems) ||
-                  (session.mode === 'quick')) && (
-                  <button
-                    onClick={addNewItem}
-                    className="btn-primary"
-                  >
-                    Add Item
-                  </button>
-                )}
               </div>
               
               <div className="flex flex-wrap gap-xs mb-sm">
@@ -476,8 +538,9 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               onUpdate={(updates: Partial<TastingItemData>) => updateItem(currentItem.id, updates)}
               isBlindItems={session.is_blind_items}
               isBlindAttributes={session.is_blind_attributes}
-              showOverallScore={false}
-              showNotesFields={false}
+              showOverallScore={true}
+              showNotesFields={true}
+              showFlavorWheel={false}
             />
           ) : (
             <div className="card p-lg text-center">
@@ -485,12 +548,19 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                 <Utensils size={64} className="text-text-secondary" />
               </div>
               <h3 className="text-h3 font-heading font-semibold text-text-primary mb-2">
-                {session.mode === 'competition' ? 'Waiting for Items' : 'No Items Yet'}
+                {hasItems
+                  ? 'Add Next Item'
+                  : session.mode === 'competition'
+                    ? 'Waiting for Items'
+                    : 'No Items Yet'
+                }
               </h3>
               <p className="text-text-secondary mb-md">
-                {session.mode === 'competition'
-                  ? 'Items should be preloaded for competition mode.'
-                  : 'Add your first item to start tasting!'
+                {hasItems
+                  ? 'Add another item to continue your tasting session.'
+                  : session.mode === 'competition'
+                    ? 'Items should be preloaded for competition mode.'
+                    : 'Add your first item to start tasting!'
                 }
               </p>
               {(session.mode === 'study' || session.mode === 'quick') && (
@@ -498,7 +568,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                   onClick={addNewItem}
                   className="btn-primary"
                 >
-                  Add First Item
+                  {hasItems ? 'Add Next Item' : 'Add First Item'}
                 </button>
               )}
             </div>
@@ -515,15 +585,20 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           )}
         </div>
 
-        {/* Start Tasting Button */}
-        {hasItems && (
-          <div className="mt-8 flex justify-center">
+        {/* Item Action Buttons */}
+        {currentItem && (
+          <div className="mt-8 flex justify-center gap-4">
             <button
-              onClick={startTasting}
+              onClick={handleAddNextItem}
+              className="btn-secondary flex items-center gap-2"
+            >
+              Next Item
+            </button>
+            <button
+              onClick={handleEndTasting}
               className="btn-primary flex items-center gap-2"
             >
-              <Play size={16} />
-              Start Tasting
+              End Tasting
             </button>
           </div>
         )}
@@ -567,7 +642,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           isBlindItems={session.is_blind_items}
           isBlindAttributes={session.is_blind_attributes}
           showOverallScore={false}
-          showFlavorWheel={true}
+          showFlavorWheel={false}
           showEditControls={false}
           showPhotoControls={false}
         />
@@ -629,24 +704,6 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               </div>
             </div>
 
-            {/* Flavor Summary */}
-            {currentItem.flavor_scores && Object.keys(currentItem.flavor_scores).length > 0 && (
-              <div className="mt-8 pt-6 border-t border-border-default">
-                <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">
-                  Selected Flavors
-                </h4>
-                <div className="flex flex-wrap gap-xs">
-                  {Object.entries(currentItem.flavor_scores).map(([flavor, score]) => (
-                    <div
-                      key={flavor}
-                      className="px-sm py-xs bg-primary-100 text-primary-800 rounded-full text-xs tablet:text-small font-body font-medium"
-                    >
-                      {flavor} ({score as number}/100)
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 

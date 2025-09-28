@@ -5,7 +5,6 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -246,9 +245,6 @@ module.exports = {
         'gradient-conic-to-b': 'conic-gradient(from 0deg at 50% 50%, var(--tw-gradient-stops))',
         'gradient-conic-to-l': 'conic-gradient(from 90deg at 50% 50%, var(--tw-gradient-stops))',
         'gradient-conic-to-r': 'conic-gradient(from 270deg at 50% 50%, var(--tw-gradient-stops))',
-        // Dark mode gradients
-        'gradient-dark': 'linear-gradient(135deg, #121212 0%, #1E1E1E 100%)',
-        'gradient-dark-surface': 'linear-gradient(135deg, #1E1E1E 0%, #2A2A2A 100%)',
       },
       backdropBlur: {
         none: '0',
@@ -384,7 +380,6 @@ module.exports = {
         'touch': { 'raw': '(hover: none) and (pointer: coarse)' },
         'hover': { 'raw': '(hover: hover) and (pointer: fine)' },
         'reduced-motion': { 'raw': '(prefers-reduced-motion: reduce)' },
-        'dark': { 'raw': '(prefers-color-scheme: dark)' },
       },
       aria: {
         busy: 'busy="true"',

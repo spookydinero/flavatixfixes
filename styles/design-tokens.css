@@ -283,53 +283,6 @@
   --container-7xl: 80rem;
 }
 
-/* === DARK MODE TOKENS === */
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Background Colors */
-    --color-background-app: #121212;
-    --color-background-surface: #1E1E1E;
-    --color-background-surface-secondary: #2A2A2A;
-    --color-background-muted: #363636;
-    
-    /* Text Colors */
-    --color-text-primary: #FFFFFF;
-    --color-text-secondary: #B3B3B3;
-    --color-text-muted: #737373;
-    --color-text-inverse: #2C1810;
-    
-    /* Border Colors */
-    --color-border-subtle: rgba(255, 255, 255, 0.08);
-    --color-border-default: rgba(255, 255, 255, 0.12);
-    --color-border-strong: rgba(255, 255, 255, 0.20);
-    
-    /* Input-specific Colors for Dark Mode */
-    --color-border-input: rgba(255, 255, 255, 0.12);
-    --color-background-input: #1E1E1E;
-  }
-}
-
-/* === DARK MODE CLASS-BASED === */
-
-.dark {
-  /* Background Colors */
-  --color-background-app: #121212;
-  --color-background-surface: #1E1E1E;
-  --color-background-surface-secondary: #2A2A2A;
-  --color-background-muted: #363636;
-  
-  /* Text Colors */
-  --color-text-primary: #FFFFFF;
-  --color-text-secondary: #B3B3B3;
-  --color-text-muted: #737373;
-  --color-text-inverse: #2C1810;
-  
-  /* Border Colors */
-  --color-border-subtle: rgba(255, 255, 255, 0.08);
-  --color-border-default: rgba(255, 255, 255, 0.12);
-  --color-border-strong: rgba(255, 255, 255, 0.20);
-}
 
 /* === REDUCED MOTION === */
 

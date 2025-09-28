@@ -326,6 +326,55 @@ const TastingItem: React.FC<TastingItemProps> = ({
             />
           </div>
 
+          {/* Overall Score - Show when requested */}
+          {showOverallScore && (
+            <div className="mb-md">
+              <div className="text-center">
+                <div className="text-xs tablet:text-sm font-medium text-text-primary mb-6 tracking-widest uppercase">
+                  Overall Score
+                </div>
+                <div className="flex flex-col items-center space-y-6">
+                  <div className="relative w-48 mobile:w-52 tablet:w-64">
+                    <input
+                      type="range"
+                      min="1"
+                      max="100"
+                      value={localScore}
+                      onChange={(e) => handleScoreChange(parseInt(e.target.value))}
+                      className="w-full h-px bg-neutral-200 rounded-full appearance-none cursor-pointer slider-ultra-thin shadow-none border-0"
+                      style={{
+                        background: `linear-gradient(to right,
+                          var(--color-neutral-200) 0%,
+                          var(--color-primary-500) ${localScore}%,
+                          var(--color-neutral-200) ${localScore}%,
+                          var(--color-neutral-200) 100%)`
+                      }}
+                    />
+                    <div className="absolute -top-1.5 left-0 w-full h-4 pointer-events-none flex items-center">
+                      <div
+                        className="absolute w-2 h-2 bg-white rounded-full shadow-sm border border-neutral-300 transition-all duration-200 ease-out"
+                        style={{
+                          left: `calc(${((localScore - 1) / 99) * 100}% - 4px)`,
+                          borderColor: localScore > 80 ? '#737373' : localScore > 60 ? '#a3a3a3' : localScore > 40 ? '#d4d4d4' : '#e5e5e5'
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="text-center space-y-2">
+                    <div className="text-4xl mobile:text-5xl tablet:text-6xl font-thin text-neutral-600 tracking-tight leading-none">
+                      {localScore}
+                    </div>
+                    {localScore > 0 && (
+                      <div className="text-sm mobile:text-base tablet:text-lg font-normal text-neutral-400 animate-fade-in leading-relaxed tracking-wide opacity-80">
+                        {getScoreLabel(localScore)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Other Notes Section */}
           <div>
             <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Other Notes</h4>
@@ -367,6 +416,7 @@ const TastingItem: React.FC<TastingItemProps> = ({
           </div>
         </div>
       )}
+
     </div>
   );
 };
