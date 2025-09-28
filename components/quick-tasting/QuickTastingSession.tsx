@@ -333,6 +333,17 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     }
   };
 
+  const handleNextOrAdd = async () => {
+    if (currentItemIndex < items.length - 1) {
+      setCurrentItemIndex(currentItemIndex + 1);
+      setShowEditTastingDashboard(false);
+      setShowItemSuggestions(false);
+    } else {
+      await addNewItem();
+      setPhase('tasting'); // Ensure phase is tasting
+    }
+  };
+
   const handleBackToSetup = () => {
     setPhase('setup');
   };
@@ -665,85 +676,25 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           onUpdate={(updates: Partial<TastingItemData>) => updateItem(currentItem.id, updates)}
           isBlindItems={session.is_blind_items}
           isBlindAttributes={session.is_blind_attributes}
-          showOverallScore={false}
+          showOverallScore={true}
           showFlavorWheel={false}
           showEditControls={true}
           showPhotoControls={false}
         />
 
-        {/* Overall Score Card */}
-        <div className="card p-lg mb-lg">
-          <div className="text-center">
-            <div className="text-xs tablet:text-sm font-medium text-text-primary mb-8 tracking-widest uppercase">
-              Overall Score
-            </div>
-            <div className="flex flex-col items-center space-y-8">
-              <div className="relative w-48 mobile:w-52 tablet:w-64">
-                <input
-                  type="range"
-                  min="1"
-                  max="100"
-                  value={currentItem.overall_score || 0}
-                  onChange={(e) => updateItem(currentItem.id, { overall_score: parseInt(e.target.value) })}
-                  className="w-full h-px bg-neutral-200 rounded-full appearance-none cursor-pointer slider-ultra-thin shadow-none border-0"
-                  style={{
-                    background: `linear-gradient(to right,
-                      var(--color-neutral-200) 0%,
-                      var(--color-primary-500) ${currentItem.overall_score || 0}%,
-                      var(--color-neutral-200) ${currentItem.overall_score || 0}%,
-                      var(--color-neutral-200) 100%)`
-                  }}
-                />
-                <div className="absolute -top-1.5 left-0 w-full h-4 pointer-events-none flex items-center">
-                  <div
-                    className="absolute w-2 h-2 bg-white rounded-full shadow-sm border border-neutral-300 transition-all duration-200 ease-out"
-                    style={{
-                      left: `calc(${(((currentItem.overall_score || 0) - 1) / 99) * 100}% - 4px)`,
-                      borderColor: (currentItem.overall_score || 0) > 80 ? '#737373' : (currentItem.overall_score || 0) > 60 ? '#a3a3a3' : (currentItem.overall_score || 0) > 40 ? '#d4d4d4' : '#e5e5e5'
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="text-center space-y-2">
-                <div className="text-4xl mobile:text-5xl tablet:text-6xl font-thin text-neutral-600 tracking-tight leading-none">
-                  {currentItem.overall_score || 0}
-                </div>
-                {(currentItem.overall_score || 0) > 0 && (
-                  <div className="text-sm mobile:text-base tablet:text-lg font-normal text-neutral-400 animate-fade-in leading-relaxed tracking-wide opacity-80">
-                    {(() => {
-                      const score = currentItem.overall_score || 0;
-                      if (score >= 90) return '(Exceptional)';
-                      if (score >= 80) return '(Excellent)';
-                      if (score >= 70) return '(Very Good)';
-                      if (score >= 60) return '(Good)';
-                      if (score >= 50) return '(Average)';
-                      if (score >= 40) return '(Below Average)';
-                      if (score >= 30) return '(Poor)';
-                      if (score >= 20) return '(Very Poor)';
-                      if (score >= 10) return '(Terrible)';
-                      return '(Unacceptable)';
-                    })()}
-                  </div>
-                )}
-              </div>
-            </div>
-
-          </div>
-        </div>
-
         {/* Navigation */}
-        <div className="flex justify-between items-center mt-lg px-4">
+        <div className="flex justify-center items-center mt-lg px-4 gap-4">
           <button
-            onClick={handleBack}
+            onClick={handleNextOrAdd}
             className="btn-secondary"
           >
-            {currentItemIndex > 0 ? 'Previous Item' : 'Back to Setup'}
+            Next Item
           </button>
           <button
-            onClick={handleNextItem}
+            onClick={completeSession}
             className="btn-primary"
           >
-            {currentItemIndex === items.length - 1 ? 'Complete Tasting' : 'Next Item'}
+            Complete Tasting
           </button>
         </div>
       </div>
