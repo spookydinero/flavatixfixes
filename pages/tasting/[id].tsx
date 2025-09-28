@@ -34,6 +34,7 @@ const TastingSessionPage: React.FC = () => {
   const [session, setSession] = useState<QuickTasting | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasAccess, setHasAccess] = useState(false);
   const supabase = getSupabaseClient();
 
   useEffect(() => {
@@ -80,36 +81,61 @@ const TastingSessionPage: React.FC = () => {
         return;
       }
 
-      // Check if user has access to this session (either creator or participant)
-      const { data: participantData, error: participantError } = await supabase
-        .from('tasting_participants')
-        .select('*')
-        .eq('tasting_id', id)
-        .eq('user_id', user.id)
-        .single();
+      // Check access based on tasting mode
+      const tastingMode = (sessionData as any).mode;
+      const isCreator = (sessionData as any).user_id === user.id;
 
-      if (participantError && (sessionData as any).user_id !== user.id) {
-        // If not a participant and not the creator, try to add as participant
-        try {
-          const { error: addError } = await supabase
-            .from('tasting_participants')
-            .insert({
-              tasting_id: id as string,
-              user_id: user.id,
-              role: 'participant'
-            } as any);
-
-          if (addError) {
-            throw addError;
-          }
-        } catch (addError) {
-          console.error('Error adding participant:', addError);
+      if (tastingMode === 'quick') {
+        // For quick tasting: only creator has access, no participant records needed
+        if (!isCreator) {
           setError('You do not have access to this tasting session');
           return;
+        }
+        // Quick tasting doesn't need participant records
+      } else {
+        // For study mode: use full participant logic
+        const { data: participantData, error: participantError } = await supabase
+          .from('tasting_participants')
+          .select('*')
+          .eq('tasting_id', id)
+          .eq('user_id', user.id)
+          .single();
+
+        const isParticipant = !participantError && participantData;
+
+        if (!isCreator && !isParticipant) {
+          // User has no access to this session
+          setError('You do not have access to this tasting session');
+          return;
+        }
+
+        // If user is creator but not a participant record, add them as participant
+        if (isCreator && !isParticipant) {
+          try {
+            const { error: addError } = await supabase
+              .from('tasting_participants')
+              .insert({
+                tasting_id: id as string,
+                user_id: user.id,
+                role: 'host' // Creator gets host role
+              } as any);
+
+            if (addError && !addError.message?.includes('duplicate key')) {
+              // Only fail if it's not a duplicate key error
+              throw addError;
+            }
+          } catch (addError) {
+            if (!addError.message?.includes('duplicate key')) {
+              console.error('Error adding creator as participant:', addError);
+              setError('Failed to initialize session access');
+              return;
+            }
+          }
         }
       }
 
       setSession(sessionData);
+      setHasAccess(true);
     } catch (error: any) {
       console.error('Error loading session:', error);
       setError(error.message || 'Failed to load tasting session');
@@ -162,7 +188,7 @@ const TastingSessionPage: React.FC = () => {
     );
   }
 
-  if (!session) {
+  if (!session || !hasAccess) {
     return null;
   }
 

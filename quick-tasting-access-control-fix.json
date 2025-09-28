@@ -1,0 +1,131 @@
+{
+  "feature_specification": {
+    "title": "Quick Tasting Access Control Fix",
+    "description": "Fix access control logic for quick tasting sessions to not require participant roles",
+    "problem_statement": "Quick tasting sessions currently try to load participant roles and permissions, but quick tasting doesn't have host/participant concepts. This causes 406/409 errors and unnecessary participant record creation attempts.",
+    "business_context": "Quick tasting is designed for solo users to quickly taste items without complex role management. The current implementation incorrectly assumes study mode participant logic applies to quick tasting.",
+    "user_story": "As a solo taster, I want to create and complete quick tasting sessions without participant role errors, so that I can focus on tasting without technical issues.",
+    "functional_requirements": [
+      "Quick tasting sessions should not attempt to load participant roles",
+      "Quick tasting sessions should only require creator ownership for access",
+      "No participant records should be created for quick tasting sessions",
+      "Role-based permissions should not apply to quick tasting",
+      "Access control should be simplified to just check if user is the session creator"
+    ],
+    "non_functional_requirements": [
+      "No performance impact on study mode sessions",
+      "Backward compatibility maintained for existing quick tasting sessions",
+      "Clean error handling without confusing role-related messages",
+      "Simplified codebase by removing unnecessary role logic from quick tasting"
+    ],
+    "acceptance_criteria": [
+      "Quick tasting sessions load without participant role errors",
+      "No 406/409 errors in console for quick tasting",
+      "Access control works based on creator ownership only",
+      "Study mode functionality remains unchanged",
+      "Clean console logs without role-related error messages"
+    ],
+    "technical_constraints": [
+      "Must maintain study mode participant functionality",
+      "Cannot break existing database schema",
+      "Must work with current authentication system",
+      "Should not affect performance of other tasting modes"
+    ],
+    "edge_cases": [
+      "User tries to access quick tasting session they didn't create",
+      "Quick tasting session gets converted to study mode",
+      "Multiple users try to access same quick tasting session",
+      "Legacy quick tasting sessions without proper access controls"
+    ]
+  },
+  "current_state_analysis": {
+    "quick_tasting_characteristics": {
+      "solo_experience": true,
+      "no_participants": true,
+      "creator_only_access": true,
+      "no_role_management": true,
+      "simple_workflow": true
+    },
+    "current_problems": {
+      "participant_role_loading": "QuickTastingSession tries to load user roles on mount",
+      "unnecessary_participant_creation": "Attempts to create participant records for solo sessions",
+      "access_control_complexity": "Uses study mode logic for simple quick tasting",
+      "error_noise": "Console filled with role-related 406/409 errors",
+      "performance_overhead": "Unnecessary database queries for role checking"
+    },
+    "affected_components": [
+      "QuickTastingSession.tsx - loadUserRole() function",
+      "pages/tasting/[id].tsx - access control logic",
+      "RoleService.ts - unnecessary role operations for quick tasting",
+      "Database queries - participant role lookups"
+    ]
+  },
+  "solution_design": {
+    "architecture_approach": "Conditional logic based on tasting mode",
+    "key_changes": {
+      "access_control_logic": "For quick tasting: check creator ownership only. For study mode: use full participant logic.",
+      "role_loading": "Skip role loading entirely for quick tasting sessions",
+      "participant_creation": "Never create participant records for quick tasting",
+      "error_handling": "Remove role-related errors from quick tasting context"
+    },
+    "implementation_phases": [
+      {
+        "phase": "Phase 1 - Quick Tasting Detection",
+        "tasks": [
+          "Add mode detection logic to identify quick tasting vs study mode",
+          "Create helper functions to check session type",
+          "Update component props to indicate session mode"
+        ]
+      },
+      {
+        "phase": "Phase 2 - Access Control Simplification",
+        "tasks": [
+          "Modify pages/tasting/[id].tsx to skip participant checks for quick tasting",
+          "Update QuickTastingSession to conditionally load roles",
+          "Simplify access validation logic"
+        ]
+      },
+      {
+        "phase": "Phase 3 - Error Prevention",
+        "tasks": [
+          "Remove participant creation attempts for quick tasting",
+          "Add early returns in role service for quick tasting",
+          "Clean up error handling to avoid role-related messages"
+        ]
+      }
+    ],
+    "code_patterns": {
+      "mode_detection": "session.mode === 'quick' vs session.mode === 'study'",
+      "conditional_logic": "if (isQuickTasting) { /* simple logic */ } else { /* full participant logic */ }",
+      "access_check": "isCreator ? allow : deny (for quick tasting)"
+    }
+  },
+  "implementation_plan": {
+    "priority_order": [
+      "Phase 1: Quick Tasting Detection - Foundation",
+      "Phase 2: Access Control Simplification - Core Fix",
+      "Phase 3: Error Prevention - Cleanup"
+    ],
+    "estimated_effort": "4-6 hours",
+    "risk_assessment": "Low - Changes are additive and backward compatible",
+    "testing_strategy": [
+      "Unit tests for mode detection logic",
+      "Integration tests for access control",
+      "E2E tests for complete quick tasting flow",
+      "Regression tests for study mode functionality"
+    ],
+    "rollback_plan": "Can revert changes if study mode is affected"
+  },
+  "success_metrics": {
+    "primary": "Zero participant role errors in quick tasting console logs",
+    "secondary": "Quick tasting sessions load instantly without role checks",
+    "validation": "All quick tasting flows work without authentication errors",
+    "performance": "Reduced database queries for quick tasting sessions"
+  },
+  "future_considerations": {
+    "scalability": "This approach scales well as quick tasting remains simple",
+    "maintainability": "Clear separation between quick and study mode logic",
+    "extensibility": "Easy to add features to either mode independently",
+    "user_experience": "Cleaner, faster experience for solo tasters"
+  }
+}

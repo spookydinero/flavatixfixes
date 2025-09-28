@@ -30,6 +30,7 @@ interface TastingItemProps {
   showEditControls?: boolean;
   showPhotoControls?: boolean;
   showNotesFields?: boolean;
+  itemIndex?: number; // 1-based index for dynamic naming
 }
 
 const TastingItem: React.FC<TastingItemProps> = ({
@@ -44,14 +45,24 @@ const TastingItem: React.FC<TastingItemProps> = ({
   showEditControls = true,
   showPhotoControls = true,
   showNotesFields = true,
+  itemIndex,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [localNotes, setLocalNotes] = useState(item.notes || '');
   const [localAroma, setLocalAroma] = useState(item.aroma || '');
   const [localFlavor, setLocalFlavor] = useState(item.flavor || '');
   const [localScore, setLocalScore] = useState(item.overall_score || 0);
+
+  // Generate dynamic display name based on current category and item index
+  const getDisplayName = () => {
+    if (isBlindItems) {
+      return `Item ${item.id.slice(-4)}`;
+    }
+    // Use dynamic name based on current category and index, fallback to stored name
+    return itemIndex ? `${category.charAt(0).toUpperCase() + category.slice(1)} ${itemIndex}` : item.item_name;
+  };
   const [isEditingName, setIsEditingName] = useState(false);
-  const [editingName, setEditingName] = useState(item.item_name);
+  const [editingName, setEditingName] = useState(getDisplayName());
 
   // Reset local state when item changes
   useEffect(() => {
@@ -59,9 +70,9 @@ const TastingItem: React.FC<TastingItemProps> = ({
     setLocalAroma(item.aroma || '');
     setLocalFlavor(item.flavor || '');
     setLocalScore(item.overall_score || 0);
-    setEditingName(item.item_name);
+    setEditingName(getDisplayName());
     setIsEditingName(false);
-  }, [item.id, item.item_name]);
+  }, [item.id, category, itemIndex]);
 
   const getScoreLabel = (score: number): string => {
     if (score >= 90) return '(Exceptional)';
@@ -155,7 +166,7 @@ const TastingItem: React.FC<TastingItemProps> = ({
 
   const startEditingName = () => {
     setIsEditingName(true);
-    setEditingName(item.item_name);
+    setEditingName(getDisplayName());
   };
 
   const saveName = () => {
@@ -238,10 +249,10 @@ const TastingItem: React.FC<TastingItemProps> = ({
             ) : (
               <div className={`flex items-center space-x-2 ${showEditControls ? 'group cursor-pointer' : ''}`} onClick={showEditControls ? startEditingName : undefined}>
                 <h3 className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary truncate">
-                  {isBlindItems ? `Item ${item.id.slice(-4)}` : item.item_name}
+                  {getDisplayName()}
                 </h3>
                 {!isBlindItems && showEditControls && (
-                  <Edit size={16} className="text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                  <Edit size={16} className="text-text-secondary opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0" />
                 )}
               </div>
             )}

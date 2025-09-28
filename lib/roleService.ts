@@ -70,6 +70,38 @@ export class RoleService {
     userId: string,
     requestedRole?: ParticipantRole
   ): Promise<ParticipantWithRole> {
+    // Check if tasting exists and get its mode
+    const { data: tasting, error: tastingError } = await this.supabase
+      .from('quick_tastings')
+      .select('mode, study_approach, user_id')
+      .eq('id', tastingId)
+      .single();
+
+    if (tastingError || !tasting) {
+      throw new Error('Tasting session not found');
+    }
+
+    // Quick tasting doesn't need participant records
+    if ((tasting as any).mode === 'quick') {
+      // For quick tasting, return mock participant data with full permissions for creator
+      if (userId === (tasting as any).user_id) {
+        const mockParticipant: TastingParticipant = {
+          id: 'quick-tasting-creator',
+          tasting_id: tastingId,
+          user_id: userId,
+          role: 'host',
+          can_moderate: true,
+          can_add_items: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        return this.enrichParticipantWithPermissions(mockParticipant);
+      } else {
+        throw new Error('Only the creator can access quick tasting sessions');
+      }
+    }
+
+    // Study mode: use full participant logic
     // Check if user is already a participant
     const { data: existing } = await this.supabase
       .from('tasting_participants')
@@ -80,17 +112,6 @@ export class RoleService {
 
     if (existing) {
       return this.enrichParticipantWithPermissions(existing as TastingParticipant);
-    }
-
-    // Check if tasting exists and get its mode
-    const { data: tasting, error: tastingError } = await this.supabase
-      .from('quick_tastings')
-      .select('mode, study_approach, user_id')
-      .eq('id', tastingId)
-      .single();
-
-    if (tastingError || !tasting) {
-      throw new Error('Tasting session not found');
     }
 
     // Determine role based on context
@@ -223,6 +244,30 @@ export class RoleService {
    * Get permissions for a specific user in a tasting
    */
   async getUserPermissions(tastingId: string, userId: string): Promise<RolePermissions> {
+    // First check if this is a quick tasting session
+    const { data: tasting } = await this.supabase
+      .from('quick_tastings')
+      .select('mode, user_id')
+      .eq('id', tastingId)
+      .single();
+
+    // For quick tasting, creator has full permissions
+    if (tasting && (tasting as any).mode === 'quick') {
+      if ((tasting as any).user_id === userId) {
+        return {
+          role: 'host',
+          canModerate: true,
+          canAddItems: true,
+          canManageSession: true,
+          canViewAllSuggestions: true,
+          canParticipateInTasting: true,
+        };
+      } else {
+        throw new Error('User is not the creator of this quick tasting session');
+      }
+    }
+
+    // For study mode, use participant logic
     const { data, error } = await this.supabase
       .from('tasting_participants')
       .select('role, can_moderate, can_add_items')

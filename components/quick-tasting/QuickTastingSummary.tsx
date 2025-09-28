@@ -59,13 +59,26 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
 
   const loadTastingItems = async () => {
     try {
+      console.log('🔍 QuickTastingSummary: Loading items for session:', session.id);
+
       const { data, error } = await supabase
         .from('quick_tasting_items')
         .select('*')
         .eq('tasting_id', session.id)
         .order('created_at', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ QuickTastingSummary: Error loading items:', error);
+        throw error;
+      }
+
+      console.log('📊 QuickTastingSummary: Loaded items:', data?.length || 0, 'items');
+      if (data) {
+        data.forEach((item, index) => {
+          console.log(`  ${index + 1}. ${item.item_name} (ID: ${item.id}, Score: ${item.overall_score})`);
+        });
+      }
+
       setItems(data || []);
     } catch (error) {
       console.error('Error loading tasting items:', error);

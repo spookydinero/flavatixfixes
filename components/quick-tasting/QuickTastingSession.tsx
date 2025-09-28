@@ -144,8 +144,11 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
   useEffect(() => {
     loadTastingItems();
-    loadUserRole();
-  }, [session.id, userId]);
+    // Only load user roles for study mode sessions
+    if (session.mode === 'study') {
+      loadUserRole();
+    }
+  }, [session.id, userId, session.mode]);
 
   useEffect(() => {
     // For quick tasting mode, automatically add first item if no items exist
@@ -159,6 +162,21 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   }, [session.session_name]);
 
   const loadUserRole = async () => {
+    // Quick tasting doesn't use roles - set default permissions
+    if (session.mode === 'quick') {
+      setUserPermissions({
+        role: 'host', // Creator has full access to quick tasting
+        canModerate: true,
+        canAddItems: true,
+        canManageSession: true,
+        canViewAllSuggestions: true,
+        canParticipateInTasting: true,
+      });
+      setUserRole('host');
+      return;
+    }
+
+    // Study mode: load participant roles
     try {
       const permissions = await roleService.getUserPermissions(session.id, userId);
       setUserPermissions(permissions);
@@ -168,11 +186,28 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
       // User might not be a participant yet, try to add them
       try {
         await roleService.addParticipant(session.id, userId);
-        const permissions = await roleService.getUserPermissions(session.id, userId);
-        setUserPermissions(permissions);
-        setUserRole(permissions.role);
+        // Wait a moment for the participant record to be created
+        setTimeout(async () => {
+          try {
+            const permissions = await roleService.getUserPermissions(session.id, userId);
+            setUserPermissions(permissions);
+            setUserRole(permissions.role);
+          } catch (retryError) {
+            console.error('Error loading permissions after adding participant:', retryError);
+          }
+        }, 500);
       } catch (addError) {
         console.error('Error adding user as participant:', addError);
+        // Set default participant permissions if we can't determine role
+        setUserPermissions({
+          role: 'participant',
+          canModerate: false,
+          canAddItems: true,
+          canManageSession: false,
+          canViewAllSuggestions: false,
+          canParticipateInTasting: true,
+        });
+        setUserRole('participant');
       }
     }
   };
@@ -401,6 +436,13 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   };
 
   const completeSession = async () => {
+    console.log('🏁 QuickTastingSession: Completing session:', session.id);
+    console.log('📊 QuickTastingSession: Current items state:', items.length, 'items');
+
+    items.forEach((item, index) => {
+      console.log(`  ${index + 1}. ${item.item_name} (ID: ${item.id}, Score: ${item.overall_score})`);
+    });
+
     setIsLoading(true);
     try {
       const { data, error } = await supabase
@@ -415,10 +457,11 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
       if (error) throw error;
 
+      console.log('✅ QuickTastingSession: Session completed successfully');
       toast.success('Tasting session completed!');
       onSessionComplete(data);
     } catch (error) {
-      console.error('Error completing session:', error);
+      console.error('❌ QuickTastingSession: Error completing session:', error);
       toast.error('Failed to complete session');
     } finally {
       setIsLoading(false);
@@ -429,8 +472,17 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const hasItems = items.length > 0;
   const completedItems = items.filter(item => item.overall_score !== null).length;
 
+  // Generate dynamic display name for current item based on category and index
+  const getCurrentItemDisplayName = () => {
+    if (!currentItem) return '';
+    if (session.is_blind_items) {
+      return `Item ${currentItem.id.slice(-4)}`;
+    }
+    return `${getDisplayCategoryName(session.category, session.custom_category_name).charAt(0).toUpperCase() + getDisplayCategoryName(session.category, session.custom_category_name).slice(1)} ${currentItemIndex + 1}`;
+  };
+
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto" data-testid="quick-tasting-session">
       {/* Session Header */}
       <div className="card p-md mb-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
@@ -442,19 +494,19 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                     Editing Session Name
                   </div>
                   <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      value={editingSessionName}
-                      onChange={(e) => setEditingSessionName(e.target.value)}
-                      onBlur={saveSessionName}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') saveSessionName();
-                        if (e.key === 'Escape') cancelEditingSessionName();
-                      }}
+                <input
+                  type="text"
+                  value={editingSessionName}
+                  onChange={(e) => setEditingSessionName(e.target.value)}
+                  onBlur={saveSessionName}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') saveSessionName();
+                    if (e.key === 'Escape') cancelEditingSessionName();
+                  }}
                       className="text-h2 font-heading font-bold text-text-primary bg-transparent border-none outline-none focus:ring-0 flex-1 placeholder-text-secondary/50"
                       placeholder="Enter session name..."
-                      autoFocus
-                    />
+                  autoFocus
+                />
                     <div className="flex items-center space-x-1 text-text-secondary text-xs">
                       <span>Press Enter to save</span>
                     </div>
@@ -475,7 +527,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                     <div className="flex items-center space-x-2">
                       <h2 className="text-h2 font-heading font-bold text-text-primary truncate">
                         {session.session_name || 'Quick Tasting'}
-                      </h2>
+                </h2>
                       <div className="flex items-center space-x-1 text-text-secondary">
                         <Edit size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
                         <span className="text-xs font-medium opacity-60 group-hover:opacity-100 transition-opacity">
@@ -637,6 +689,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               showOverallScore={true}
               showNotesFields={true}
               showFlavorWheel={false}
+              itemIndex={currentItemIndex + 1}
             />
           ) : (
             <div className="card p-lg text-center">
@@ -708,10 +761,10 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         <div className="card p-md mb-lg">
           <div className="text-center">
             <h2 className="text-h2 font-heading font-bold text-text-primary mb-sm">
-              Tasting {currentItem.item_name}
+              Tasting {getCurrentItemDisplayName()}
             </h2>
             <p className="text-body font-body text-text-secondary mb-md">
-              Rate the flavors and overall impression of <strong>{currentItem.item_name}</strong>
+              Rate the flavors and overall impression of <strong>{getCurrentItemDisplayName()}</strong>
             </p>
             <div className="flex items-center justify-center space-x-sm">
               <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
@@ -719,7 +772,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               </div>
               <div className="text-left">
                 <div className="text-small font-body font-medium text-text-primary">
-                  {currentItem.item_name}
+                  {getCurrentItemDisplayName()}
                 </div>
                 <div className="text-caption font-body text-text-secondary">
                   {getDisplayCategoryName(session.category, session.custom_category_name)} Tasting
@@ -741,6 +794,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           showFlavorWheel={false}
           showEditControls={true}
           showPhotoControls={false}
+          itemIndex={currentItemIndex + 1}
         />
 
         {/* Item Navigation */}
@@ -771,10 +825,10 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               {currentItemIndex + 1} of {items.length}
             </span>
 
-            <button
-              onClick={handleNextOrAdd}
-              className="btn-secondary"
-            >
+          <button
+            onClick={handleNextOrAdd}
+            className="btn-secondary"
+          >
               {currentItemIndex < items.length - 1 ? 'Next Item' : 'Add Item'}
             </button>
           </div>
@@ -786,7 +840,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               className="text-sm text-primary-600 hover:text-primary-700 underline"
             >
               {showItemNavigation ? 'Hide' : 'Show'} All Items
-            </button>
+          </button>
           )}
 
           {/* Complete Tasting Button */}
