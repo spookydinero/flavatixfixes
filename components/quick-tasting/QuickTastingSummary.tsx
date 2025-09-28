@@ -74,12 +74,12 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
 
       console.log('📊 QuickTastingSummary: Loaded items:', data?.length || 0, 'items');
       if (data) {
-        data.forEach((item, index) => {
+        (data as TastingItemData[]).forEach((item, index) => {
           console.log(`  ${index + 1}. ${item.item_name} (ID: ${item.id}, Score: ${item.overall_score})`);
         });
       }
 
-      setItems(data || []);
+      setItems((data as TastingItemData[]) || []);
     } catch (error) {
       console.error('Error loading tasting items:', error);
       toast.error('Failed to load tasting items');

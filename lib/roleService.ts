@@ -90,10 +90,11 @@ export class RoleService {
           tasting_id: tastingId,
           user_id: userId,
           role: 'host',
+          score: null,
+          rank: null,
           can_moderate: true,
           can_add_items: true,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
         };
         return this.enrichParticipantWithPermissions(mockParticipant);
       } else {

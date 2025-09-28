@@ -120,12 +120,12 @@ const TastingSessionPage: React.FC = () => {
                 role: 'host' // Creator gets host role
               } as any);
 
-            if (addError && !addError.message?.includes('duplicate key')) {
+            if (addError && !(addError as any)?.message?.includes('duplicate key')) {
               // Only fail if it's not a duplicate key error
               throw addError;
             }
           } catch (addError) {
-            if (!addError.message?.includes('duplicate key')) {
+            if (!(addError as any)?.message?.includes('duplicate key')) {
               console.error('Error adding creator as participant:', addError);
               setError('Failed to initialize session access');
               return;
