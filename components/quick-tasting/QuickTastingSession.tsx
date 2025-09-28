@@ -720,27 +720,13 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between items-center mt-lg">
-          {currentItemIndex === 0 ? (
-            <button
-              onClick={handleBackToSetup}
-              className="btn-secondary"
-            >
-              Back to Setup
-            </button>
-          ) : (
-            <button
-              onClick={handlePreviousItem}
-              className="btn-secondary"
-            >
-              Previous Item
-            </button>
-          )}
-          <div className="text-center">
-            <div className="text-small font-body text-text-secondary">
-              Item {currentItemIndex + 1} of {items.length}
-            </div>
-          </div>
+        <div className="flex justify-between items-center mt-lg px-4">
+          <button
+            onClick={handleBackToSetup}
+            className="btn-secondary"
+          >
+            Back to Setup
+          </button>
           <button
             onClick={handleNextItem}
             className="btn-primary"
