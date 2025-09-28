@@ -51,7 +51,7 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen pb-20">
+    <div className="bg-background-light font-display text-zinc-900 min-h-screen pb-20">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-orange-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -138,17 +138,17 @@ export default function HistoryPage() {
       </div>
 
       {/* Bottom Navigation */}
-      <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200 bg-background-light dark:border-zinc-800 dark:bg-background-dark">
+      <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200 bg-background-light">
         <nav className="flex justify-around p-2">
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/dashboard">
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/dashboard">
             <span className="material-symbols-outlined">home</span>
             <span className="text-xs font-medium">Home</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/create-tasting">
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/create-tasting">
             <span className="material-symbols-outlined">add_circle</span>
             <span className="text-xs font-medium">Create</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500 dark:text-zinc-400" href="/social">
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/social">
             <span className="material-symbols-outlined">reviews</span>
             <span className="text-xs font-medium">Review</span>
           </a>
