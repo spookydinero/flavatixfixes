@@ -439,26 +439,55 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             {isEditingSessionName ? (
-              <div className="flex items-center space-x-2 mb-2">
-                <input
-                  type="text"
-                  value={editingSessionName}
-                  onChange={(e) => setEditingSessionName(e.target.value)}
-                  onBlur={saveSessionName}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') saveSessionName();
-                    if (e.key === 'Escape') cancelEditingSessionName();
-                  }}
-                  className="text-h2 font-heading font-bold text-text-primary bg-transparent border-b border-primary-500 focus:outline-none flex-1"
-                  autoFocus
-                />
+              <div className="mb-2">
+                <div className="p-2 rounded-lg bg-background-app border-2 border-primary-300">
+                  <div className="text-xs font-medium text-text-secondary uppercase tracking-wider mb-1">
+                    Editing Session Name
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      value={editingSessionName}
+                      onChange={(e) => setEditingSessionName(e.target.value)}
+                      onBlur={saveSessionName}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') saveSessionName();
+                        if (e.key === 'Escape') cancelEditingSessionName();
+                      }}
+                      className="text-h2 font-heading font-bold text-text-primary bg-transparent border-none outline-none focus:ring-0 flex-1 placeholder-text-secondary/50"
+                      placeholder="Enter session name..."
+                      autoFocus
+                    />
+                    <div className="flex items-center space-x-1 text-text-secondary text-xs">
+                      <span>Press Enter to save</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
-              <div className="flex items-center space-x-2 mb-2 group cursor-pointer" onClick={startEditingSessionName}>
-                <h2 className="text-h2 font-heading font-bold text-text-primary">
-                  {session.session_name}
-                </h2>
-                <Edit size={20} className="text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="mb-2">
+                <div
+                  className="flex items-center space-x-2 p-2 rounded-lg bg-background-app border border-border-subtle hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-200 group"
+                  onClick={startEditingSessionName}
+                  title="Click to edit session name"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wider mb-1">
+                      Session Name
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <h2 className="text-h2 font-heading font-bold text-text-primary truncate">
+                        {session.session_name || 'Quick Tasting'}
+                      </h2>
+                      <div className="flex items-center space-x-1 text-text-secondary">
+                        <Edit size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                        <span className="text-xs font-medium opacity-60 group-hover:opacity-100 transition-opacity">
+                          Edit
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
             {phase === 'setup' && (
