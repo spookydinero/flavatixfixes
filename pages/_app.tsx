@@ -16,10 +16,6 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="var(--color-primary)" />
         <link rel="icon" href="https://kobuclkvlacdwvxmakvq.supabase.co/storage/v1/object/public/images/flavicon.png" />
         <link rel="apple-touch-icon" href="https://kobuclkvlacdwvxmakvq.supabase.co/storage/v1/object/public/images/flavicon.png" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400&display=swap" rel="stylesheet" />
       </Head>
       <GlobalInspirationBox>
         <Component {...pageProps} />

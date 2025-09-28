@@ -1,0 +1,135 @@
+{
+  "feature_request": "Tasting Session Navigation and Item Revisiting",
+  "description": "Users need the ability to navigate back to previous tasting items during an active session to modify notes, scores, or add additional information before completing the tasting session.",
+  "current_state_analysis": {
+    "database_structure": {
+      "quick_tastings": {
+        "table": "public.quick_tastings",
+        "fields": ["id", "user_id", "category", "session_name", "notes", "total_items", "completed_items", "average_score", "created_at", "updated_at", "completed_at"],
+        "relationships": "One-to-many with quick_tasting_items"
+      },
+      "quick_tasting_items": {
+        "table": "public.quick_tasting_items", 
+        "fields": ["id", "tasting_id", "item_name", "notes", "aroma", "flavor", "flavor_scores", "overall_score", "photo_url", "created_at", "updated_at"],
+        "relationships": "Many-to-one with quick_tastings"
+      }
+    },
+    "current_ui_flow": {
+      "session_creation": "Users create a tasting session with category selection",
+      "item_addition": "Users add items one by one through 'Add First Item' button",
+      "item_editing": "Each item can be edited individually with notes, aroma, flavor, scores",
+      "navigation": "Linear progression through items with next/previous buttons",
+      "completion": "Session ends when user completes all items"
+    },
+    "existing_navigation": {
+      "forward_navigation": "handleNextItem() and handleNextOrAdd() functions",
+      "backward_navigation": "handlePreviousItem() function exists but limited",
+      "current_limitations": "No way to jump to specific items or see item list during session"
+    }
+  },
+  "identified_todos": [
+    {
+      "id": "tasting_name_editability_ui",
+      "priority": "medium",
+      "category": "UI/UX Improvement",
+      "description": "Make the 'Tasting 1111' title appear as an editable text field instead of requiring users to click to discover editability",
+      "current_behavior": "Title is editable by clicking but doesn't look editable",
+      "proposed_solution": "Add visual indicators (underline, edit icon, or input styling) to show editability",
+      "affected_components": ["QuickTastingSession.tsx", "TastingItem.tsx"],
+      "implementation_notes": "Similar to how item names are handled in TastingItem component with hover states"
+    },
+    {
+      "id": "remove_empty_state_card",
+      "priority": "high", 
+      "category": "UX Flow Optimization",
+      "description": "Remove the 'No Items Yet' empty state card and start directly with item creation page",
+      "current_behavior": "Shows empty state with 'Add First Item' button before starting tasting",
+      "proposed_solution": "Skip empty state and go directly to item 1 creation page",
+      "affected_components": ["QuickTastingSession.tsx", "pages/quick-tasting.tsx"],
+      "implementation_notes": "Modify phase logic to start in 'tasting' phase instead of 'setup' phase"
+    },
+    {
+      "id": "item_navigation_dropdown",
+      "priority": "high",
+      "category": "Core Feature",
+      "description": "Add a dropdown or navigation component to allow users to jump to any previous item during an active tasting session",
+      "current_behavior": "Users can only go to previous/next item sequentially",
+      "proposed_solution": "Add item list dropdown or sidebar showing all items with ability to jump to any item",
+      "affected_components": ["QuickTastingSession.tsx", "components/quick-tasting/"],
+      "implementation_notes": "Need to track current item index and allow setting it to any valid index"
+    },
+    {
+      "id": "enhanced_summary_display",
+      "priority": "medium",
+      "category": "Feature Enhancement", 
+      "description": "Show aroma and flavor inputs in the tasting summary screen for better overview",
+      "current_behavior": "Summary only shows item names, scores, and notes",
+      "proposed_solution": "Expand summary to include aroma and flavor fields in the detailed view",
+      "affected_components": ["QuickTastingSummary.tsx"],
+      "implementation_notes": "Database already stores aroma and flavor fields, just need to display them"
+    },
+    {
+      "id": "session_settings_cleanup",
+      "priority": "low",
+      "category": "Code Cleanup",
+      "description": "Remove unnecessary blind tasting settings for quick tasting mode since it's single-user",
+      "current_behavior": "Quick tasting shows blind tasting options that aren't relevant",
+      "proposed_solution": "Hide or remove blind tasting settings for quick mode",
+      "affected_components": ["EditTastingDashboard.tsx"],
+      "implementation_notes": "Add conditional rendering based on tasting mode"
+    }
+  ],
+  "technical_requirements": {
+    "database_changes": "None required - existing schema supports all needed functionality",
+    "new_components_needed": [
+      "ItemNavigationDropdown - dropdown showing all items with jump functionality",
+      "ItemListSidebar - optional sidebar view of all items"
+    ],
+    "modified_components": [
+      "QuickTastingSession.tsx - add navigation controls and item jumping",
+      "QuickTastingSummary.tsx - enhance display of aroma/flavor data",
+      "EditTastingDashboard.tsx - conditional rendering for quick mode"
+    ],
+    "state_management": {
+      "current_item_index": "Already tracked in QuickTastingSession",
+      "item_list": "Already loaded and managed",
+      "navigation_state": "Need to add ability to set current item index to any value"
+    }
+  },
+  "user_experience_goals": {
+    "primary": "Allow users to easily revisit and modify any previous item during a tasting session",
+    "secondary": [
+      "Reduce friction in the initial tasting flow",
+      "Improve visual clarity of editable elements", 
+      "Provide comprehensive summary information",
+      "Streamline settings for quick tasting mode"
+    ]
+  },
+  "implementation_approach": {
+    "phase_1": [
+      "Add item navigation dropdown to QuickTastingSession",
+      "Implement item jumping functionality",
+      "Update navigation state management"
+    ],
+    "phase_2": [
+      "Remove empty state and start directly with item creation",
+      "Improve visual indicators for editable elements"
+    ],
+    "phase_3": [
+      "Enhance summary display with aroma/flavor data",
+      "Clean up unnecessary settings for quick mode"
+    ]
+  },
+  "success_criteria": {
+    "functional": [
+      "Users can navigate to any previous item during active session",
+      "Users can modify notes, scores, and other data on previous items",
+      "Navigation is intuitive and doesn't disrupt tasting flow"
+    ],
+    "ux": [
+      "Reduced friction in starting new tasting sessions",
+      "Clear visual indicators for interactive elements",
+      "Comprehensive summary information available"
+    ]
+  }
+}

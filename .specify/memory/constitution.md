@@ -1,50 +1,88 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# FlavorWheel Project Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### 1. User Experience First
+- Mobile-first design (375x667px target)
+- Intuitive navigation and minimal friction
+- Clear visual feedback and state indicators
+- Accessibility compliance (WCAG 2.1 AA)
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### 2. Code Quality Standards
+- TypeScript for type safety
+- Component-based architecture
+- Consistent naming conventions
+- Comprehensive error handling
+- Performance optimization
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### 3. Database Integrity
+- Row Level Security (RLS) enabled
+- Proper foreign key relationships
+- Automatic timestamp management
+- Data validation and constraints
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### 4. Security Requirements
+- Input validation and sanitization
+- Authentication and authorization
+- Secure file uploads
+- No hardcoded secrets
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### 5. Testing Standards
+- Unit tests for business logic
+- Integration tests for workflows
+- E2E tests for critical paths
+- Performance benchmarks
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### 6. Documentation Requirements
+- Clear API documentation
+- Component documentation
+- Database schema documentation
+- User-facing help content
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Technical Constraints
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### Frontend
+- Next.js with TypeScript
+- Tailwind CSS for styling
+- Supabase for backend services
+- React hooks for state management
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### Backend
+- Supabase PostgreSQL
+- Row Level Security policies
+- Real-time subscriptions
+- File storage integration
 
-## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+### Performance
+- < 100ms navigation response
+- Optimized database queries
+- Efficient state management
+- Minimal bundle size impact
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+## Quality Gates
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+### Code Review
+- All changes require review
+- Automated linting and formatting
+- Type checking passes
+- Tests pass with >80% coverage
+
+### Deployment
+- Staging environment testing
+- Database migration validation
+- Performance regression checks
+- User acceptance testing
+
+## Change Management
+
+### Feature Development
+- Feature branches from main
+- Comprehensive testing
+- Documentation updates
+- User feedback integration
+
+### Breaking Changes
+- Version bumping
+- Migration scripts
+- Backward compatibility
+- User notification

@@ -8,6 +8,7 @@ import CompetitionRanking from './CompetitionRanking';
 import { RoleIndicator } from './RoleIndicator';
 import { EditTastingDashboard } from './EditTastingDashboard';
 import { ItemSuggestions } from './ItemSuggestions';
+import { ItemNavigationDropdown } from './ItemNavigationDropdown';
 import { toast } from '../../lib/toast';
 import { Utensils, Settings, Play, Edit } from 'lucide-react';
 
@@ -143,7 +144,8 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const [userPermissions, setUserPermissions] = useState<any>({});
   const [showEditTastingDashboard, setShowEditTastingDashboard] = useState(false);
   const [showItemSuggestions, setShowItemSuggestions] = useState(false);
-  const [phase, setPhase] = useState<'setup' | 'tasting'>('setup');
+  const [showItemNavigation, setShowItemNavigation] = useState(false);
+  const [phase, setPhase] = useState<'setup' | 'tasting'>(session.mode === 'quick' ? 'tasting' : 'setup');
   const [isEditingSessionName, setIsEditingSessionName] = useState(false);
   const [editingSessionName, setEditingSessionName] = useState(session.session_name || '');
   const supabase = getSupabaseClient() as any;
@@ -152,6 +154,13 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     loadTastingItems();
     loadUserRole();
   }, [session.id, userId]);
+
+  useEffect(() => {
+    // For quick tasting mode, automatically add first item if no items exist
+    if (items.length === 0 && session.mode === 'quick' && phase === 'tasting' && !isLoading) {
+      addNewItem();
+    }
+  }, [items.length, session.mode, phase, isLoading]);
 
   useEffect(() => {
     setEditingSessionName(session.session_name || '');
@@ -354,6 +363,26 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
       setShowEditTastingDashboard(false);
       setShowItemSuggestions(false);
     }
+  };
+
+  const handleItemNavigation = (index: number) => {
+    if (index >= 0 && index < items.length) {
+      setCurrentItemIndex(index);
+      setShowEditTastingDashboard(false);
+      setShowItemSuggestions(false);
+    }
+  };
+
+  const getNavigationItems = (): any[] => {
+    return items.map((item, index) => ({
+      id: item.id,
+      index,
+      name: item.item_name,
+      isCompleted: item.overall_score !== null && item.overall_score !== undefined,
+      hasPhoto: !!item.photo_url,
+      score: item.overall_score,
+      isCurrent: index === currentItemIndex
+    }));
   };
 
   const handleAddNextItem = async () => {
@@ -682,14 +711,53 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           showPhotoControls={false}
         />
 
+        {/* Item Navigation */}
+        {items.length > 1 && (
+          <div className="flex justify-center mt-md">
+            <ItemNavigationDropdown
+              items={getNavigationItems()}
+              currentIndex={currentItemIndex}
+              onItemSelect={handleItemNavigation}
+              className="w-full max-w-sm"
+            />
+          </div>
+        )}
+
         {/* Navigation */}
-        <div className="flex justify-center items-center mt-lg px-4 gap-4">
-          <button
-            onClick={handleNextOrAdd}
-            className="btn-secondary"
-          >
-            Next Item
-          </button>
+        <div className="flex flex-col items-center mt-lg px-4 gap-4">
+          {/* Navigation Controls */}
+          <div className="flex items-center justify-center gap-4">
+            <button
+              onClick={handlePreviousItem}
+              disabled={currentItemIndex === 0}
+              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+
+            <span className="text-sm text-gray-500 px-2 min-w-20 text-center">
+              {currentItemIndex + 1} of {items.length}
+            </span>
+
+            <button
+              onClick={handleNextOrAdd}
+              className="btn-secondary"
+            >
+              {currentItemIndex < items.length - 1 ? 'Next Item' : 'Add Item'}
+            </button>
+          </div>
+
+          {/* Show/Hide Navigation Toggle */}
+          {items.length > 1 && (
+            <button
+              onClick={() => setShowItemNavigation(!showItemNavigation)}
+              className="text-sm text-primary-600 hover:text-primary-700 underline"
+            >
+              {showItemNavigation ? 'Hide' : 'Show'} All Items
+            </button>
+          )}
+
+          {/* Complete Tasting Button */}
           <button
             onClick={completeSession}
             className="btn-primary"

@@ -215,24 +215,26 @@ export const EditTastingDashboard: React.FC<EditTastingDashboardProps> = ({
           </p>
         </div>
 
-        {/* Blind Tasting Toggle */}
-        <div className="mt-4 flex items-center justify-between">
-          <div>
-            <h3 className="font-medium text-text-primary">Blind Tasting</h3>
-            <p className="text-sm text-text-secondary">Hide information during tasting</p>
+        {/* Blind Tasting Toggle - Only show for non-quick modes */}
+        {session.mode !== 'quick' && (
+          <div className="mt-4 flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-text-primary">Blind Tasting</h3>
+              <p className="text-sm text-text-secondary">Hide information during tasting</p>
+            </div>
+            <button
+              onClick={handleBlindTastingToggle}
+              disabled={isLoading}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                isBlindTasting
+                  ? 'bg-purple-100 text-purple-800'
+                  : 'bg-gray-100 text-gray-800'
+              }`}
+            >
+              {isBlindTasting ? '🕶️ On' : '👁️ Off'}
+            </button>
           </div>
-          <button
-            onClick={handleBlindTastingToggle}
-            disabled={isLoading}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              isBlindTasting
-                ? 'bg-purple-100 text-purple-800'
-                : 'bg-gray-100 text-gray-800'
-            }`}
-          >
-            {isBlindTasting ? '🕶️ On' : '👁️ Off'}
-          </button>
-        </div>
+        )}
       </div>
 
       {/* Content */}
