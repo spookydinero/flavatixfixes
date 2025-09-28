@@ -244,9 +244,15 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
       if (error) throw error;
 
-      setItems(prev => prev.map(item =>
+      const updatedItems = items.map(item =>
         item.id === itemId ? { ...item, ...data } : item
-      ));
+      );
+      setItems(updatedItems);
+
+      const newCompleted = updatedItems.filter(item => item.overall_score !== null).length;
+      if (onSessionUpdate) {
+        onSessionUpdate({ ...session, completed_items: newCompleted });
+      }
     } catch (error) {
       console.error('Error updating item:', error);
       // Removed toast.error to prevent annoying notifications during typing
@@ -349,6 +355,14 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     completeSession();
   };
 
+  const handleBack = () => {
+    if (currentItemIndex > 0) {
+      handlePreviousItem();
+    } else {
+      handleBackToSetup();
+    }
+  };
+
   const completeSession = async () => {
     setIsLoading(true);
     try {
@@ -376,9 +390,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
   const currentItem = items[currentItemIndex];
   const hasItems = items.length > 0;
-  const completedItems = phase === 'tasting'
-    ? currentItemIndex  // In tasting phase, show items completed so far
-    : items.filter(item => item.overall_score !== null).length;  // In setup phase, show scored items
+  const completedItems = items.filter(item => item.overall_score !== null).length;
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -722,10 +734,10 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         {/* Navigation */}
         <div className="flex justify-between items-center mt-lg px-4">
           <button
-            onClick={handleBackToSetup}
+            onClick={handleBack}
             className="btn-secondary"
           >
-            Back to Setup
+            {currentItemIndex > 0 ? 'Previous Item' : 'Back to Setup'}
           </button>
           <button
             onClick={handleNextItem}
