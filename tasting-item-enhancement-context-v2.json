@@ -1,0 +1,200 @@
+{
+  "feature_description": "Fix Tasting Item Naming and Navigation Issues Based on User Feedback",
+  "problem_statement": "After reviewing the mobile app screenshots more carefully, the main issues are: 1) Items are showing generic names like 'Coffee 1', 'Coffee 2' instead of meaningful names, 2) The item name editing is not clearly discoverable (user specifically mentions needing an 'editable field'), 3) Photo upload button is missing or not visible, and 4) For sessions with many items, there's no 'jump to' feature to quickly navigate to specific items (user mentions being on 'item 100 and wanting to edit item 3').",
+  "current_state_analysis": {
+    "item_naming_issue": {
+      "what_user_sees": "Items display as 'Coffee 1', 'Coffee 2', 'Coffee 3' etc.",
+      "user_feedback": "'default this to item 1, item 2 etc with editable field so they can change the name'",
+      "current_behavior": "Items get auto-named as '{Category} {Number}' in QuickTastingSession.tsx line 222",
+      "problem": "Generic numbering doesn't help users identify specific items, and editing isn't obvious"
+    },
+    "editing_discoverability": {
+      "what_user_sees": "Item names appear as plain text with only a small edit icon on hover",
+      "user_feedback": "User specifically mentions needing an 'editable field' - suggests current editing isn't clear",
+      "current_behavior": "Edit icon only visible on hover in TastingItem.tsx lines 243-245",
+      "problem": "Not immediately obvious that item names can be edited, inconsistent with session name editing UX"
+    },
+    "missing_photo_upload": {
+      "what_user_sees": "No visible photo upload button in the item interface",
+      "user_feedback": "'also the upload image button' - suggests it's missing or not visible",
+      "current_behavior": "Photo upload exists in TastingItem.tsx but may not be prominently displayed",
+      "problem": "Photo upload functionality exists but isn't discoverable in the UI"
+    },
+    "navigation_scalability": {
+      "what_user_sees": "Navigation shows 'Item 3 of 3' with Previous/Next buttons",
+      "user_feedback": "'maybe this can have a jump to feature in case you are on item 100 and want to edit item 3'",
+      "current_behavior": "Only Previous/Next navigation, no direct item jumping",
+      "problem": "For sessions with many items, navigating to specific items is inefficient"
+    }
+  },
+  "proposed_solution": {
+    "improve_item_naming": {
+      "description": "Make item names more meaningful and clearly editable",
+      "features": [
+        "Better default naming (e.g., 'Colombian Coffee', 'Ethiopian Blend' instead of 'Coffee 1')",
+        "Clear visual indication that names are editable (like session name editing)",
+        "Consistent editing UX across all name fields"
+      ]
+    },
+    "enhance_editing_ux": {
+      "description": "Make item name editing as discoverable as session name editing",
+      "features": [
+        "Apply same bordered container pattern as session name editing",
+        "Add 'Item Name' label above the name",
+        "Show 'Edit' text alongside icon for clarity",
+        "Consistent hover states and visual feedback"
+      ]
+    },
+    "add_prominent_photo_upload": {
+      "description": "Make photo upload clearly visible and accessible",
+      "features": [
+        "Add prominent photo upload button/area to item interface",
+        "Visual preview of uploaded photos",
+        "Clear upload progress and feedback"
+      ]
+    },
+    "implement_jump_to_navigation": {
+      "description": "Add direct navigation to specific items for large sessions",
+      "features": [
+        "Enhance existing ItemNavigationDropdown with 'jump to' functionality",
+        "Add item number input for direct navigation",
+        "Show item list with quick selection",
+        "Maintain current Previous/Next navigation as primary method"
+      ]
+    }
+  },
+  "technical_requirements": {
+    "database_changes": {
+      "none_required": "Current schema supports all needed fields"
+    },
+    "new_components": [
+      "ItemNameEditor - Consistent editing UX component",
+      "PhotoUploadArea - Prominent photo upload component", 
+      "JumpToNavigation - Direct item navigation component"
+    ],
+    "modified_components": [
+      "TastingItem.tsx - Enhanced editing UX and photo upload",
+      "QuickTastingSession.tsx - Better naming logic",
+      "ItemNavigationDropdown.tsx - Add jump-to functionality"
+    ],
+    "new_services": [
+      "ItemNamingService - Better default naming suggestions"
+    ]
+  },
+  "user_stories": [
+    {
+      "id": "meaningful-names",
+      "title": "Meaningful Item Names",
+      "description": "As a user, I want items to have meaningful default names instead of generic 'Coffee 1', 'Coffee 2' so I can easily identify them",
+      "acceptance_criteria": [
+        "Items get better default names based on category",
+        "Names are clearly editable with visual cues",
+        "Fallback to numbered system works properly"
+      ]
+    },
+    {
+      "id": "discoverable-editing",
+      "title": "Discoverable Item Editing", 
+      "description": "As a user, I want to immediately see that item names can be edited, just like session names",
+      "acceptance_criteria": [
+        "Item names have same visual treatment as session names",
+        "Edit functionality is immediately visible",
+        "Consistent UX across all editable fields"
+      ]
+    },
+    {
+      "id": "visible-photo-upload",
+      "title": "Visible Photo Upload",
+      "description": "As a user, I want to easily see and access the photo upload functionality for each item",
+      "acceptance_criteria": [
+        "Photo upload button is prominently displayed",
+        "Visual preview of uploaded photos",
+        "Clear upload progress and feedback"
+      ]
+    },
+    {
+      "id": "jump-to-navigation",
+      "title": "Jump to Item Navigation",
+      "description": "As a user with many items, I want to quickly jump to specific items instead of navigating one by one",
+      "acceptance_criteria": [
+        "Can directly navigate to any item by number",
+        "Item list shows all items for quick selection",
+        "Maintains existing Previous/Next navigation"
+      ]
+    }
+  ],
+  "implementation_phases": [
+    {
+      "phase": 1,
+      "name": "Fix Item Naming and Editing UX",
+      "tasks": [
+        "Create ItemNameEditor component with consistent UX",
+        "Update TastingItem to use new editing component", 
+        "Improve default naming logic in QuickTastingSession",
+        "Apply same visual treatment as session name editing"
+      ],
+      "estimated_time": "4-5 hours"
+    },
+    {
+      "phase": 2,
+      "name": "Add Prominent Photo Upload",
+      "tasks": [
+        "Create PhotoUploadArea component",
+        "Integrate with TastingItem interface",
+        "Add photo preview and management",
+        "Ensure upload is prominently displayed"
+      ],
+      "estimated_time": "3-4 hours"
+    },
+    {
+      "phase": 3,
+      "name": "Implement Jump-to Navigation",
+      "tasks": [
+        "Enhance ItemNavigationDropdown with jump-to functionality",
+        "Add item number input for direct navigation",
+        "Create item list view for quick selection",
+        "Test with large item counts"
+      ],
+      "estimated_time": "4-6 hours"
+    }
+  ],
+  "success_criteria": [
+    "Items have meaningful default names instead of generic numbering",
+    "Item name editing is as discoverable as session name editing",
+    "Photo upload is prominently displayed and easy to use",
+    "Users can quickly jump to specific items in large sessions",
+    "Consistent UX across all editable fields",
+    "No regression in existing functionality"
+  ],
+  "risk_assessment": {
+    "low_risk": [
+      "UX improvements are additive and don't break existing functionality",
+      "Photo upload already exists, just needs better presentation"
+    ],
+    "medium_risk": [
+      "Jump-to navigation needs to work well with existing navigation",
+      "Need to ensure naming suggestions are appropriate"
+    ],
+    "mitigation": [
+      "Maintain existing navigation as primary method",
+      "Implement comprehensive fallback naming system",
+      "Test with various item counts and edge cases"
+    ]
+  },
+  "related_files": [
+    "components/quick-tasting/TastingItem.tsx",
+    "components/quick-tasting/QuickTastingSession.tsx", 
+    "components/quick-tasting/ItemNavigationDropdown.tsx",
+    "components/AvatarUpload.tsx",
+    "lib/avatarService.ts"
+  ],
+  "design_tokens": {
+    "consistent_with": "Session name editing UX we just implemented",
+    "visual_patterns": [
+      "Bordered containers for editable fields",
+      "Clear labels above editable content", 
+      "Edit text + icon combination",
+      "Hover states with color changes"
+    ]
+  }
+}

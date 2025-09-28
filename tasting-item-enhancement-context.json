@@ -1,0 +1,186 @@
+{
+  "feature_description": "Enhance Tasting Item Management with Smart Defaults, Better Editing UX, and Improved Photo Upload",
+  "problem_statement": "Based on user feedback from the mobile app screenshots, the current tasting item experience needs significant improvements in three key areas: 1) Item naming defaults are not intuitive (showing 'Coffee 1', 'Coffee 2' instead of meaningful names), 2) Item name editing is not clearly discoverable, and 3) Photo upload functionality is missing or not prominent enough in the tasting flow.",
+  "current_state_analysis": {
+    "item_naming": {
+      "current_behavior": "Items are auto-named as '{Category} {Number}' (e.g., 'Coffee 1', 'Coffee 2')",
+      "code_location": "QuickTastingSession.tsx line 222: `const itemName = \`${getDisplayCategoryName(session.category, session.custom_category_name)} ${items.length + 1}\`;`",
+      "user_feedback": "User annotation shows 'default this to item 1, item 2 etc with editable field so they can change the name'",
+      "issues": [
+        "Generic naming doesn't help users identify specific items",
+        "No clear indication that names are editable",
+        "No smart suggestions based on category or context"
+      ]
+    },
+    "item_editing_ux": {
+      "current_behavior": "Item names can be edited but only show small edit icon on hover",
+      "code_location": "TastingItem.tsx lines 239-247: Edit icon only visible on hover",
+      "user_feedback": "Not immediately clear that item names can be edited",
+      "issues": [
+        "Edit functionality is hidden until hover",
+        "No visual cues that field is editable",
+        "Inconsistent with session name editing UX we just improved"
+      ]
+    },
+    "photo_upload": {
+      "current_behavior": "Photo upload exists but may not be prominent enough",
+      "code_location": "TastingItem.tsx lines 81-125: Photo upload functionality exists",
+      "user_feedback": "User annotation mentions 'also the upload image button' suggesting it's missing or not visible",
+      "issues": [
+        "Photo upload may not be prominently displayed",
+        "No visual indication of photo upload capability",
+        "May be buried in the interface"
+      ]
+    }
+  },
+  "proposed_solution": {
+    "smart_item_naming": {
+      "description": "Implement intelligent default naming with category-specific suggestions",
+      "features": [
+        "Category-aware naming patterns (e.g., 'Colombian Supremo', 'Ethiopian Yirgacheffe' for coffee)",
+        "Smart suggestions based on common items in category",
+        "Fallback to numbered system if no suggestions available",
+        "Clear visual indication that names are editable"
+      ]
+    },
+    "enhanced_editing_ux": {
+      "description": "Make item name editing as discoverable as session name editing",
+      "features": [
+        "Apply same UX pattern as session name editing (bordered container, clear labels)",
+        "Add 'Item Name' label above the name",
+        "Show 'Edit' text alongside icon",
+        "Consistent hover states and visual feedback"
+      ]
+    },
+    "prominent_photo_upload": {
+      "description": "Make photo upload more prominent and accessible",
+      "features": [
+        "Add photo upload button/area to item header",
+        "Visual preview of uploaded photos",
+        "Drag-and-drop functionality",
+        "Clear upload progress indicators"
+      ]
+    }
+  },
+  "technical_requirements": {
+    "database_changes": {
+      "none_required": "Current schema supports all needed fields (item_name, photo_url)"
+    },
+    "new_components": [
+      "SmartItemNameInput - Enhanced input with suggestions",
+      "PhotoUploadArea - Prominent photo upload component",
+      "ItemNameEditor - Consistent editing UX component"
+    ],
+    "modified_components": [
+      "TastingItem.tsx - Enhanced editing UX and photo upload",
+      "QuickTastingSession.tsx - Smart naming logic"
+    ],
+    "new_services": [
+      "ItemNamingService - Category-specific naming suggestions",
+      "PhotoUploadService - Enhanced photo handling"
+    ]
+  },
+  "user_stories": [
+    {
+      "id": "smart-naming",
+      "title": "Smart Item Naming",
+      "description": "As a user, I want items to have meaningful default names so I can easily identify them without having to rename every item",
+      "acceptance_criteria": [
+        "Items get category-appropriate default names",
+        "Names are clearly editable with visual cues",
+        "Fallback to numbered system works properly"
+      ]
+    },
+    {
+      "id": "discoverable-editing",
+      "title": "Discoverable Item Editing",
+      "description": "As a user, I want to immediately see that item names can be edited, just like session names",
+      "acceptance_criteria": [
+        "Item names have same visual treatment as session names",
+        "Edit functionality is immediately visible",
+        "Consistent UX across all editable fields"
+      ]
+    },
+    {
+      "id": "prominent-photos",
+      "title": "Prominent Photo Upload",
+      "description": "As a user, I want to easily upload photos for each tasting item without hunting for the upload button",
+      "acceptance_criteria": [
+        "Photo upload is prominently displayed",
+        "Visual preview of uploaded photos",
+        "Clear upload progress and feedback"
+      ]
+    }
+  ],
+  "implementation_phases": [
+    {
+      "phase": 1,
+      "name": "Smart Naming System",
+      "tasks": [
+        "Create ItemNamingService with category-specific suggestions",
+        "Implement smart default naming in QuickTastingSession",
+        "Add fallback logic for unknown categories"
+      ],
+      "estimated_time": "4-6 hours"
+    },
+    {
+      "phase": 2,
+      "name": "Enhanced Editing UX",
+      "tasks": [
+        "Create ItemNameEditor component with consistent UX",
+        "Update TastingItem to use new editing component",
+        "Apply same visual treatment as session name editing"
+      ],
+      "estimated_time": "3-4 hours"
+    },
+    {
+      "phase": 3,
+      "name": "Prominent Photo Upload",
+      "tasks": [
+        "Create PhotoUploadArea component",
+        "Integrate with TastingItem header",
+        "Add drag-and-drop functionality",
+        "Implement photo preview and management"
+      ],
+      "estimated_time": "5-7 hours"
+    }
+  ],
+  "success_criteria": [
+    "Items have meaningful default names based on category",
+    "Item name editing is as discoverable as session name editing",
+    "Photo upload is prominently displayed and easy to use",
+    "Consistent UX across all editable fields",
+    "No regression in existing functionality"
+  ],
+  "risk_assessment": {
+    "low_risk": [
+      "UX improvements are additive and don't break existing functionality",
+      "Photo upload already exists, just needs better presentation"
+    ],
+    "medium_risk": [
+      "Smart naming suggestions need good fallback logic",
+      "Need to ensure naming suggestions are culturally appropriate"
+    ],
+    "mitigation": [
+      "Implement comprehensive fallback naming system",
+      "Test with various categories and edge cases",
+      "Provide user override for all auto-generated names"
+    ]
+  },
+  "related_files": [
+    "components/quick-tasting/TastingItem.tsx",
+    "components/quick-tasting/QuickTastingSession.tsx",
+    "components/AvatarUpload.tsx",
+    "lib/avatarService.ts",
+    "schema.sql"
+  ],
+  "design_tokens": {
+    "consistent_with": "Session name editing UX we just implemented",
+    "visual_patterns": [
+      "Bordered containers for editable fields",
+      "Clear labels above editable content",
+      "Edit text + icon combination",
+      "Hover states with color changes"
+    ]
+  }
+}
