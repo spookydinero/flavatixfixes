@@ -166,6 +166,8 @@ export type Database = {
           tasting_id: string;
           item_name: string;
           notes: string | null;
+          aroma: string | null;
+          flavor: string | null;
           flavor_scores: any | null;
           overall_score: number | null;
           photo_url: string | null;
@@ -179,6 +181,8 @@ export type Database = {
           tasting_id: string;
           item_name: string;
           notes?: string | null;
+          aroma?: string | null;
+          flavor?: string | null;
           flavor_scores?: any | null;
           overall_score?: number | null;
           photo_url?: string | null;
@@ -192,6 +196,8 @@ export type Database = {
           tasting_id?: string;
           item_name?: string;
           notes?: string | null;
+          aroma?: string | null;
+          flavor?: string | null;
           flavor_scores?: any | null;
           overall_score?: number | null;
           photo_url?: string | null;
