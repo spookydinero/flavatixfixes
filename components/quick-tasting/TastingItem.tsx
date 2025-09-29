@@ -252,7 +252,7 @@ const TastingItem: React.FC<TastingItemProps> = ({
                   {getDisplayName()}
                 </h3>
                 {!isBlindItems && showEditControls && (
-                  <Edit size={16} className="text-text-secondary opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                  <Edit size={16} className="text-text-secondary opacity-80 transition-opacity flex-shrink-0" />
                 )}
               </div>
             )}

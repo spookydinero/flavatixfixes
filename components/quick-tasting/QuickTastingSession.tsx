@@ -757,30 +757,6 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     {/* Tasting Phase */}
     {phase === 'tasting' && currentItem && (
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="card p-md mb-lg">
-          <div className="text-center">
-            <h2 className="text-h2 font-heading font-bold text-text-primary mb-sm">
-              Tasting {getCurrentItemDisplayName()}
-            </h2>
-            <p className="text-body font-body text-text-secondary mb-md">
-              Rate the flavors and overall impression of <strong>{getCurrentItemDisplayName()}</strong>
-            </p>
-            <div className="flex items-center justify-center space-x-sm">
-              <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                <span className="text-primary-800 font-bold text-lg">🍷</span>
-              </div>
-              <div className="text-left">
-                <div className="text-small font-body font-medium text-text-primary">
-                  {getCurrentItemDisplayName()}
-                </div>
-                <div className="text-caption font-body text-text-secondary">
-                  {getDisplayCategoryName(session.category, session.custom_category_name)} Tasting
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Unified Tasting Item */}
         <TastingItem
