@@ -54,12 +54,29 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('🔄 QuickTastingSummary: Component mounted with session:', session.id, session.session_name);
     loadTastingItems();
   }, [session.id]);
 
   const loadTastingItems = async () => {
     try {
-      console.log('🔍 QuickTastingSummary: Loading items for session:', session.id);
+      console.log('🔍 QuickTastingSummary: Loading items for session:', session.id, session.session_name);
+
+      // First, verify the session exists and is completed
+      const { data: sessionData, error: sessionError } = await supabase
+        .from('quick_tastings')
+        .select('id, completed_at, total_items, completed_items')
+        .eq('id', session.id)
+        .single();
+
+      if (sessionError) {
+        console.error('❌ QuickTastingSummary: Error loading session:', sessionError);
+        toast.error('Session not found');
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('📊 QuickTastingSummary: Session data:', sessionData);
 
       const { data, error } = await supabase
         .from('quick_tasting_items')
@@ -75,13 +92,13 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
       console.log('📊 QuickTastingSummary: Loaded items:', data?.length || 0, 'items');
       if (data) {
         (data as TastingItemData[]).forEach((item, index) => {
-          console.log(`  ${index + 1}. ${item.item_name} (ID: ${item.id}, Score: ${item.overall_score})`);
+          console.log(`  ${index + 1}. ${item.item_name} (ID: ${item.id}, Score: ${item.overall_score}, Aroma: ${item.aroma ? 'YES' : 'NO'}, Flavor: ${item.flavor ? 'YES' : 'NO'})`);
         });
       }
 
       setItems((data as TastingItemData[]) || []);
     } catch (error) {
-      console.error('Error loading tasting items:', error);
+      console.error('❌ QuickTastingSummary: Error in loadTastingItems:', error);
       toast.error('Failed to load tasting items');
     } finally {
       setIsLoading(false);

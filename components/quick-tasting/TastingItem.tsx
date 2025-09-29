@@ -145,18 +145,14 @@ const TastingItem: React.FC<TastingItemProps> = ({
 
   const handleAromaChange = (aroma: string) => {
     setLocalAroma(aroma);
-    // Debounce the update
-    setTimeout(() => {
-      onUpdate({ aroma });
-    }, 500);
+    // Immediate update for critical data like aroma/flavor
+    onUpdate({ aroma });
   };
 
   const handleFlavorChange = (flavor: string) => {
     setLocalFlavor(flavor);
-    // Debounce the update
-    setTimeout(() => {
-      onUpdate({ flavor });
-    }, 500);
+    // Immediate update for critical data like aroma/flavor
+    onUpdate({ flavor });
   };
 
   const handleScoreChange = (score: number) => {

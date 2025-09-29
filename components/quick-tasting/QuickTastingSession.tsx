@@ -143,6 +143,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const supabase = getSupabaseClient() as any;
 
   useEffect(() => {
+    console.log('🔄 QuickTastingSession: Loading session:', session?.id, 'mode:', session?.mode);
     loadTastingItems();
     // Only load user roles for study mode sessions
     if (session.mode === 'study') {
@@ -150,12 +151,6 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     }
   }, [session.id, userId, session.mode]);
 
-  useEffect(() => {
-    // For quick tasting mode, automatically add first item if no items exist
-    if (items.length === 0 && session.mode === 'quick' && phase === 'tasting' && !isLoading) {
-      addNewItem();
-    }
-  }, [items.length, session.mode, phase, isLoading]);
 
   useEffect(() => {
     setEditingSessionName(session.session_name || '');
@@ -214,6 +209,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
   const loadTastingItems = async () => {
     try {
+      console.log('🔄 QuickTastingSession: Loading items for session:', session.id);
       const { data, error } = await supabase
         .from('quick_tasting_items')
         .select('*')
@@ -221,7 +217,15 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         .order('created_at', { ascending: true });
 
       if (error) throw error;
+
+      console.log('✅ QuickTastingSession: Loaded', (data || []).length, 'items');
       setItems(data || []);
+
+      // After loading items, check if we need to create the first item for quick tasting
+      if ((data || []).length === 0 && session.mode === 'quick' && phase === 'tasting' && !isLoading) {
+        console.log('🔄 QuickTastingSession: No items found, auto-adding first item...');
+        setTimeout(() => addNewItem(), 100); // Small delay to ensure state is updated
+      }
     } catch (error) {
       console.error('Error loading tasting items:', error);
       toast.error('Failed to load tasting items');
@@ -229,24 +233,30 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   };
 
   const addNewItem = async () => {
+    console.log('➕ QuickTastingSession: addNewItem called for session:', session?.id);
+
     // Check permissions based on mode
     if (session.mode === 'competition') {
+      console.log('❌ QuickTastingSession: Cannot add items in competition mode');
       toast.error('Cannot add items in competition mode');
       return;
     }
 
     if (session.mode === 'study' && session.study_approach === 'collaborative') {
+      console.log('❌ QuickTastingSession: Collaborative mode - showing suggestions');
       toast.error('In collaborative mode, suggest items instead of adding them directly');
       setShowItemSuggestions(true);
       return;
     }
 
     if (session.mode === 'study' && !userPermissions.canAddItems) {
+      console.log('❌ QuickTastingSession: No permission to add items');
       toast.error('You do not have permission to add items');
       return;
     }
 
     const itemName = `${getDisplayCategoryName(session.category, session.custom_category_name)} ${items.length + 1}`;
+    console.log('📝 QuickTastingSession: Creating item:', itemName, 'for session:', session.id);
 
     try {
       const { data, error } = await supabase
@@ -258,13 +268,17 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ QuickTastingSession: Error inserting item:', error);
+        throw error;
+      }
 
+      console.log('✅ QuickTastingSession: Item created successfully:', data.id);
       setItems(prev => [...prev, data]);
       setCurrentItemIndex(items.length);
       toast.success('New item added!');
     } catch (error) {
-      console.error('Error adding new item:', error);
+      console.error('❌ QuickTastingSession: Error adding new item:', error);
       toast.error('Failed to add new item');
     }
   };
