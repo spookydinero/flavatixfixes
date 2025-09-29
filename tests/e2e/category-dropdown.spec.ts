@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Category Dropdown E2E', () => {
   test('complete user workflow for category selection and mode display removal', async ({ page }) => {
     // Navigate to the quick tasting page
-    await page.goto('http://localhost:3030/quick-tasting')
+http://localhost:3030/quick-tasting')
 
     // Wait for the page to load
     await page.waitForSelector('[data-testid="quick-tasting-session"]', { timeout: 10000 })
