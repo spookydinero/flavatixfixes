@@ -209,7 +209,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
   const loadTastingItems = async () => {
     try {
-      console.log('🔄 QuickTastingSession: Loading items for session:', session.id);
+      console.log('🔄 QuickTastingSession: Loading items for session:', session.id, 'mode:', session.mode, 'phase:', phase, 'isLoading:', isLoading);
       const { data, error } = await supabase
         .from('quick_tasting_items')
         .select('*')
@@ -255,8 +255,9 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
       return;
     }
 
-    const itemName = `${getDisplayCategoryName(session.category, session.custom_category_name)} ${items.length + 1}`;
-    console.log('📝 QuickTastingSession: Creating item:', itemName, 'for session:', session.id);
+    const newIndex = items.length;
+    const itemName = `${getDisplayCategoryName(session.category, session.custom_category_name)} ${newIndex + 1}`;
+    console.log('📝 QuickTastingSession: Creating item:', itemName, 'at index:', newIndex, 'for session:', session.id);
 
     try {
       const { data, error } = await supabase
@@ -275,7 +276,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
       console.log('✅ QuickTastingSession: Item created successfully:', data.id);
       setItems(prev => [...prev, data]);
-      setCurrentItemIndex(items.length);
+      setCurrentItemIndex(newIndex);
       toast.success('New item added!');
     } catch (error) {
       console.error('❌ QuickTastingSession: Error adding new item:', error);
@@ -284,6 +285,8 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   };
 
   const updateItem = async (itemId: string, updates: Partial<TastingItemData>) => {
+    console.log('🔄 QuickTastingSession: Updating item:', itemId, 'with:', updates);
+
     try {
       const { data, error } = await supabase
         .from('quick_tasting_items')
@@ -292,7 +295,12 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ QuickTastingSession: Error updating item:', error);
+        throw error;
+      }
+
+      console.log('✅ QuickTastingSession: Item updated successfully:', data.id);
 
       const updatedItems = items.map(item =>
         item.id === itemId ? { ...item, ...data } : item
