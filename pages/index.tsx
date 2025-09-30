@@ -11,7 +11,7 @@ const crimsonText = Crimson_Text({
 
 export default function Home() {
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200">
+    <div className="bg-background-light font-display text-zinc-900">
       <Head>
         <title>Flavatix - Taste the World, One Sip at a Time</title>
         <meta name="description" content="The world's most pivotal tasting app for coffee and drinks. Discover, analyze, and share your tasting experiences with our user-friendly platform." />

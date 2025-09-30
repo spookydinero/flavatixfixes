@@ -115,7 +115,7 @@ const CreateReviewPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+      <div className="min-h-screen bg-background-light flex items-center justify-center">
         <div className="flex flex-col items-center">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-sm"></div>
           <div className="text-text-primary text-h4 font-body font-medium">Loading...</div>
@@ -129,7 +129,7 @@ const CreateReviewPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen">
+    <div className="bg-background-light font-display text-zinc-900 min-h-screen">
       <main id="main-content">
         <div className="container mx-auto px-md py-lg max-w-4xl">
           {/* Header */}

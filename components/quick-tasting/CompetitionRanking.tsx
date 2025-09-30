@@ -127,7 +127,7 @@ const CompetitionRanking: React.FC<CompetitionRankingProps> = ({
               <div
                 key={participant.id}
                 className={`flex items-center justify-between p-sm rounded-lg ${
-                  isCurrentUser ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800' : 'bg-background-surface'
+                  isCurrentUser ? 'bg-primary-50 border border-primary-200' : 'bg-background-surface'
                 }`}
               >
                 <div className="flex items-center">
@@ -135,7 +135,7 @@ const CompetitionRanking: React.FC<CompetitionRankingProps> = ({
                     {getRankIcon(participant.rank)}
                   </div>
                   <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-800 flex items-center justify-center mr-sm">
+                    <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center mr-sm">
                       <Users size={16} className="text-primary-600" />
                     </div>
                     <div>

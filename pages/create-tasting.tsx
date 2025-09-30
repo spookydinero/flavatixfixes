@@ -188,7 +188,7 @@ const CreateTastingPage: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen">
+    <div className="bg-background-light font-display text-zinc-900 min-h-screen">
       <main id="main-content">
         <div className="container mx-auto px-md py-lg max-w-4xl">
           {/* Header */}
@@ -218,7 +218,7 @@ const CreateTastingPage: React.FC = () => {
                   onClick={() => handleModeChange('study')}
                   className={`p-md rounded-lg border-2 transition-all ${
                     form.mode === 'study'
-                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
+                      ? 'border-primary-600 bg-primary-50'
                       : 'border-border-default hover:border-primary-400'
                   }`}
                 >
@@ -236,7 +236,7 @@ const CreateTastingPage: React.FC = () => {
                   onClick={() => handleModeChange('competition')}
                   className={`p-md rounded-lg border-2 transition-all ${
                     form.mode === 'competition'
-                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
+                      ? 'border-primary-600 bg-primary-50'
                       : 'border-border-default hover:border-primary-400'
                   }`}
                 >
@@ -254,7 +254,7 @@ const CreateTastingPage: React.FC = () => {
                   onClick={() => handleModeChange('quick')}
                   className={`p-md rounded-lg border-2 transition-all ${
                     form.mode === 'quick'
-                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
+                      ? 'border-primary-600 bg-primary-50'
                       : 'border-border-default hover:border-primary-400'
                   }`}
                 >

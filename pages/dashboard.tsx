@@ -82,13 +82,13 @@ export default function Dashboard() {
   return (
     <div className="bg-background-light font-display text-zinc-900 min-h-screen">
       <div className="flex h-screen flex-col">
-        <header className="flex items-center border-b border-zinc-200 dark:border-zinc-700 p-4">
+        <header className="flex items-center border-b border-zinc-200 p-4">
            <h1 className="flex-1 text-center text-xl font-bold">
              {activeTab === 'home' ? 'Dashboard' : 'Profile'}
            </h1>
            <button
              onClick={handleLogout}
-             className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+             className="text-sm text-zinc-600 hover:text-zinc-900:text-zinc-200"
            >
              Logout
            </button>
@@ -96,13 +96,13 @@ export default function Dashboard() {
 
         <main className="flex-1 overflow-y-auto pb-20">
            {/* Main Tab Navigation */}
-           <div className="flex border-b border-zinc-200 dark:border-zinc-700">
+           <div className="flex border-b border-zinc-200">
              <button
                onClick={() => setActiveTab('home')}
                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                  activeTab === 'home'
                    ? 'border-primary text-primary'
-                   : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                   : 'border-transparent text-zinc-500 hover:text-zinc-700:text-zinc-300'
                }`}
              >
                Home
@@ -112,7 +112,7 @@ export default function Dashboard() {
                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                  activeTab === 'edit'
                    ? 'border-primary text-primary'
-                   : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                   : 'border-transparent text-zinc-500 hover:text-zinc-700:text-zinc-300'
                }`}
              >
                Edit Profile
@@ -132,7 +132,7 @@ export default function Dashboard() {
 
             {/* Profile Overview */}
             {profile && (
-              <div className="bg-white dark:bg-zinc-800/50 p-6 rounded-lg mb-6">
+              <div className="bg-white p-6 rounded-lg mb-6">
                 {/* Header with Avatar and Basic Info */}
                 <div className="flex items-start space-x-4 mb-6">
                   <div className="flex-shrink-0 relative">
@@ -161,13 +161,13 @@ export default function Dashboard() {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-bold text-zinc-900 dark:text-white truncate">
+                    <h3 className="text-xl font-bold text-zinc-900 truncate">
                       {profile.full_name || 'No name set'}
                     </h3>
                     {profile.username && (
-                      <p className="text-zinc-600 dark:text-zinc-400 mb-1">@{profile.username}</p>
+                      <p className="text-zinc-600 mb-1">@{profile.username}</p>
                     )}
-                    <p className="text-zinc-500 dark:text-zinc-400 text-sm">{user?.email}</p>
+                    <p className="text-zinc-500 text-sm">{user?.email}</p>
                     {profile.preferred_category && (
                       <span className="inline-block px-3 py-1 rounded-full text-sm font-medium mt-2 bg-primary/10 text-primary">
                         {profile.preferred_category}
@@ -185,39 +185,39 @@ export default function Dashboard() {
                 {/* Bio */}
                 {profile.bio && (
                   <div className="mb-6">
-                    <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">About</h4>
-                    <p className="text-zinc-900 dark:text-white leading-relaxed">{profile.bio}</p>
+                    <h4 className="text-sm font-medium text-zinc-700 mb-2">About</h4>
+                    <p className="text-zinc-900 leading-relaxed">{profile.bio}</p>
                   </div>
                 )}
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-zinc-50 dark:bg-zinc-700/50 p-4 text-center rounded-lg">
+                  <div className="bg-zinc-50 p-4 text-center rounded-lg">
                     <div className="text-2xl font-bold text-primary">{tastingStats?.totalTastings || profile.tastings_count || 0}</div>
-                    <div className="text-sm text-zinc-600 dark:text-zinc-400">Tastings</div>
+                    <div className="text-sm text-zinc-600">Tastings</div>
                   </div>
 
-                  <div className="bg-zinc-50 dark:bg-zinc-700/50 p-4 text-center rounded-lg">
+                  <div className="bg-zinc-50 p-4 text-center rounded-lg">
                     <div className="text-2xl font-bold text-primary">{profile.reviews_count || 0}</div>
-                    <div className="text-sm text-zinc-600 dark:text-zinc-400">Reviews</div>
+                    <div className="text-sm text-zinc-600">Reviews</div>
                   </div>
 
-                  <div className="bg-zinc-50 dark:bg-zinc-700/50 p-4 text-center rounded-lg">
+                  <div className="bg-zinc-50 p-4 text-center rounded-lg">
                     <div className="text-2xl font-bold text-primary">{profile.followers_count || 0}</div>
-                    <div className="text-sm text-zinc-600 dark:text-zinc-400">Followers</div>
+                    <div className="text-sm text-zinc-600">Followers</div>
                   </div>
 
-                  <div className="bg-zinc-50 dark:bg-zinc-700/50 p-4 text-center rounded-lg">
+                  <div className="bg-zinc-50 p-4 text-center rounded-lg">
                     <div className="text-2xl font-bold text-primary">{profile.following_count || 0}</div>
-                    <div className="text-sm text-zinc-600 dark:text-zinc-400">Following</div>
+                    <div className="text-sm text-zinc-600">Following</div>
                   </div>
                 </div>
 
                 {/* Additional Info */}
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between items-center">
-                    <span className="text-zinc-600 dark:text-zinc-400">Member since</span>
-                    <span className="text-zinc-900 dark:text-white font-medium">
+                    <span className="text-zinc-600">Member since</span>
+                    <span className="text-zinc-900 font-medium">
                       {new Date(profile.created_at).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
@@ -228,8 +228,8 @@ export default function Dashboard() {
 
                   {profile.last_tasted_at && (
                     <div className="flex justify-between items-center">
-                      <span className="text-zinc-600 dark:text-zinc-400">Last tasting</span>
-                      <span className="text-zinc-900 dark:text-white font-medium">
+                      <span className="text-zinc-600">Last tasting</span>
+                      <span className="text-zinc-900 font-medium">
                         {new Date(profile.last_tasted_at).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'long',
@@ -240,7 +240,7 @@ export default function Dashboard() {
                   )}
 
                   <div className="flex justify-between items-center">
-                    <span className="text-zinc-600 dark:text-zinc-400">Email verified</span>
+                    <span className="text-zinc-600">Email verified</span>
                     <div className="flex items-center">
                       {profile.email_confirmed ? (
                         <>
@@ -267,20 +267,20 @@ export default function Dashboard() {
             <div className="space-y-4">
               <button
                 onClick={() => router.push('/history')}
-                className="w-full flex items-center gap-3 p-4 bg-white dark:bg-zinc-800/50 text-zinc-900 dark:text-white rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+                className="w-full flex items-center gap-3 p-4 bg-white text-zinc-900 rounded-lg hover:bg-zinc-50:bg-zinc-700 transition-colors"
               >
                 <span className="material-symbols-outlined">history</span>
                 <div className="text-left">
                   <div className="font-medium">View History</div>
-                  <div className="text-sm text-zinc-600 dark:text-zinc-400">Your past tastings</div>
+                  <div className="text-sm text-zinc-600">Your past tastings</div>
                 </div>
               </button>
 
               {/* Recent Tasting Summary */}
               {latestTasting && (
-                <div className="bg-white dark:bg-zinc-800/50 p-4 rounded-lg">
+                <div className="bg-white p-4 rounded-lg">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-bold text-zinc-900 dark:text-white">
+                    <h3 className="text-lg font-bold text-zinc-900">
                       Latest Tasting
                     </h3>
                     <button
@@ -290,12 +290,12 @@ export default function Dashboard() {
                       View All
                     </button>
                   </div>
-                  <div className="bg-zinc-50 dark:bg-zinc-700/50 p-3 rounded-lg">
+                  <div className="bg-zinc-50 p-3 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-zinc-900 dark:text-white font-medium">
+                      <span className="text-zinc-900 font-medium">
                         {latestTasting.category?.replace('_', ' ') || 'Tasting'}
                       </span>
-                      <span className="text-zinc-500 dark:text-zinc-400 text-sm">
+                      <span className="text-zinc-500 text-sm">
                         {latestTasting.created_at && !isNaN(new Date(latestTasting.created_at).getTime())
                           ? new Date(latestTasting.created_at).toLocaleDateString()
                           : 'Date unavailable'
@@ -303,12 +303,12 @@ export default function Dashboard() {
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-zinc-600 dark:text-zinc-400">Score:</span>
+                      <span className="text-zinc-600">Score:</span>
                       <span className="text-primary font-semibold">
                         {latestTasting.average_score ? latestTasting.average_score.toFixed(1) : 'N/A'}/5
                       </span>
                       <span className="text-zinc-400">•</span>
-                      <span className="text-zinc-600 dark:text-zinc-400">
+                      <span className="text-zinc-600">
                         {latestTasting.items?.length || 0} items
                       </span>
                     </div>
@@ -318,18 +318,18 @@ export default function Dashboard() {
 
               {/* Stats Card */}
               {tastingStats && (
-                <div className="bg-white dark:bg-zinc-800/50 p-4 rounded-lg">
-                  <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-3">Your Stats</h3>
+                <div className="bg-white p-4 rounded-lg">
+                  <h3 className="text-lg font-bold text-zinc-900 mb-3">Your Stats</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center">
                       <div className="text-2xl font-bold text-primary">{tastingStats.totalTastings}</div>
-                      <div className="text-sm text-zinc-600 dark:text-zinc-400">Total Tastings</div>
+                      <div className="text-sm text-zinc-600">Total Tastings</div>
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-primary">
                         {tastingStats.averageScore ? tastingStats.averageScore.toFixed(1) : '0.0'}
                       </div>
-                      <div className="text-sm text-zinc-600 dark:text-zinc-400">Avg Score</div>
+                      <div className="text-sm text-zinc-600">Avg Score</div>
                     </div>
                   </div>
                 </div>

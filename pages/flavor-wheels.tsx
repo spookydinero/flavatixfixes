@@ -31,7 +31,7 @@ export default function HistoryPage() {
 
   if (loading) {
     return (
-      <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen flex items-center justify-center">
+      <div className="bg-background-light font-display text-zinc-900 min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-text-secondary">Loading...</p>

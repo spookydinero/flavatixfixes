@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
 import { getSupabaseClient } from '../lib/supabase';
 import { toast } from '../lib/toast';
+import CommentsModal from '../components/social/CommentsModal';
 
 type TastingItem = {
   id: string;
@@ -48,6 +49,8 @@ export default function SocialPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'following'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
+  const [commentsModalOpen, setCommentsModalOpen] = useState(false);
+  const [activePostId, setActivePostId] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -406,8 +409,15 @@ export default function SocialPage() {
   };
 
   const handleComment = (postId: string) => {
-    // TODO: Open comment modal/input when implemented
-    toast.info('Comments feature coming soon!');
+    setActivePostId(postId);
+    setCommentsModalOpen(true);
+  };
+
+  const handleCloseComments = () => {
+    setCommentsModalOpen(false);
+    setActivePostId(null);
+    // Reload feed to update comment counts
+    loadSocialFeed();
   };
 
   const handleShare = async (postId: string) => {
@@ -579,8 +589,8 @@ export default function SocialPage() {
                 <div className="mb-4">
                   <span className="material-symbols-outlined text-6xl text-orange-500">local_bar</span>
                 </div>
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">No tastings yet</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 mb-4">
+                <h3 className="text-lg font-semibold text-zinc-900 mb-2">No tastings yet</h3>
+                <p className="text-zinc-600 mb-4">
                   Be the first to share your tasting experience!
                 </p>
                 <button
@@ -805,6 +815,16 @@ export default function SocialPage() {
           </nav>
         </footer>
       </div>
+
+      {/* Comments Modal */}
+      {activePostId && (
+        <CommentsModal
+          tastingId={activePostId}
+          isOpen={commentsModalOpen}
+          onClose={handleCloseComments}
+          initialCommentCount={posts.find(p => p.id === activePostId)?.stats.comments || 0}
+        />
+      )}
     </div>
   );
 }
