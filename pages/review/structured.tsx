@@ -255,8 +255,8 @@ const StructuredReviewPage: React.FC = () => {
                   >
                     <option value="">Select category</option>
                     {REVIEW_CATEGORIES.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
+                      <option key={cat} value={cat}>
+                        {cat}
                       </option>
                     ))}
                   </select>
