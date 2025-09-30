@@ -1,0 +1,600 @@
+import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/router';
+import { useAuth } from '@/contexts/AuthContext';
+import { getSupabaseClient } from '@/lib/supabase';
+import { toast } from '@/lib/toast';
+import { REVIEW_CATEGORIES, COUNTRIES, US_STATES, MEXICAN_STATES, generateReviewId } from '@/lib/reviewCategories';
+import { Camera } from 'lucide-react';
+
+const StructuredReviewPage: React.FC = () => {
+  const router = useRouter();
+  const { user } = useAuth();
+  const supabase = getSupabaseClient() as any;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Item ID fields
+  const [itemName, setItemName] = useState('');
+  const [photoUrl, setPhotoUrl] = useState('');
+  const [brand, setBrand] = useState('');
+  const [country, setCountry] = useState('');
+  const [state, setState] = useState('');
+  const [region, setRegion] = useState('');
+  const [vintage, setVintage] = useState('');
+  const [batchId, setBatchId] = useState('');
+  const [barcode, setBarcode] = useState('');
+  const [category, setCategory] = useState('');
+
+  // Characteristics
+  const [aromaNotes, setAromaNotes] = useState('');
+  const [aromaIntensity, setAromaIntensity] = useState(50);
+  const [saltNotes, setSaltNotes] = useState('');
+  const [saltScore, setSaltScore] = useState(50);
+  const [sweetnessNotes, setSweetnessNotes] = useState('');
+  const [sweetnessScore, setSweetnessScore] = useState(50);
+  const [acidityNotes, setAcidityNotes] = useState('');
+  const [acidityScore, setAcidityScore] = useState(50);
+  const [umamiNotes, setUmamiNotes] = useState('');
+  const [umamiScore, setUmamiScore] = useState(50);
+  const [spicinessNotes, setSpicinessNotes] = useState('');
+  const [spicinessScore, setSpicinessScore] = useState(50);
+  const [flavorNotes, setFlavorNotes] = useState('');
+  const [flavorIntensity, setFlavorIntensity] = useState(50);
+  const [textureNotes, setTextureNotes] = useState('');
+  const [typicityScore, setTypicityScore] = useState(50);
+  const [complexityScore, setComplexityScore] = useState(50);
+  const [otherNotes, setOtherNotes] = useState('');
+  const [overallScore, setOverallScore] = useState(50);
+
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('tasting-photos')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('tasting-photos')
+        .getPublicUrl(filePath);
+
+      setPhotoUrl(publicUrl);
+      toast.success('Photo uploaded!');
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      toast.error('Failed to upload photo');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const saveReview = async (status: 'draft' | 'completed') => {
+    if (!user) return;
+    
+    if (!itemName.trim()) {
+      toast.error('Item name is required');
+      return;
+    }
+
+    if (!category) {
+      toast.error('Category is required');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const reviewData = {
+        user_id: user.id,
+        item_name: itemName,
+        picture_url: photoUrl || null,
+        brand: brand || null,
+        country: country || null,
+        state: state || null,
+        region: region || null,
+        vintage: vintage || null,
+        batch_id: batchId || null,
+        barcode: barcode || null,
+        category,
+        aroma_notes: aromaNotes || null,
+        aroma_intensity: aromaIntensity,
+        salt_notes: saltNotes || null,
+        salt_score: saltScore,
+        sweetness_notes: sweetnessNotes || null,
+        sweetness_score: sweetnessScore,
+        acidity_notes: acidityNotes || null,
+        acidity_score: acidityScore,
+        umami_notes: umamiNotes || null,
+        umami_score: umamiScore,
+        spiciness_notes: spicinessNotes || null,
+        spiciness_score: spicinessScore,
+        flavor_notes: flavorNotes || null,
+        flavor_intensity: flavorIntensity,
+        texture_notes: textureNotes || null,
+        typicity_score: typicityScore,
+        complexity_score: complexityScore,
+        other_notes: otherNotes || null,
+        overall_score: overallScore,
+        status,
+      };
+
+      const { data, error } = await supabase
+        .from('quick_reviews')
+        .insert(reviewData)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success(status === 'draft' ? 'Review saved as draft' : 'Review completed!');
+      
+      if (status === 'completed') {
+        router.push(`/review/summary/${data.id}`);
+      } else {
+        router.push('/review/history');
+      }
+    } catch (error) {
+      console.error('Error saving review:', error);
+      toast.error('Failed to save review');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const startNewReview = async () => {
+    await saveReview('completed');
+    // Reset form
+    window.location.reload();
+  };
+
+  return (
+    <div className="bg-background-light font-display text-zinc-900 min-h-screen pb-20">
+      <div className="flex flex-col min-h-screen">
+        {/* Header */}
+        <header className="flex items-center justify-between border-b border-zinc-200 p-4 bg-background-light sticky top-0 z-10">
+          <button
+            onClick={() => router.back()}
+            className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-zinc-100"
+          >
+            <span className="material-symbols-outlined">arrow_back</span>
+          </button>
+          <h1 className="text-xl font-bold">Review</h1>
+          <div className="w-10"></div>
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto p-4">
+          <div className="max-w-2xl mx-auto space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-text-primary mb-2">
+                Structured Review
+              </h2>
+              <p className="text-text-secondary">
+                In-depth analysis of flavor characteristics
+              </p>
+            </div>
+
+            {/* ITEM ID Section */}
+            <div className="card p-6">
+              <h3 className="text-lg font-bold text-text-primary mb-4">Item Information</h3>
+              <p className="text-sm text-text-secondary mb-4">Fill in all that apply</p>
+              
+              <div className="space-y-4">
+                {/* Item Name - Required */}
+                <div>
+                  <label className="label">
+                    Item Name / Variety <span className="text-error">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={itemName}
+                    onChange={(e) => setItemName(e.target.value)}
+                    className="form-input"
+                    placeholder="Enter item name"
+                    required
+                  />
+                </div>
+
+                {/* Photo Upload */}
+                <div>
+                  <label className="label">Picture (optional)</label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="btn-secondary w-full"
+                  >
+                    {isUploading ? 'Uploading...' : photoUrl ? 'Change Photo' : 'Upload Photo'}
+                  </button>
+                  {photoUrl && (
+                    <img src={photoUrl} alt="Review item" className="mt-2 w-full h-48 object-cover rounded-lg" />
+                  )}
+                </div>
+
+                {/* Brand */}
+                <div>
+                  <label className="label">Brand</label>
+                  <input
+                    type="text"
+                    value={brand}
+                    onChange={(e) => setBrand(e.target.value)}
+                    className="form-input"
+                    placeholder="Enter brand name"
+                  />
+                </div>
+
+                {/* Category - Required */}
+                <div>
+                  <label className="label">
+                    Category <span className="text-error">*</span>
+                  </label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="form-input"
+                    required
+                  >
+                    <option value="">Select category</option>
+                    {REVIEW_CATEGORIES.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Country */}
+                <div>
+                  <label className="label">Country</label>
+                  <select
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className="form-input"
+                  >
+                    <option value="">Select country</option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* State */}
+                <div>
+                  <label className="label">State</label>
+                  <select
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                    className="form-input"
+                  >
+                    <option value="">Select state</option>
+                    {country === 'United States' && US_STATES.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                    {country === 'Mexico' && MEXICAN_STATES.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Region */}
+                <div>
+                  <label className="label">Region</label>
+                  <input
+                    type="text"
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value)}
+                    className="form-input"
+                    placeholder="Enter region"
+                  />
+                </div>
+
+                {/* Vintage */}
+                <div>
+                  <label className="label">Vintage (4 digit format)</label>
+                  <input
+                    type="text"
+                    value={vintage}
+                    onChange={(e) => setVintage(e.target.value)}
+                    className="form-input"
+                    placeholder="YYYY"
+                    maxLength={4}
+                    pattern="[0-9]{4}"
+                  />
+                </div>
+
+                {/* Batch ID */}
+                <div>
+                  <label className="label">Batch ID</label>
+                  <input
+                    type="text"
+                    value={batchId}
+                    onChange={(e) => setBatchId(e.target.value)}
+                    className="form-input"
+                    placeholder="Enter batch ID"
+                  />
+                </div>
+
+                {/* Barcode */}
+                <div>
+                  <label className="label">Scan UPC / Barcode</label>
+                  <input
+                    type="text"
+                    value={barcode}
+                    onChange={(e) => setBarcode(e.target.value)}
+                    className="form-input"
+                    placeholder="Enter or scan barcode"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Characteristics Section */}
+            <div className="card p-6">
+              <h3 className="text-lg font-bold text-text-primary mb-4">Characteristics</h3>
+
+              <div className="space-y-6">
+                {/* Aroma */}
+                <div>
+                  <label className="label">Aroma</label>
+                  <textarea
+                    value={aromaNotes}
+                    onChange={(e) => setAromaNotes(e.target.value)}
+                    className="form-input h-20 resize-none mb-2"
+                    placeholder="Describe the aroma..."
+                  />
+                  <label className="text-sm text-text-secondary mb-1 block">Intensity of Aroma</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={aromaIntensity}
+                    onChange={(e) => setAromaIntensity(parseInt(e.target.value))}
+                    className="w-full slider-ultra-thin"
+                  />
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{aromaIntensity}</div>
+                </div>
+
+                {/* Saltiness */}
+                <div>
+                  <label className="label">Saltiness</label>
+                  <textarea
+                    value={saltNotes}
+                    onChange={(e) => setSaltNotes(e.target.value)}
+                    className="form-input h-20 resize-none mb-2"
+                    placeholder="Describe saltiness..."
+                  />
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={saltScore}
+                    onChange={(e) => setSaltScore(parseInt(e.target.value))}
+                    className="w-full slider-ultra-thin"
+                  />
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{saltScore}</div>
+                </div>
+
+                {/* Sweetness */}
+                <div>
+                  <label className="label">Sweetness</label>
+                  <textarea
+                    value={sweetnessNotes}
+                    onChange={(e) => setSweetnessNotes(e.target.value)}
+                    className="form-input h-20 resize-none mb-2"
+                    placeholder="Describe sweetness..."
+                  />
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={sweetnessScore}
+                    onChange={(e) => setSweetnessScore(parseInt(e.target.value))}
+                    className="w-full slider-ultra-thin"
+                  />
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{sweetnessScore}</div>
+                </div>
+
+                {/* Acidity */}
+                <div>
+                  <label className="label">Acidity</label>
+                  <textarea
+                    value={acidityNotes}
+                    onChange={(e) => setAcidityNotes(e.target.value)}
+                    className="form-input h-20 resize-none mb-2"
+                    placeholder="Describe acidity..."
+                  />
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={acidityScore}
+                    onChange={(e) => setAcidityScore(parseInt(e.target.value))}
+                    className="w-full slider-ultra-thin"
+                  />
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{acidityScore}</div>
+                </div>
+
+                {/* Umami */}
+                <div>
+                  <label className="label">Umami</label>
+                  <textarea
+                    value={umamiNotes}
+                    onChange={(e) => setUmamiNotes(e.target.value)}
+                    className="form-input h-20 resize-none mb-2"
+                    placeholder="Describe umami..."
+                  />
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={umamiScore}
+                    onChange={(e) => setUmamiScore(parseInt(e.target.value))}
+                    className="w-full slider-ultra-thin"
+                  />
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{umamiScore}</div>
+                </div>
+
+                {/* Spiciness */}
+                <div>
+                  <label className="label">Spiciness (Chile pepper)</label>
+                  <textarea
+                    value={spicinessNotes}
+                    onChange={(e) => setSpicinessNotes(e.target.value)}
+                    className="form-input h-20 resize-none mb-2"
+                    placeholder="Describe spiciness..."
+                  />
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={spicinessScore}
+                    onChange={(e) => setSpicinessScore(parseInt(e.target.value))}
+                    className="w-full slider-ultra-thin"
+                  />
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{spicinessScore}</div>
+                </div>
+
+                {/* Flavor */}
+                <div>
+                  <label className="label">Flavor</label>
+                  <textarea
+                    value={flavorNotes}
+                    onChange={(e) => setFlavorNotes(e.target.value)}
+                    className="form-input h-20 resize-none mb-2"
+                    placeholder="Describe flavor..."
+                  />
+                  <label className="text-sm text-text-secondary mb-1 block">Intensity of Flavor</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={flavorIntensity}
+                    onChange={(e) => setFlavorIntensity(parseInt(e.target.value))}
+                    className="w-full slider-ultra-thin"
+                  />
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{flavorIntensity}</div>
+                </div>
+
+                {/* Texture */}
+                <div>
+                  <label className="label">Texture</label>
+                  <textarea
+                    value={textureNotes}
+                    onChange={(e) => setTextureNotes(e.target.value)}
+                    className="form-input h-20 resize-none"
+                    placeholder="Describe texture..."
+                  />
+                </div>
+
+                {/* Typicity */}
+                <div>
+                  <label className="label">Typicity (Tastes how it should)</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={typicityScore}
+                    onChange={(e) => setTypicityScore(parseInt(e.target.value))}
+                    className="w-full slider-ultra-thin"
+                  />
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{typicityScore}</div>
+                </div>
+
+                {/* Complexity */}
+                <div>
+                  <label className="label">Complexity</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={complexityScore}
+                    onChange={(e) => setComplexityScore(parseInt(e.target.value))}
+                    className="w-full slider-ultra-thin"
+                  />
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{complexityScore}</div>
+                </div>
+
+                {/* Other */}
+                <div>
+                  <label className="label">Other</label>
+                  <textarea
+                    value={otherNotes}
+                    onChange={(e) => setOtherNotes(e.target.value)}
+                    className="form-input h-20 resize-none"
+                    placeholder="Other notes..."
+                  />
+                </div>
+
+                {/* Overall */}
+                <div>
+                  <label className="label">Overall</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={overallScore}
+                    onChange={(e) => setOverallScore(parseInt(e.target.value))}
+                    className="w-full slider-ultra-thin"
+                  />
+                  <div className="text-center text-3xl font-bold text-primary mt-2">{overallScore}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="card p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button
+                  onClick={() => saveReview('completed')}
+                  disabled={isSaving}
+                  className="btn-primary"
+                >
+                  Done
+                </button>
+                <button
+                  onClick={() => saveReview('draft')}
+                  disabled={isSaving}
+                  className="btn-secondary"
+                >
+                  Save for Later
+                </button>
+                <button
+                  onClick={startNewReview}
+                  disabled={isSaving}
+                  className="btn-ghost"
+                >
+                  New Review
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default StructuredReviewPage;
+

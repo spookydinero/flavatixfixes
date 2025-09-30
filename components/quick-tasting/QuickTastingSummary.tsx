@@ -208,7 +208,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
                 </div>
                 <div className="text-right">
                   <div className="text-small font-body font-medium text-text-primary">
-                    {flavor.avgScore}/5 avg
+                    {flavor.avgScore}/100 avg
                   </div>
                   <div className="text-caption font-body text-text-secondary">
                     {flavor.count} item{flavor.count !== 1 ? 's' : ''}
@@ -236,7 +236,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
                       <div className="flex items-center space-x-xs">
                         <Star className="w-4 h-4 text-warning fill-current" />
                         <span className="text-small font-body font-medium text-text-primary">
-                          {item.overall_score}/5
+                          {item.overall_score}/100
                         </span>
                       </div>
                     )}
