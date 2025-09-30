@@ -61,12 +61,6 @@ const CreateTastingPage: React.FC = () => {
   }, [user, loading, router]);
 
   const handleModeChange = (mode: TastingMode) => {
-    if (mode === 'quick') {
-      // For quick tasting, redirect directly to the quick tasting page
-      router.push('/quick-tasting');
-      return;
-    }
-
     setForm(prev => ({
       ...prev,
       mode,
@@ -194,7 +188,7 @@ const CreateTastingPage: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="bg-background-light font-display text-zinc-900 min-h-screen pb-20">
+    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen">
       <main id="main-content">
         <div className="container mx-auto px-md py-lg max-w-4xl">
           {/* Header */}
@@ -219,24 +213,6 @@ const CreateTastingPage: React.FC = () => {
             <div className="card p-md">
               <h2 className="text-h3 font-heading font-semibold text-text-primary mb-md">Mode</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-                <button
-                  type="button"
-                  onClick={() => handleModeChange('quick')}
-                  className={`p-md rounded-lg border-2 transition-all ${
-                    form.mode === 'quick'
-                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
-                      : 'border-border-default hover:border-primary-400'
-                  }`}
-                >
-                  <Users size={32} className={`mx-auto mb-sm ${
-                    form.mode === 'quick' ? 'text-primary-600' : 'text-text-secondary'
-                  }`} />
-                  <h3 className="font-heading font-semibold mb-xs">Quick Tasting</h3>
-                  <p className="text-small text-text-secondary">
-                    Standard quick tasting workflow for immediate use.
-                  </p>
-                </button>
-
                 <button
                   type="button"
                   onClick={() => handleModeChange('study')}
@@ -272,6 +248,24 @@ const CreateTastingPage: React.FC = () => {
                     Preload items with correct answers. Enable participant ranking.
                   </p>
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleModeChange('quick')}
+                  className={`p-md rounded-lg border-2 transition-all ${
+                    form.mode === 'quick'
+                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
+                      : 'border-border-default hover:border-primary-400'
+                  }`}
+                >
+                  <Users size={32} className={`mx-auto mb-sm ${
+                    form.mode === 'quick' ? 'text-primary-600' : 'text-text-secondary'
+                  }`} />
+                  <h3 className="font-heading font-semibold mb-xs">Quick Tasting</h3>
+                  <p className="text-small text-text-secondary">
+                    Standard quick tasting workflow for immediate use.
+                  </p>
+                </button>
               </div>
             </div>
 
@@ -294,12 +288,16 @@ const CreateTastingPage: React.FC = () => {
                 <div>
                   <label className="block text-small font-body font-medium text-text-primary mb-xs">
                     Category *
+                    {form.items.length > 0 && (
+                      <span className="ml-2 text-xs text-text-secondary">(Locked after adding items)</span>
+                    )}
                   </label>
                   <select
                     value={form.category}
                     onChange={(e) => setForm(prev => ({ ...prev, category: e.target.value }))}
                     className="form-input w-full"
                     required
+                    disabled={form.items.length > 0}
                   >
                     <option value="">Select a category</option>
                     {CATEGORIES.map(category => (
@@ -313,6 +311,9 @@ const CreateTastingPage: React.FC = () => {
                 <div>
                   <label className="block text-small font-body font-medium text-text-primary mb-xs">
                     Session Name
+                    {form.items.length > 0 && (
+                      <span className="ml-2 text-xs text-text-secondary">(Locked after adding items)</span>
+                    )}
                   </label>
                   <input
                     type="text"
@@ -320,6 +321,7 @@ const CreateTastingPage: React.FC = () => {
                     onChange={(e) => setForm(prev => ({ ...prev, session_name: e.target.value }))}
                     placeholder={`${form.category ? form.category.charAt(0).toUpperCase() + form.category.slice(1) : 'Category'} ${form.mode === 'competition' ? 'Competition' : 'Study'}`}
                     className="form-input w-full"
+                    disabled={form.items.length > 0}
                   />
                 </div>
               </div>
@@ -516,28 +518,6 @@ const CreateTastingPage: React.FC = () => {
           </form>
         </div>
       </main>
-
-      {/* Bottom Navigation */}
-      <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200 bg-background-light">
-        <nav className="flex justify-around p-2">
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/dashboard">
-            <span className="material-symbols-outlined">home</span>
-            <span className="text-xs font-medium">Home</span>
-          </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/create-tasting">
-            <span className="material-symbols-outlined">add_circle</span>
-            <span className="text-xs font-bold">Create</span>
-          </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/social">
-            <span className="material-symbols-outlined">reviews</span>
-            <span className="text-xs font-medium">Review</span>
-          </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/flavor-wheels">
-            <span className="material-symbols-outlined">donut_large</span>
-            <span className="text-xs font-medium">Flavor Wheels</span>
-          </a>
-        </nav>
-      </footer>
     </div>
   );
 };

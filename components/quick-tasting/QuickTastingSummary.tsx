@@ -7,7 +7,6 @@ interface QuickTasting {
   id: string;
   user_id: string;
   category: string;
-  custom_category_name?: string | null;
   session_name?: string;
   notes?: string;
   total_items: number;
@@ -23,8 +22,6 @@ interface TastingItemData {
   tasting_id: string;
   item_name: string;
   notes?: string;
-  aroma?: string;
-  flavor?: string;
   flavor_scores?: Record<string, number>;
   overall_score?: number;
   photo_url?: string;
@@ -41,64 +38,26 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
   session,
   onStartNewSession,
 }) => {
-  // Helper function to get the display category name
-  const getDisplayCategoryName = (category: string, customName?: string | null): string => {
-    if (category === 'other' && customName) {
-      return customName;
-    }
-    return category.charAt(0).toUpperCase() + category.slice(1);
-  };
-
   const [items, setItems] = useState<TastingItemData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('🔄 QuickTastingSummary: Component mounted with session:', session.id, session.session_name);
     loadTastingItems();
   }, [session.id]);
 
   const loadTastingItems = async () => {
     try {
-      console.log('🔍 QuickTastingSummary: Loading items for session:', session.id, session.session_name);
-
-      // First, verify the session exists and is completed
-      const { data: sessionData, error: sessionError } = await supabase
-        .from('quick_tastings')
-        .select('id, completed_at, total_items, completed_items')
-        .eq('id', session.id)
-        .single();
-
-      if (sessionError) {
-        console.error('❌ QuickTastingSummary: Error loading session:', sessionError);
-        toast.error('Session not found');
-        setIsLoading(false);
-        return;
-      }
-
-      console.log('📊 QuickTastingSummary: Session data:', sessionData);
-
       const { data, error } = await supabase
         .from('quick_tasting_items')
         .select('*')
         .eq('tasting_id', session.id)
         .order('created_at', { ascending: true });
 
-      if (error) {
-        console.error('❌ QuickTastingSummary: Error loading items:', error);
-        throw error;
-      }
-
-      console.log('📊 QuickTastingSummary: Loaded items:', data?.length || 0, 'items');
-      if (data) {
-        (data as TastingItemData[]).forEach((item, index) => {
-          console.log(`  ${index + 1}. ${item.item_name} (ID: ${item.id}, Score: ${item.overall_score}, Aroma: ${item.aroma ? 'YES' : 'NO'}, Flavor: ${item.flavor ? 'YES' : 'NO'})`);
-        });
-      }
-
-      setItems((data as TastingItemData[]) || []);
+      if (error) throw error;
+      setItems(data || []);
     } catch (error) {
-      console.error('❌ QuickTastingSummary: Error in loadTastingItems:', error);
+      console.error('Error loading tasting items:', error);
       toast.error('Failed to load tasting items');
     } finally {
       setIsLoading(false);
@@ -192,7 +151,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
                 {session.session_name}
               </h2>
               <p className="text-text-secondary">
-                {getDisplayCategoryName(session.category, (session as any).custom_category_name)} Tasting Session
+                {session.category.charAt(0).toUpperCase() + session.category.slice(1)} Tasting Session
               </p>
               <p className="text-small font-body text-text-secondary">
                 Completed on {formatDate(session.completed_at || session.updated_at)}
@@ -228,7 +187,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
         </div>
         <div className="card p-md text-center">
           <div className="text-h1 font-heading font-bold text-warning text-primary mb-xs">
-            {averageScore > 0 ? `${averageScore}/5` : 'N/A'}
+            {averageScore > 0 ? `${averageScore}/100` : 'N/A'}
           </div>
           <div className="text-text-secondary">Average Score</div>
         </div>
@@ -307,23 +266,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
                         />
                       </div>
                     )}
-
-                    {/* Aroma */}
-                    {item.aroma && (
-                      <div>
-                        <h5 className="text-small font-body font-medium text-text-secondary mb-xs">Aroma</h5>
-                        <p className="text-text-primary text-small font-body leading-relaxed">{item.aroma}</p>
-                      </div>
-                    )}
-
-                    {/* Flavor */}
-                    {item.flavor && (
-                      <div>
-                        <h5 className="text-small font-body font-medium text-text-secondary mb-xs">Flavor</h5>
-                        <p className="text-text-primary text-small font-body leading-relaxed">{item.flavor}</p>
-                      </div>
-                    )}
-
+                    
                     {/* Notes */}
                     {item.notes && (
                       <div>
@@ -343,7 +286,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
                             key={flavor}
                             className="px-sm py-xs bg-primary/10 text-primary rounded-full text-small font-body font-medium"
                           >
-                            {flavor} ({score}/5)
+                            {flavor} ({score}/100)
                           </div>
                         ))}
                       </div>

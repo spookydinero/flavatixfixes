@@ -17,6 +17,7 @@
     "framer-motion": "^12.23.13",
     "lucide-react": "^0.544.0",
     "next": "14.0.4",
+    "playwright": "^1.55.1",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.3.8",
