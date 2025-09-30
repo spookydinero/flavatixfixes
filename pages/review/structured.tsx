@@ -3,8 +3,7 @@ import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
 import { getSupabaseClient } from '@/lib/supabase';
 import { toast } from '@/lib/toast';
-import { REVIEW_CATEGORIES, COUNTRIES, US_STATES, MEXICAN_STATES, generateReviewId } from '@/lib/reviewCategories';
-import { Camera } from 'lucide-react';
+import { REVIEW_CATEGORIES, COUNTRIES, US_STATES, MEXICAN_STATES } from '@/lib/reviewCategories';
 
 const StructuredReviewPage: React.FC = () => {
   const router = useRouter();
