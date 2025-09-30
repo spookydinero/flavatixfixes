@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
 import { getSupabaseClient } from '@/lib/supabase';
-import { generateReviewId } from '@/lib/reviewCategories';
+import { generateReviewId } from '@/lib/reviewIdGenerator';
 import { FileText, Edit3, Clock } from 'lucide-react';
 
 interface Review {
