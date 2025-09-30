@@ -139,6 +139,32 @@ const ProseReviewPage: React.FC = () => {
           />
         </div>
       </main>
+
+      {/* Bottom Navigation */}
+      <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200 bg-background-light">
+        <nav className="flex justify-around p-2">
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/dashboard">
+            <span className="material-symbols-outlined">home</span>
+            <span className="text-xs font-medium">Home</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/create-tasting">
+            <span className="material-symbols-outlined">add_circle</span>
+            <span className="text-xs font-medium">Create</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/review">
+            <span className="material-symbols-outlined">reviews</span>
+            <span className="text-xs font-bold">Review</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/social">
+            <span className="material-symbols-outlined">groups</span>
+            <span className="text-xs font-medium">Social</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/flavor-wheels">
+            <span className="material-symbols-outlined">donut_small</span>
+            <span className="text-xs font-medium">Wheels</span>
+          </a>
+        </nav>
+      </footer>
     </div>
   );
 };
