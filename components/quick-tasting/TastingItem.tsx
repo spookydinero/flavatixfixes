@@ -1,13 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { getSupabaseClient } from '../../lib/supabase';
 import { toast } from '../../lib/toast';
-import { Coffee, Wine, Beer, Utensils, Star, Camera } from 'lucide-react';
+import { Coffee, Wine, Beer, Utensils, Star, Camera, Edit } from 'lucide-react';
+import FlavorWheel from './FlavorWheel';
 
 interface TastingItemData {
   id: string;
   tasting_id: string;
   item_name: string;
   notes?: string;
+  aroma?: string;
+  flavor?: string;
   flavor_scores?: Record<string, number>;
   overall_score?: number;
   photo_url?: string;
@@ -22,6 +25,12 @@ interface TastingItemProps {
   onUpdate: (updates: Partial<TastingItemData>) => void;
   isBlindItems?: boolean;
   isBlindAttributes?: boolean;
+  showOverallScore?: boolean;
+  showFlavorWheel?: boolean;
+  showEditControls?: boolean;
+  showPhotoControls?: boolean;
+  showNotesFields?: boolean;
+  itemIndex?: number; // 1-based index for dynamic naming
 }
 
 const TastingItem: React.FC<TastingItemProps> = ({
@@ -31,19 +40,39 @@ const TastingItem: React.FC<TastingItemProps> = ({
   onUpdate,
   isBlindItems = false,
   isBlindAttributes = false,
+  showOverallScore = true,
+  showFlavorWheel = false,
+  showEditControls = true,
+  showPhotoControls = true,
+  showNotesFields = true,
+  itemIndex,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [localNotes, setLocalNotes] = useState(item.notes || '');
+  const [localAroma, setLocalAroma] = useState(item.aroma || '');
+  const [localFlavor, setLocalFlavor] = useState(item.flavor || '');
   const [localScore, setLocalScore] = useState(item.overall_score || 0);
-  const [localItemName, setLocalItemName] = useState(item.item_name);
+
+  // Generate dynamic display name based on current category and item index
+  const getDisplayName = () => {
+    if (isBlindItems) {
+      return `Item ${item.id.slice(-4)}`;
+    }
+    // Use dynamic name based on current category and index, fallback to stored name
+    return itemIndex ? `${category.charAt(0).toUpperCase() + category.slice(1)} ${itemIndex}` : item.item_name;
+  };
   const [isEditingName, setIsEditingName] = useState(false);
+  const [editingName, setEditingName] = useState(getDisplayName());
 
   // Reset local state when item changes
   useEffect(() => {
     setLocalNotes(item.notes || '');
+    setLocalAroma(item.aroma || '');
+    setLocalFlavor(item.flavor || '');
     setLocalScore(item.overall_score || 0);
-    setLocalItemName(item.item_name);
-  }, [item.id, item.item_name]);
+    setEditingName(getDisplayName());
+    setIsEditingName(false);
+  }, [item.id, category, itemIndex]);
 
   const getScoreLabel = (score: number): string => {
     if (score >= 90) return '(Exceptional)';
@@ -114,22 +143,37 @@ const TastingItem: React.FC<TastingItemProps> = ({
     }, 500);
   };
 
+  const handleAromaChange = (aroma: string) => {
+    setLocalAroma(aroma);
+    // Immediate update for critical data like aroma/flavor
+    onUpdate({ aroma });
+  };
+
+  const handleFlavorChange = (flavor: string) => {
+    setLocalFlavor(flavor);
+    // Immediate update for critical data like aroma/flavor
+    onUpdate({ flavor });
+  };
+
   const handleScoreChange = (score: number) => {
     setLocalScore(score);
     onUpdate({ overall_score: score });
   };
 
-  const handleItemNameChange = (name: string) => {
-    setLocalItemName(name);
+  const startEditingName = () => {
+    setIsEditingName(true);
+    setEditingName(getDisplayName());
   };
 
-  const handleItemNameBlur = () => {
-    if (localItemName.trim() && localItemName !== item.item_name) {
-      onUpdate({ item_name: localItemName.trim() });
-      toast.success('Item name updated');
-    } else if (!localItemName.trim()) {
-      setLocalItemName(item.item_name);
+  const saveName = () => {
+    if (editingName.trim() && editingName.trim() !== item.item_name) {
+      onUpdate({ item_name: editingName.trim() });
     }
+    setIsEditingName(false);
+  };
+
+  const cancelEditingName = () => {
+    setEditingName(item.item_name);
     setIsEditingName(false);
   };
 
@@ -183,35 +227,30 @@ const TastingItem: React.FC<TastingItemProps> = ({
         <div className="flex items-center space-x-sm min-w-0 flex-1">
           <div className="flex items-center justify-center w-10 h-10 tablet:w-12 tablet:h-12 flex-shrink-0">{getCategoryIcon(category)}</div>
           <div className="min-w-0 flex-1">
-            {isBlindItems ? (
-              <h3 className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary truncate">
-                Item {item.id.slice(-4)}
-              </h3>
-            ) : isEditingName ? (
-              <input
-                type="text"
-                value={localItemName}
-                onChange={(e) => handleItemNameChange(e.target.value)}
-                onBlur={handleItemNameBlur}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleItemNameBlur();
-                  } else if (e.key === 'Escape') {
-                    setLocalItemName(item.item_name);
-                    setIsEditingName(false);
-                  }
-                }}
-                autoFocus
-                className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary w-full border-b-2 border-primary bg-transparent focus:outline-none"
-              />
+            {isEditingName ? (
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={editingName}
+                  onChange={(e) => setEditingName(e.target.value)}
+                  onBlur={saveName}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') saveName();
+                    if (e.key === 'Escape') cancelEditingName();
+                  }}
+                  className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary bg-transparent border-b border-primary-500 focus:outline-none flex-1"
+                  autoFocus
+                />
+              </div>
             ) : (
-              <h3
-                className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary truncate cursor-pointer hover:text-primary transition-colors"
-                onClick={() => setIsEditingName(true)}
-                title="Click to edit item name"
-              >
-                {item.item_name}
-              </h3>
+              <div className={`flex items-center space-x-2 ${showEditControls ? 'group cursor-pointer' : ''}`} onClick={showEditControls ? startEditingName : undefined}>
+                <h3 className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary truncate">
+                  {getDisplayName()}
+                </h3>
+                {!isBlindItems && showEditControls && (
+                  <Edit size={16} className="text-text-secondary opacity-80 transition-opacity flex-shrink-0" />
+                )}
+              </div>
             )}
             <p className="text-xs tablet:text-small font-body text-text-secondary">
               {category.charAt(0).toUpperCase() + category.slice(1)} Tasting
@@ -220,50 +259,10 @@ const TastingItem: React.FC<TastingItemProps> = ({
           </div>
         </div>
         
-        {/* Overall Score */}
-        <div className="text-center font-body flex-shrink-0 px-3 py-4">
-          <div className="text-xs tablet:text-sm font-medium text-neutral-400 mb-4 tracking-widest uppercase opacity-70">Overall Score</div>
-          <div className="flex flex-col items-center space-y-5">
-            <div className="relative w-40 mobile:w-44 tablet:w-52">
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value={localScore}
-                onChange={(e) => handleScoreChange(parseInt(e.target.value))}
-                className="w-full h-px bg-neutral-200 rounded-full appearance-none cursor-pointer slider-ultra-thin shadow-none border-0"
-                style={{
-                  background: `linear-gradient(to right, 
-                    #d4d4d4 0%, 
-                    #a3a3a3 ${localScore}%, 
-                    #e5e5e5 ${localScore}%, 
-                    #e5e5e5 100%)`
-                }}
-              />
-              <div className="absolute -top-1.5 left-0 w-full h-4 pointer-events-none flex items-center">
-                <div 
-                  className="absolute w-2 h-2 bg-white rounded-full shadow-sm border border-neutral-300 transition-all duration-200 ease-out"
-                  style={{ 
-                    left: `calc(${((localScore - 1) / 99) * 100}% - 4px)`,
-                    borderColor: localScore > 80 ? '#737373' : localScore > 60 ? '#a3a3a3' : localScore > 40 ? '#d4d4d4' : '#e5e5e5'
-                  }}
-                />
-              </div>
-            </div>
-            <div className="text-center space-y-1.5">
-              <div className="text-2xl mobile:text-3xl tablet:text-4xl font-thin text-neutral-600 tracking-tight leading-none">{localScore}</div>
-              {localScore > 0 && (
-                <div className="text-xs mobile:text-sm tablet:text-sm font-normal text-neutral-400 animate-fade-in leading-relaxed tracking-wide opacity-80">
-                  {getScoreLabel(localScore)}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Photo Section */}
-      {!isBlindItems && (
+      {!isBlindItems && showPhotoControls && (
         <div className="mb-md">
           <div className="flex flex-col tablet:flex-row tablet:items-center tablet:justify-between gap-xs mb-sm">
             <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary">Photo</h4>
@@ -309,16 +308,104 @@ const TastingItem: React.FC<TastingItemProps> = ({
         </div>
       )}
 
-      {/* Notes Section */}
-      <div>
-        <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Aroma</h4>
-        <textarea
-          value={localNotes}
-          onChange={(e) => handleNotesChange(e.target.value)}
-          placeholder={`Describe the ${category}'s aroma, taste, mouthfeel, and finish...`}
-          className="form-input w-full h-24 tablet:h-32 resize-none text-sm tablet:text-base"
-        />
-      </div>
+      {/* Notes Fields - Only show in tasting/review mode */}
+      {showNotesFields && (
+        <>
+          {/* Aroma Section */}
+          <div className="mb-md">
+            <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Aroma</h4>
+            <textarea
+              value={localAroma}
+              onChange={(e) => handleAromaChange(e.target.value)}
+              placeholder={`Describe the ${category}'s aroma...`}
+              className="form-input w-full h-20 tablet:h-24 resize-none text-sm tablet:text-base"
+            />
+          </div>
+
+          {/* Flavor Section */}
+          <div className="mb-md">
+            <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Flavor</h4>
+            <textarea
+              value={localFlavor}
+              onChange={(e) => handleFlavorChange(e.target.value)}
+              placeholder={`Describe the ${category}'s flavor, taste, and mouthfeel...`}
+              className="form-input w-full h-20 tablet:h-24 resize-none text-sm tablet:text-base"
+            />
+          </div>
+
+          {/* Overall Score - Show when requested */}
+          {showOverallScore && (
+            <div className="mb-md">
+              <div className="text-center">
+                <div className="text-xs tablet:text-sm font-medium text-text-primary mb-6 tracking-widest uppercase">
+                  Overall Score
+                </div>
+                <div className="flex flex-col items-center space-y-6">
+                  <div className="relative w-48 mobile:w-52 tablet:w-64">
+                    <input
+                      type="range"
+                      min="1"
+                      max="100"
+                      value={localScore}
+                      onChange={(e) => handleScoreChange(parseInt(e.target.value))}
+                      className="w-full h-px bg-neutral-200 rounded-full appearance-none cursor-pointer slider-ultra-thin shadow-none border-0"
+                      style={{
+                        background: `linear-gradient(to right,
+                          var(--color-neutral-200) 0%,
+                          var(--color-primary-500) ${localScore}%,
+                          var(--color-neutral-200) ${localScore}%,
+                          var(--color-neutral-200) 100%)`
+                      }}
+                    />
+                    <div className="absolute -top-1.5 left-0 w-full h-4 pointer-events-none flex items-center">
+                      <div
+                        className="absolute w-2 h-2 bg-white rounded-full shadow-sm border border-neutral-300 transition-all duration-200 ease-out"
+                        style={{
+                          left: `calc(${((localScore - 1) / 99) * 100}% - 4px)`,
+                          borderColor: localScore > 80 ? '#737373' : localScore > 60 ? '#a3a3a3' : localScore > 40 ? '#d4d4d4' : '#e5e5e5'
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="text-center space-y-2">
+                    <div className="text-4xl mobile:text-5xl tablet:text-6xl font-thin text-neutral-600 tracking-tight leading-none">
+                      {localScore}
+                    </div>
+                    {localScore > 0 && (
+                      <div className="text-sm mobile:text-base tablet:text-lg font-normal text-neutral-400 animate-fade-in leading-relaxed tracking-wide opacity-80">
+                        {getScoreLabel(localScore)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Other Notes Section */}
+          <div>
+            <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Other Notes</h4>
+            <textarea
+              value={localNotes}
+              onChange={(e) => handleNotesChange(e.target.value)}
+              placeholder={`Additional notes about the ${category}...`}
+              className="form-input w-full h-20 tablet:h-24 resize-none text-sm tablet:text-base"
+            />
+          </div>
+        </>
+      )}
+
+      {/* Flavor Wheel */}
+      {showFlavorWheel && !isBlindAttributes && (
+        <div className="mb-md">
+          <h4 className="text-base tablet:text-lg font-body font-medium text-text-primary mb-sm">Flavor Profile</h4>
+          <FlavorWheel
+            category={category}
+            selectedFlavors={item.flavor_scores || {}}
+            onFlavorSelect={(flavors) => onUpdate({ flavor_scores: flavors })}
+          />
+        </div>
+      )}
 
       {/* Flavor Summary */}
       {item.flavor_scores && Object.keys(item.flavor_scores).length > 0 && !isBlindAttributes && (
@@ -336,6 +423,7 @@ const TastingItem: React.FC<TastingItemProps> = ({
           </div>
         </div>
       )}
+
     </div>
   );
 };
