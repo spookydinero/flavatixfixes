@@ -51,7 +51,12 @@ export default function SocialPage() {
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const [commentsModalOpen, setCommentsModalOpen] = useState(false);
   const [activePostId, setActivePostId] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(0);
   const router = useRouter();
+
+  const POSTS_PER_PAGE = 10;
 
   useEffect(() => {
     if (!loading && !user) {
@@ -60,7 +65,9 @@ export default function SocialPage() {
     }
 
     if (user) {
-      loadSocialFeed();
+      setPage(0);
+      setHasMore(true);
+      loadSocialFeed(0, false);
     }
   }, [user, loading, router]);
 
@@ -81,20 +88,25 @@ export default function SocialPage() {
     setFilteredPosts(filtered);
   }, [posts, activeTab, categoryFilter]);
 
-  const loadSocialFeed = async () => {
+  const loadSocialFeed = async (pageNum: number = 0, append: boolean = false) => {
     if (!user?.id) return;
 
     try {
-      setLoadingPosts(true);
+      if (!append) {
+        setLoadingPosts(true);
+      } else {
+        setLoadingMore(true);
+      }
       const supabase = getSupabaseClient();
 
       // First, let's just get completed tastings without joins to debug
+      const offset = pageNum * POSTS_PER_PAGE;
       const { data: tastingsData, error: tastingsError } = await supabase
         .from('quick_tastings')
         .select('*')
         .not('completed_at', 'is', null) // Only completed tastings
         .order('completed_at', { ascending: false })
-        .limit(20);
+        .range(offset, offset + POSTS_PER_PAGE - 1);
 
       if (tastingsError) {
         console.error('Error fetching tastings:', tastingsError);
@@ -234,11 +246,20 @@ export default function SocialPage() {
         };
       }) || [];
 
-      setPosts(transformedPosts);
+      // Check if there are more posts
+      setHasMore(transformedPosts.length === POSTS_PER_PAGE);
+
+      // Append or replace posts
+      if (append) {
+        setPosts(prev => [...prev, ...transformedPosts]);
+      } else {
+        setPosts(transformedPosts);
+      }
     } catch (error) {
       console.error('Error loading social feed:', error);
     } finally {
       setLoadingPosts(false);
+      setLoadingMore(false);
     }
   };
 
@@ -417,8 +438,39 @@ export default function SocialPage() {
     setCommentsModalOpen(false);
     setActivePostId(null);
     // Reload feed to update comment counts
-    loadSocialFeed();
+    loadSocialFeed(0, false);
   };
+
+  const loadMorePosts = () => {
+    if (!loadingMore && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      loadSocialFeed(nextPage, true);
+    }
+  };
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loadingPosts) {
+          loadMorePosts();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const sentinel = document.getElementById('scroll-sentinel');
+    if (sentinel) {
+      observer.observe(sentinel);
+    }
+
+    return () => {
+      if (sentinel) {
+        observer.unobserve(sentinel);
+      }
+    };
+  }, [hasMore, loadingMore, loadingPosts, page]);
 
   const handleShare = async (postId: string) => {
     if (!user?.id) {
@@ -785,6 +837,21 @@ export default function SocialPage() {
                   </div>
                 </div>
               ))
+            )}
+
+            {/* Infinite Scroll Sentinel */}
+            {!loadingPosts && filteredPosts.length > 0 && (
+              <div id="scroll-sentinel" className="h-20 flex items-center justify-center">
+                {loadingMore && (
+                  <div className="flex items-center gap-2 text-zinc-500">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    <span className="text-sm">Loading more...</span>
+                  </div>
+                )}
+                {!hasMore && !loadingMore && (
+                  <p className="text-sm text-zinc-400">You've reached the end!</p>
+                )}
+              </div>
             )}
           </div>
         </main>
