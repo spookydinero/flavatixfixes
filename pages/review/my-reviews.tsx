@@ -241,7 +241,7 @@ const MyReviewsPage: React.FC = () => {
                   {inProgressReviews.map((review) => (
                     <button
                       key={review.id}
-                      onClick={() => router.push(`/review/summary/${review.id}`)}
+                      onClick={() => router.push(`/review/structured?id=${review.id}`)}
                       className="w-full text-left p-md bg-background-surface hover:bg-background-app rounded-lg transition-colors border border-border-default"
                     >
                       <div className="flex items-center justify-between">
@@ -263,7 +263,7 @@ const MyReviewsPage: React.FC = () => {
                   {inProgressProseReviews.map((review) => (
                     <button
                       key={review.id}
-                      onClick={() => router.push(`/review/summary/${review.id}?type=prose`)}
+                      onClick={() => router.push(`/review/prose?id=${review.id}`)}
                       className="w-full text-left p-md bg-background-surface hover:bg-background-app rounded-lg transition-colors border border-border-default"
                     >
                       <div className="flex items-center justify-between">

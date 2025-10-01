@@ -14,7 +14,7 @@ const CharacteristicSlider: React.FC<CharacteristicSliderProps> = ({
   value,
   onChange,
   description,
-  min = 1,
+  min = 0,
   max = 100
 }) => {
   const getScoreLabel = (score: number): string => {
