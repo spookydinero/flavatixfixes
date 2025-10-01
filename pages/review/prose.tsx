@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
 import { getSupabaseClient } from '@/lib/supabase';
@@ -11,13 +11,62 @@ const ProseReviewPage: React.FC = () => {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingReview, setIsLoadingReview] = useState(false);
+  const [existingReview, setExistingReview] = useState<ProseReviewFormData | null>(null);
+  const [reviewId, setReviewId] = useState<string | null>(null);
   const supabase = getSupabaseClient() as any;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loading && !user) {
       router.push('/auth');
     }
   }, [user, loading, router]);
+
+  // Load existing review if id is provided in query params
+  useEffect(() => {
+    const loadReview = async () => {
+      const { id } = router.query;
+      if (!id || typeof id !== 'string') return;
+
+      setIsLoadingReview(true);
+      try {
+        const { data, error } = await supabase
+          .from('prose_reviews')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+
+        // Populate form with existing data
+        setReviewId(data.id);
+        setExistingReview({
+          item_name: data.item_name || '',
+          picture_url: data.picture_url || '',
+          brand: data.brand || '',
+          country: data.country || '',
+          state: data.state || '',
+          region: data.region || '',
+          vintage: data.vintage || '',
+          batch_id: data.batch_id || '',
+          upc_barcode: data.upc_barcode || '',
+          category: data.category || '',
+          review_content: data.review_content || ''
+        });
+
+        toast.success('Review loaded');
+      } catch (error) {
+        console.error('Error loading review:', error);
+        toast.error('Failed to load review');
+      } finally {
+        setIsLoadingReview(false);
+      }
+    };
+
+    if (router.isReady) {
+      loadReview();
+    }
+  }, [router.isReady, router.query, supabase]);
 
   const handlePhotoUpload = async (file: File): Promise<string> => {
     const fileExt = file.name.split('.').pop();
@@ -53,27 +102,46 @@ const ProseReviewPage: React.FC = () => {
       // Determine status based on action
       const status = action === 'done' ? 'completed' : 'in_progress';
 
-      // Insert review into database
-      const { data: review, error } = await supabase
-        .from('prose_reviews')
-        .insert({
-          user_id: user.id,
-          review_id: reviewId,
-          item_name: data.item_name,
-          picture_url: data.picture_url,
-          brand: data.brand,
-          country: data.country,
-          state: data.state,
-          region: data.region,
-          vintage: data.vintage,
-          batch_id: data.batch_id,
-          upc_barcode: data.upc_barcode,
-          category: data.category,
-          review_content: data.review_content,
-          status: status
-        })
-        .select()
-        .single();
+      let review;
+      let error;
+
+      const reviewData = {
+        user_id: user.id,
+        review_id: reviewId,
+        item_name: data.item_name,
+        picture_url: data.picture_url,
+        brand: data.brand,
+        country: data.country,
+        state: data.state,
+        region: data.region,
+        vintage: data.vintage,
+        batch_id: data.batch_id,
+        upc_barcode: data.upc_barcode,
+        category: data.category,
+        review_content: data.review_content,
+        status: status
+      };
+
+      if (reviewId) {
+        // Update existing review
+        const result = await supabase
+          .from('prose_reviews')
+          .update(reviewData)
+          .eq('id', reviewId)
+          .select()
+          .single();
+        review = result.data;
+        error = result.error;
+      } else {
+        // Insert new review
+        const result = await supabase
+          .from('prose_reviews')
+          .insert(reviewData)
+          .select()
+          .single();
+        review = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
 
@@ -133,6 +201,7 @@ const ProseReviewPage: React.FC = () => {
 
           {/* Prose Review Form */}
           <ProseReviewForm
+            initialData={existingReview || undefined}
             onSubmit={handleSubmit}
             onPhotoUpload={handlePhotoUpload}
             isSubmitting={isSubmitting}

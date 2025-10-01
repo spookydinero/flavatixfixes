@@ -346,7 +346,7 @@ const TastingItem: React.FC<TastingItemProps> = ({
                   <div className="relative w-48 mobile:w-52 tablet:w-64">
                     <input
                       type="range"
-                      min="1"
+                      min="0"
                       max="100"
                       value={localScore}
                       onChange={(e) => handleScoreChange(parseInt(e.target.value))}

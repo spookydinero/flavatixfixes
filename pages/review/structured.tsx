@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
 import { getSupabaseClient } from '@/lib/supabase';
@@ -46,6 +46,70 @@ const StructuredReviewPage: React.FC = () => {
 
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [reviewId, setReviewId] = useState<string | null>(null);
+
+  // Load existing review if id is provided in query params
+  useEffect(() => {
+    const loadReview = async () => {
+      const { id } = router.query;
+      if (!id || typeof id !== 'string') return;
+
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('quick_reviews')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+
+        // Populate form with existing data
+        setReviewId(data.id);
+        setItemName(data.item_name || '');
+        setPhotoUrl(data.picture_url || '');
+        setBrand(data.brand || '');
+        setCountry(data.country || '');
+        setState(data.state || '');
+        setRegion(data.region || '');
+        setVintage(data.vintage || '');
+        setBatchId(data.batch_id || '');
+        setBarcode(data.upc_barcode || '');
+        setCategory(data.category || '');
+        setAromaNotes(data.aroma_notes || '');
+        setAromaIntensity(data.aroma_intensity || 50);
+        setSaltNotes(data.salt_notes || '');
+        setSaltScore(data.salt_score || 50);
+        setSweetnessNotes(data.sweetness_notes || '');
+        setSweetnessScore(data.sweetness_score || 50);
+        setAcidityNotes(data.acidity_notes || '');
+        setAcidityScore(data.acidity_score || 50);
+        setUmamiNotes(data.umami_notes || '');
+        setUmamiScore(data.umami_score || 50);
+        setSpicinessNotes(data.spiciness_notes || '');
+        setSpicinessScore(data.spiciness_score || 50);
+        setFlavorNotes(data.flavor_notes || '');
+        setFlavorIntensity(data.flavor_intensity || 50);
+        setTextureNotes(data.texture_notes || '');
+        setTypicityScore(data.typicity_score || 50);
+        setComplexityScore(data.complexity_score || 50);
+        setOtherNotes(data.other_notes || '');
+        setOverallScore(data.overall_score || 50);
+
+        toast.success('Review loaded');
+      } catch (error) {
+        console.error('Error loading review:', error);
+        toast.error('Failed to load review');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (router.isReady) {
+      loadReview();
+    }
+  }, [router.isReady, router.query, supabase]);
 
   const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -131,16 +195,34 @@ const StructuredReviewPage: React.FC = () => {
         status,
       };
 
-      const { data, error } = await supabase
-        .from('quick_reviews')
-        .insert(reviewData)
-        .select()
-        .single();
+      let data;
+      let error;
+
+      if (reviewId) {
+        // Update existing review
+        const result = await supabase
+          .from('quick_reviews')
+          .update(reviewData)
+          .eq('id', reviewId)
+          .select()
+          .single();
+        data = result.data;
+        error = result.error;
+      } else {
+        // Insert new review
+        const result = await supabase
+          .from('quick_reviews')
+          .insert(reviewData)
+          .select()
+          .single();
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
 
       toast.success(status === 'draft' ? 'Review saved as draft' : 'Review completed!');
-      
+
       if (status === 'completed') {
         router.push(`/review/summary/${data.id}`);
       } else {

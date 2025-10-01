@@ -13,6 +13,7 @@ interface Review {
   created_at: string;
   status: string;
   overall_score?: number;
+  review_type?: 'structured' | 'prose';
 }
 
 interface ProseReview {
@@ -22,6 +23,7 @@ interface ProseReview {
   batch_id: string;
   created_at: string;
   status: string;
+  review_type?: 'structured' | 'prose';
 }
 
 const MyReviewsPage: React.FC = () => {
@@ -71,10 +73,11 @@ const MyReviewsPage: React.FC = () => {
       // Separate completed and drafts
       const completedReviews = reviewsData?.filter((r: Review) => r.status === 'completed' || r.status === 'published') || [];
       const completedProse = proseData?.filter((r: ProseReview) => r.status === 'completed' || r.status === 'published') || [];
-      const allDrafts = [
-        ...(reviewsData?.filter((r: Review) => r.status === 'draft') || []),
-        ...(proseData?.filter((r: ProseReview) => r.status === 'draft') || [])
-      ];
+
+      // Add review_type to distinguish between structured and prose reviews
+      const structuredDrafts = (reviewsData?.filter((r: Review) => r.status === 'draft') || []).map((r: Review) => ({ ...r, review_type: 'structured' as const }));
+      const proseDrafts = (proseData?.filter((r: ProseReview) => r.status === 'draft') || []).map((r: ProseReview) => ({ ...r, review_type: 'prose' as const }));
+      const allDrafts = [...structuredDrafts, ...proseDrafts];
 
       setReviews(completedReviews);
       setProseReviews(completedProse);
@@ -133,23 +136,35 @@ const MyReviewsPage: React.FC = () => {
                   <h3 className="text-lg font-bold text-text-primary">Reviews in Progress</h3>
                 </div>
                 <div className="space-y-2">
-                  {drafts.map((draft) => (
-                    <button
-                      key={draft.id}
-                      onClick={() => router.push(`/review/summary/${draft.id}`)}
-                      className="w-full p-4 bg-background-app hover:bg-primary-50 rounded-lg transition-colors text-left"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-text-primary">{draft.item_name}</p>
-                          <p className="text-sm text-text-secondary">{formatReviewId(draft)}</p>
+                  {drafts.map((draft) => {
+                    // Determine the correct path based on review type
+                    const reviewPath = draft.review_type === 'prose'
+                      ? `/review/prose?id=${draft.id}`
+                      : `/review/structured?id=${draft.id}`;
+
+                    return (
+                      <button
+                        key={draft.id}
+                        onClick={() => router.push(reviewPath)}
+                        className="w-full p-4 bg-background-app hover:bg-primary-50 rounded-lg transition-colors text-left"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-text-primary">{draft.item_name}</p>
+                            <p className="text-sm text-text-secondary">
+                              {formatReviewId(draft)} • {draft.review_type === 'prose' ? 'Prose' : 'Structured'}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-warning">Continue</span>
+                            <span className="material-symbols-outlined text-text-secondary">
+                              arrow_forward
+                            </span>
+                          </div>
                         </div>
-                        <span className="material-symbols-outlined text-text-secondary">
-                          arrow_forward
-                        </span>
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
