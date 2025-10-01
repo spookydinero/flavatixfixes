@@ -78,24 +78,24 @@ const StructuredReviewPage: React.FC = () => {
         setBarcode(data.upc_barcode || '');
         setCategory(data.category || '');
         setAromaNotes(data.aroma_notes || '');
-        setAromaIntensity(data.aroma_intensity || 50);
+        setAromaIntensity(data.aroma_intensity ?? 0);
         setSaltNotes(data.salt_notes || '');
-        setSaltScore(data.salt_score || 50);
+        setSaltScore(data.salt_score ?? 0);
         setSweetnessNotes(data.sweetness_notes || '');
-        setSweetnessScore(data.sweetness_score || 50);
+        setSweetnessScore(data.sweetness_score ?? 0);
         setAcidityNotes(data.acidity_notes || '');
-        setAcidityScore(data.acidity_score || 50);
+        setAcidityScore(data.acidity_score ?? 0);
         setUmamiNotes(data.umami_notes || '');
-        setUmamiScore(data.umami_score || 50);
+        setUmamiScore(data.umami_score ?? 0);
         setSpicinessNotes(data.spiciness_notes || '');
-        setSpicinessScore(data.spiciness_score || 50);
+        setSpicinessScore(data.spiciness_score ?? 0);
         setFlavorNotes(data.flavor_notes || '');
-        setFlavorIntensity(data.flavor_intensity || 50);
+        setFlavorIntensity(data.flavor_intensity ?? 0);
         setTextureNotes(data.texture_notes || '');
-        setTypicityScore(data.typicity_score || 50);
-        setComplexityScore(data.complexity_score || 50);
+        setTypicityScore(data.typicity_score ?? 0);
+        setComplexityScore(data.complexity_score ?? 0);
         setOtherNotes(data.other_notes || '');
-        setOverallScore(data.overall_score || 50);
+        setOverallScore(data.overall_score ?? 0);
 
         toast.success('Review loaded');
       } catch (error) {
@@ -448,13 +448,13 @@ const StructuredReviewPage: React.FC = () => {
                   <label className="text-sm text-text-secondary mb-1 block">Intensity of Aroma</label>
                   <input
                     type="range"
-                    min="1"
+                    min="0"
                     max="100"
                     value={aromaIntensity}
                     onChange={(e) => setAromaIntensity(parseInt(e.target.value))}
                     className="w-full slider-ultra-thin"
                   />
-                  <div className="text-center text-2xl font-bold text-primary mt-2">{aromaIntensity}</div>
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{aromaIntensity}/100</div>
                 </div>
 
                 {/* Saltiness */}
@@ -468,13 +468,13 @@ const StructuredReviewPage: React.FC = () => {
                   />
                   <input
                     type="range"
-                    min="1"
+                    min="0"
                     max="100"
                     value={saltScore}
                     onChange={(e) => setSaltScore(parseInt(e.target.value))}
                     className="w-full slider-ultra-thin"
                   />
-                  <div className="text-center text-2xl font-bold text-primary mt-2">{saltScore}</div>
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{saltScore}/100</div>
                 </div>
 
                 {/* Sweetness */}
@@ -488,13 +488,13 @@ const StructuredReviewPage: React.FC = () => {
                   />
                   <input
                     type="range"
-                    min="1"
+                    min="0"
                     max="100"
                     value={sweetnessScore}
                     onChange={(e) => setSweetnessScore(parseInt(e.target.value))}
                     className="w-full slider-ultra-thin"
                   />
-                  <div className="text-center text-2xl font-bold text-primary mt-2">{sweetnessScore}</div>
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{sweetnessScore}/100</div>
                 </div>
 
                 {/* Acidity */}
@@ -508,13 +508,13 @@ const StructuredReviewPage: React.FC = () => {
                   />
                   <input
                     type="range"
-                    min="1"
+                    min="0"
                     max="100"
                     value={acidityScore}
                     onChange={(e) => setAcidityScore(parseInt(e.target.value))}
                     className="w-full slider-ultra-thin"
                   />
-                  <div className="text-center text-2xl font-bold text-primary mt-2">{acidityScore}</div>
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{acidityScore}/100</div>
                 </div>
 
                 {/* Umami */}
@@ -528,13 +528,13 @@ const StructuredReviewPage: React.FC = () => {
                   />
                   <input
                     type="range"
-                    min="1"
+                    min="0"
                     max="100"
                     value={umamiScore}
                     onChange={(e) => setUmamiScore(parseInt(e.target.value))}
                     className="w-full slider-ultra-thin"
                   />
-                  <div className="text-center text-2xl font-bold text-primary mt-2">{umamiScore}</div>
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{umamiScore}/100</div>
                 </div>
 
                 {/* Spiciness */}
@@ -548,13 +548,13 @@ const StructuredReviewPage: React.FC = () => {
                   />
                   <input
                     type="range"
-                    min="1"
+                    min="0"
                     max="100"
                     value={spicinessScore}
                     onChange={(e) => setSpicinessScore(parseInt(e.target.value))}
                     className="w-full slider-ultra-thin"
                   />
-                  <div className="text-center text-2xl font-bold text-primary mt-2">{spicinessScore}</div>
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{spicinessScore}/100</div>
                 </div>
 
                 {/* Flavor */}
@@ -569,13 +569,13 @@ const StructuredReviewPage: React.FC = () => {
                   <label className="text-sm text-text-secondary mb-1 block">Intensity of Flavor</label>
                   <input
                     type="range"
-                    min="1"
+                    min="0"
                     max="100"
                     value={flavorIntensity}
                     onChange={(e) => setFlavorIntensity(parseInt(e.target.value))}
                     className="w-full slider-ultra-thin"
                   />
-                  <div className="text-center text-2xl font-bold text-primary mt-2">{flavorIntensity}</div>
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{flavorIntensity}/100</div>
                 </div>
 
                 {/* Texture */}
@@ -594,13 +594,13 @@ const StructuredReviewPage: React.FC = () => {
                   <label className="label">Typicity (Tastes how it should)</label>
                   <input
                     type="range"
-                    min="1"
+                    min="0"
                     max="100"
                     value={typicityScore}
                     onChange={(e) => setTypicityScore(parseInt(e.target.value))}
                     className="w-full slider-ultra-thin"
                   />
-                  <div className="text-center text-2xl font-bold text-primary mt-2">{typicityScore}</div>
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{typicityScore}/100</div>
                 </div>
 
                 {/* Complexity */}
@@ -608,13 +608,13 @@ const StructuredReviewPage: React.FC = () => {
                   <label className="label">Complexity</label>
                   <input
                     type="range"
-                    min="1"
+                    min="0"
                     max="100"
                     value={complexityScore}
                     onChange={(e) => setComplexityScore(parseInt(e.target.value))}
                     className="w-full slider-ultra-thin"
                   />
-                  <div className="text-center text-2xl font-bold text-primary mt-2">{complexityScore}</div>
+                  <div className="text-center text-2xl font-bold text-primary mt-2">{complexityScore}/100</div>
                 </div>
 
                 {/* Other */}
@@ -633,13 +633,13 @@ const StructuredReviewPage: React.FC = () => {
                   <label className="label">Overall</label>
                   <input
                     type="range"
-                    min="1"
+                    min="0"
                     max="100"
                     value={overallScore}
                     onChange={(e) => setOverallScore(parseInt(e.target.value))}
                     className="w-full slider-ultra-thin"
                   />
-                  <div className="text-center text-3xl font-bold text-primary mt-2">{overallScore}</div>
+                  <div className="text-center text-3xl font-bold text-primary mt-2">{overallScore}/100</div>
                 </div>
               </div>
             </div>
