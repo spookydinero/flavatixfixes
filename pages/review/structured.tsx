@@ -25,24 +25,24 @@ const StructuredReviewPage: React.FC = () => {
 
   // Characteristics
   const [aromaNotes, setAromaNotes] = useState('');
-  const [aromaIntensity, setAromaIntensity] = useState(50);
+  const [aromaIntensity, setAromaIntensity] = useState(0);
   const [saltNotes, setSaltNotes] = useState('');
-  const [saltScore, setSaltScore] = useState(50);
+  const [saltScore, setSaltScore] = useState(0);
   const [sweetnessNotes, setSweetnessNotes] = useState('');
-  const [sweetnessScore, setSweetnessScore] = useState(50);
+  const [sweetnessScore, setSweetnessScore] = useState(0);
   const [acidityNotes, setAcidityNotes] = useState('');
-  const [acidityScore, setAcidityScore] = useState(50);
+  const [acidityScore, setAcidityScore] = useState(0);
   const [umamiNotes, setUmamiNotes] = useState('');
-  const [umamiScore, setUmamiScore] = useState(50);
+  const [umamiScore, setUmamiScore] = useState(0);
   const [spicinessNotes, setSpicinessNotes] = useState('');
-  const [spicinessScore, setSpicinessScore] = useState(50);
+  const [spicinessScore, setSpicinessScore] = useState(0);
   const [flavorNotes, setFlavorNotes] = useState('');
-  const [flavorIntensity, setFlavorIntensity] = useState(50);
+  const [flavorIntensity, setFlavorIntensity] = useState(0);
   const [textureNotes, setTextureNotes] = useState('');
-  const [typicityScore, setTypicityScore] = useState(50);
-  const [complexityScore, setComplexityScore] = useState(50);
+  const [typicityScore, setTypicityScore] = useState(0);
+  const [complexityScore, setComplexityScore] = useState(0);
   const [otherNotes, setOtherNotes] = useState('');
-  const [overallScore, setOverallScore] = useState(50);
+  const [overallScore, setOverallScore] = useState(0);
 
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);

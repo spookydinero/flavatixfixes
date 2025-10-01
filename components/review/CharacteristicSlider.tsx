@@ -18,16 +18,10 @@ const CharacteristicSlider: React.FC<CharacteristicSliderProps> = ({
   max = 100
 }) => {
   const getScoreLabel = (score: number): string => {
-    if (score >= 90) return 'Exceptional';
-    if (score >= 80) return 'Excellent';
-    if (score >= 70) return 'Very Good';
-    if (score >= 60) return 'Good';
-    if (score >= 50) return 'Average';
-    if (score >= 40) return 'Below Average';
-    if (score >= 30) return 'Poor';
-    if (score >= 20) return 'Very Poor';
-    if (score >= 10) return 'Terrible';
-    return 'Unacceptable';
+    if (score >= 80) return 'High';
+    if (score >= 40) return 'Medium';
+    if (score > 0) return 'Low';
+    return '';
   };
 
   return (
