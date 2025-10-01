@@ -852,9 +852,10 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           {/* Complete Tasting Button */}
           <button
             onClick={completeSession}
-            className="btn-primary"
+            disabled={isLoading}
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Complete Tasting
+            {isLoading ? 'Completing...' : 'Complete Tasting'}
           </button>
         </div>
       </div>
