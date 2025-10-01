@@ -55,16 +55,16 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   const [formData, setFormData] = useState<ReviewFormData>({
     item_name: '',
     category: '',
-    aroma_intensity: 50,
-    salt_score: 50,
-    sweetness_score: 50,
-    acidity_score: 50,
-    umami_score: 50,
-    spiciness_score: 50,
-    flavor_intensity: 50,
-    typicity_score: 50,
-    complexity_score: 50,
-    overall_score: 50,
+    aroma_intensity: 0,
+    salt_score: 0,
+    sweetness_score: 0,
+    acidity_score: 0,
+    umami_score: 0,
+    spiciness_score: 0,
+    flavor_intensity: 0,
+    typicity_score: 0,
+    complexity_score: 0,
+    overall_score: 0,
     ...initialData
   });
 

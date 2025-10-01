@@ -235,6 +235,12 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   const addNewItem = async () => {
     console.log('➕ QuickTastingSession: addNewItem called for session:', session?.id);
 
+    // Wait for permissions to load for study mode
+    if (session.mode === 'study' && (!userPermissions || !userRole)) {
+      console.log('⏳ QuickTastingSession: Waiting for permissions to load...');
+      return;
+    }
+
     // Check permissions based on mode
     if (session.mode === 'competition') {
       console.log('❌ QuickTastingSession: Cannot add items in competition mode');
