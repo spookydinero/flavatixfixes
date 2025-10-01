@@ -75,8 +75,8 @@ const MyReviewsPage: React.FC = () => {
       const completedProse = proseData?.filter((r: ProseReview) => r.status === 'completed' || r.status === 'published') || [];
 
       // Add review_type to distinguish between structured and prose reviews
-      const structuredDrafts = (reviewsData?.filter((r: Review) => r.status === 'draft') || []).map((r: Review) => ({ ...r, review_type: 'structured' as const }));
-      const proseDrafts = (proseData?.filter((r: ProseReview) => r.status === 'draft') || []).map((r: ProseReview) => ({ ...r, review_type: 'prose' as const }));
+      const structuredDrafts = (reviewsData?.filter((r: Review) => r.status === 'in_progress') || []).map((r: Review) => ({ ...r, review_type: 'structured' as const }));
+      const proseDrafts = (proseData?.filter((r: ProseReview) => r.status === 'in_progress') || []).map((r: ProseReview) => ({ ...r, review_type: 'prose' as const }));
       const allDrafts = [...structuredDrafts, ...proseDrafts];
 
       setReviews(completedReviews);

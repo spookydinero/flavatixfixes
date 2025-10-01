@@ -146,7 +146,7 @@ const StructuredReviewPage: React.FC = () => {
     }
   };
 
-  const saveReview = async (status: 'draft' | 'completed') => {
+  const saveReview = async (status: 'in_progress' | 'completed') => {
     if (!user) return;
     
     if (!itemName.trim()) {
@@ -221,7 +221,7 @@ const StructuredReviewPage: React.FC = () => {
 
       if (error) throw error;
 
-      toast.success(status === 'draft' ? 'Review saved as draft' : 'Review completed!');
+      toast.success(status === 'in_progress' ? 'Review saved for later' : 'Review completed!');
 
       if (status === 'completed') {
         router.push(`/review/summary/${data.id}`);
@@ -655,7 +655,7 @@ const StructuredReviewPage: React.FC = () => {
                   Done
                 </button>
                 <button
-                  onClick={() => saveReview('draft')}
+                  onClick={() => saveReview('in_progress')}
                   disabled={isSaving}
                   className="btn-secondary"
                 >
