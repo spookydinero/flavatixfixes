@@ -144,21 +144,17 @@ export default function HistoryPage() {
             <span className="material-symbols-outlined">home</span>
             <span className="text-xs font-medium">Home</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/create-tasting">
-            <span className="material-symbols-outlined">add_circle</span>
-            <span className="text-xs font-medium">Create</span>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/taste">
+            <span className="material-symbols-outlined">restaurant</span>
+            <span className="text-xs font-medium">Taste</span>
           </a>
           <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/review">
             <span className="material-symbols-outlined">reviews</span>
             <span className="text-xs font-medium">Review</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/social">
-            <span className="material-symbols-outlined">groups</span>
-            <span className="text-xs font-medium">Social</span>
-          </a>
           <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/flavor-wheels">
-            <span className="material-symbols-outlined">donut_large</span>
-            <span className="text-xs font-bold">Flavor Wheels</span>
+            <span className="material-symbols-outlined">donut_small</span>
+            <span className="text-xs font-bold">Wheels</span>
           </a>
         </nav>
       </footer>

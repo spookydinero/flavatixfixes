@@ -526,21 +526,17 @@ const CreateTastingPage: React.FC = () => {
             <span className="material-symbols-outlined">home</span>
             <span className="text-xs font-medium">Home</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/create-tasting">
-            <span className="material-symbols-outlined">add_circle</span>
-            <span className="text-xs font-bold">Create</span>
+          <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/taste">
+            <span className="material-symbols-outlined">restaurant</span>
+            <span className="text-xs font-bold">Taste</span>
           </a>
           <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/review">
             <span className="material-symbols-outlined">reviews</span>
             <span className="text-xs font-medium">Review</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/social">
-            <span className="material-symbols-outlined">groups</span>
-            <span className="text-xs font-medium">Social</span>
-          </a>
           <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/flavor-wheels">
-            <span className="material-symbols-outlined">donut_large</span>
-            <span className="text-xs font-medium">Flavor Wheels</span>
+            <span className="material-symbols-outlined">donut_small</span>
+            <span className="text-xs font-medium">Wheels</span>
           </a>
         </nav>
       </footer>

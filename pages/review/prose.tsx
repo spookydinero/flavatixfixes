@@ -180,7 +180,7 @@ const ProseReviewPage: React.FC = () => {
 
   return (
     <div className="bg-background-light font-display text-zinc-900 min-h-screen">
-      <main id="main-content">
+      <main id="main-content" className="pb-24">
         <div className="container mx-auto px-md py-lg max-w-4xl">
           {/* Header */}
           <div className="mb-lg">
@@ -216,17 +216,13 @@ const ProseReviewPage: React.FC = () => {
             <span className="material-symbols-outlined">home</span>
             <span className="text-xs font-medium">Home</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/create-tasting">
-            <span className="material-symbols-outlined">add_circle</span>
-            <span className="text-xs font-medium">Create</span>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/taste">
+            <span className="material-symbols-outlined">restaurant</span>
+            <span className="text-xs font-medium">Taste</span>
           </a>
           <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/review">
             <span className="material-symbols-outlined">reviews</span>
             <span className="text-xs font-bold">Review</span>
-          </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/social">
-            <span className="material-symbols-outlined">groups</span>
-            <span className="text-xs font-medium">Social</span>
           </a>
           <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/flavor-wheels">
             <span className="material-symbols-outlined">donut_small</span>

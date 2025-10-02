@@ -132,8 +132,8 @@ const AuthSection = () => {
             </div>
           </div>
           <div className="px-6 py-8 text-center">
-            <h1 className="text-3xl font-bold text-zinc-900">Flavatix México</h1>
-            <p className="mt-2 text-zinc-600">Taste, analyze, and share your reviews of México's finest beverages.</p>
+            <h1 className="text-3xl font-bold text-zinc-900">Flavatix</h1>
+            <p className="mt-2 text-zinc-600">The one place for all your tasting needs</p>
           </div>
 
           <div className="space-y-4 px-6">

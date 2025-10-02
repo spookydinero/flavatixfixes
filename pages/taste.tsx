@@ -1,9 +1,9 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
-import { FileText, PenTool, History, ChevronLeft } from 'lucide-react';
+import { Zap, Users, ChevronLeft } from 'lucide-react';
 
-const ReviewPage: React.FC = () => {
+const TastePage: React.FC = () => {
   const router = useRouter();
   const { user, loading } = useAuth();
 
@@ -28,27 +28,20 @@ const ReviewPage: React.FC = () => {
     return null;
   }
 
-  const reviewOptions = [
+  const tasteOptions = [
     {
-      title: 'Review',
-      description: 'for in depth analysis of flavor characteristics',
-      icon: FileText,
-      path: '/review/create',
+      title: 'Quick Tasting',
+      description: 'Tasting notes on the fly. Take notes and save them for future reference while growing your Flavor Wheels',
+      icon: Zap,
+      path: '/quick-tasting',
       color: 'primary'
     },
     {
-      title: 'Prose Review',
-      description: 'just write my review',
-      icon: PenTool,
-      path: '/review/prose',
+      title: 'Create Tasting',
+      description: 'Study Mode, Competition Mode, My Tastings, and Join Tasting',
+      icon: Users,
+      path: '/create-tasting',
       color: 'secondary'
-    },
-    {
-      title: 'My Reviews',
-      description: 'Review History',
-      icon: History,
-      path: '/review/my-reviews',
-      color: 'accent'
     }
   ];
 
@@ -66,59 +59,39 @@ const ReviewPage: React.FC = () => {
               Back to Dashboard
             </button>
             <h1 className="text-h1 font-heading font-bold text-text-primary mb-xs">
-              Reviews
+              Taste
             </h1>
             <p className="text-body font-body text-text-secondary">
-              Create detailed reviews or browse your review history
+              Choose your tasting experience
             </p>
           </div>
 
-          {/* Review Options */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-md max-w-6xl mx-auto">
-            {reviewOptions.map((option) => {
+          {/* Taste Options */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-lg max-w-4xl mx-auto">
+            {tasteOptions.map((option) => {
               const Icon = option.icon;
               return (
                 <button
                   key={option.path}
                   onClick={() => router.push(option.path)}
-                  className="card p-lg text-left hover:shadow-xl transition-all duration-200 hover:-translate-y-1 group"
+                  className="card p-xl text-left hover:shadow-xl transition-all duration-200 hover:-translate-y-1 group"
                 >
                   <div className="flex flex-col items-center text-center space-y-md">
-                    <div className={`w-16 h-16 rounded-full bg-${option.color}/10 flex items-center justify-center group-hover:bg-${option.color}/20 transition-colors`}>
-                      <Icon size={32} className={`text-${option.color}`} />
+                    <div className={`w-20 h-20 rounded-full bg-${option.color}/10 flex items-center justify-center group-hover:bg-${option.color}/20 transition-colors`}>
+                      <Icon size={40} className={`text-${option.color}`} />
                     </div>
                     <div>
-                      <h2 className="text-h3 font-heading font-semibold text-text-primary mb-xs">
+                      <h2 className="text-h2 font-heading font-semibold text-text-primary mb-sm">
                         {option.title}
                       </h2>
-                      <p className="text-small font-body text-text-secondary">
-                        ({option.description})
+                      <p className="text-body font-body text-text-secondary">
+                        {option.description}
                       </p>
                     </div>
                   </div>
                 </button>
               );
             })}
-          </div>
-
-          {/* Info Section */}
-          <div className="mt-xl max-w-4xl mx-auto">
-            <div className="card p-md bg-primary/5 border-primary/20">
-              <h3 className="text-h4 font-heading font-semibold text-text-primary mb-sm">
-                About Reviews
-              </h3>
-              <div className="space-y-sm text-small font-body text-text-secondary">
-                <p>
-                  <strong>Review:</strong> Conduct an in-depth analysis with structured scoring (1-100) across 12 characteristics including aroma, flavor, texture, and more.
-                </p>
-                <p>
-                  <strong>Prose Review:</strong> Write a free-form review in your own words. Descriptors from your text will be automatically added to your flavor wheels.
-                </p>
-                <p>
-                  <strong>My Reviews:</strong> Access all your completed reviews, prose reviews, and reviews in progress.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </main>
@@ -130,13 +103,13 @@ const ReviewPage: React.FC = () => {
             <span className="material-symbols-outlined">home</span>
             <span className="text-xs font-medium">Home</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/taste">
+          <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/taste">
             <span className="material-symbols-outlined">restaurant</span>
-            <span className="text-xs font-medium">Taste</span>
+            <span className="text-xs font-bold">Taste</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/review">
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/review">
             <span className="material-symbols-outlined">reviews</span>
-            <span className="text-xs font-bold">Review</span>
+            <span className="text-xs font-medium">Review</span>
           </a>
           <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/flavor-wheels">
             <span className="material-symbols-outlined">donut_small</span>
@@ -148,5 +121,4 @@ const ReviewPage: React.FC = () => {
   );
 };
 
-export default ReviewPage;
-
+export default TastePage;
