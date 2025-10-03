@@ -1,0 +1,408 @@
+{
+  "testingInstructions": {
+    "overview": {
+      "feature": "AI-Powered Flavor Wheels",
+      "status": "✅ READY FOR TESTING",
+      "databaseStatus": "✅ Migration Applied Successfully",
+      "testDataStatus": "✅ 16 Test Descriptors Inserted",
+      "serverStatus": "✅ Running on http://localhost:3032"
+    },
+    "prerequisites": {
+      "database": {
+        "status": "✅ Complete",
+        "tables": [
+          "flavor_descriptors (16 records)",
+          "flavor_wheels (0 records - will be generated)",
+          "aroma_molecules (8 seed records)"
+        ],
+        "testUser": {
+          "email": "bob@bob.com",
+          "userId": "7603f919-9f47-449a-b5a4-ce1c32791a09",
+          "hasTestData": true
+        }
+      },
+      "server": {
+        "url": "http://localhost:3032",
+        "status": "Running",
+        "port": 3032
+      }
+    },
+    "testScenarios": [
+      {
+        "id": 1,
+        "name": "Access Flavor Wheels Page",
+        "priority": "HIGH",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Navigate to http://localhost:3032",
+            "expected": "Landing page loads successfully"
+          },
+          {
+            "step": 2,
+            "action": "Click 'Login' or navigate to /auth",
+            "expected": "Auth page displays"
+          },
+          {
+            "step": 3,
+            "action": "Login with test credentials (bob@bob.com)",
+            "expected": "Redirect to dashboard"
+          },
+          {
+            "step": 4,
+            "action": "Navigate to http://localhost:3032/flavor-wheels",
+            "expected": "Flavor Wheels page loads with controls"
+          }
+        ],
+        "successCriteria": [
+          "Page loads without errors",
+          "Wheel type selector visible (Aroma/Flavor/Combined/Metaphor)",
+          "Scope selector visible (Personal/Universal)",
+          "Generate button visible"
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Generate Personal Aroma Wheel",
+        "priority": "HIGH",
+        "steps": [
+          {
+            "step": 1,
+            "action": "On /flavor-wheels page, select 'Aroma' wheel type",
+            "expected": "Aroma option highlighted"
+          },
+          {
+            "step": 2,
+            "action": "Select 'Personal' scope",
+            "expected": "Personal option highlighted"
+          },
+          {
+            "step": 3,
+            "action": "Click 'Generate Wheel' button",
+            "expected": "Loading indicator appears"
+          },
+          {
+            "step": 4,
+            "action": "Wait for generation to complete",
+            "expected": "D3.js circular visualization appears with 3 rings"
+          }
+        ],
+        "successCriteria": [
+          "Wheel displays with categories in inner ring",
+          "Subcategories in middle ring",
+          "Descriptors in outer ring",
+          "Colors are distinct and vibrant",
+          "Statistics panel shows counts"
+        ],
+        "expectedData": {
+          "categories": ["Fruity", "Sweet", "Spicy", "Woody", "Floral", "Earthy"],
+          "totalDescriptors": "10-12 (aroma type only)",
+          "uniqueDescriptors": "10-12"
+        }
+      },
+      {
+        "id": 3,
+        "name": "Test Interactive Features",
+        "priority": "HIGH",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Hover over a category segment (inner ring)",
+            "expected": "Tooltip appears showing category name and count"
+          },
+          {
+            "step": 2,
+            "action": "Hover over a subcategory segment (middle ring)",
+            "expected": "Tooltip shows subcategory name and count"
+          },
+          {
+            "step": 3,
+            "action": "Hover over a descriptor segment (outer ring)",
+            "expected": "Tooltip shows descriptor text, count, and avg intensity"
+          },
+          {
+            "step": 4,
+            "action": "Click on different segments",
+            "expected": "Segments respond to clicks (if click handler implemented)"
+          }
+        ],
+        "successCriteria": [
+          "Tooltips appear smoothly on hover",
+          "Tooltips contain accurate information",
+          "Hover effects are visible (opacity/scale changes)",
+          "No console errors"
+        ]
+      },
+      {
+        "id": 4,
+        "name": "Test Different Wheel Types",
+        "priority": "MEDIUM",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Select 'Flavor' wheel type",
+            "expected": "Flavor option highlighted"
+          },
+          {
+            "step": 2,
+            "action": "Click 'Generate Wheel'",
+            "expected": "New wheel generated with flavor descriptors only"
+          },
+          {
+            "step": 3,
+            "action": "Select 'Combined' wheel type",
+            "expected": "Combined option highlighted"
+          },
+          {
+            "step": 4,
+            "action": "Click 'Generate Wheel'",
+            "expected": "Wheel shows both aroma and flavor descriptors"
+          },
+          {
+            "step": 5,
+            "action": "Select 'Metaphor' wheel type",
+            "expected": "Metaphor option highlighted"
+          },
+          {
+            "step": 6,
+            "action": "Click 'Generate Wheel'",
+            "expected": "Empty state or message (no metaphor descriptors in test data)"
+          }
+        ],
+        "successCriteria": [
+          "Each wheel type shows appropriate descriptors",
+          "Counts change based on wheel type",
+          "Transitions are smooth",
+          "No errors in console"
+        ]
+      },
+      {
+        "id": 5,
+        "name": "Test Scope Types",
+        "priority": "MEDIUM",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Select 'Personal' scope",
+            "expected": "Shows only logged-in user's descriptors"
+          },
+          {
+            "step": 2,
+            "action": "Select 'Universal' scope",
+            "expected": "Shows all users' descriptors (if any)"
+          },
+          {
+            "step": 3,
+            "action": "Compare descriptor counts",
+            "expected": "Personal count <= Universal count"
+          }
+        ],
+        "successCriteria": [
+          "Scope switching works correctly",
+          "Data updates appropriately",
+          "Statistics reflect scope change"
+        ]
+      },
+      {
+        "id": 6,
+        "name": "Test Caching and Regeneration",
+        "priority": "MEDIUM",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Generate a wheel (any type/scope)",
+            "expected": "Wheel generated and 'Cached' indicator shows false"
+          },
+          {
+            "step": 2,
+            "action": "Refresh the page",
+            "expected": "Page reloads"
+          },
+          {
+            "step": 3,
+            "action": "Generate the same wheel again",
+            "expected": "Wheel loads faster, 'Cached' indicator shows true"
+          },
+          {
+            "step": 4,
+            "action": "Click 'Regenerate' button",
+            "expected": "Wheel regenerates, cache invalidated"
+          }
+        ],
+        "successCriteria": [
+          "Cached wheels load faster",
+          "Cache indicator is accurate",
+          "Regenerate button works correctly",
+          "No stale data issues"
+        ]
+      },
+      {
+        "id": 7,
+        "name": "Test Export Functionality",
+        "priority": "LOW",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Generate any wheel",
+            "expected": "Wheel displays"
+          },
+          {
+            "step": 2,
+            "action": "Click 'Export' button",
+            "expected": "JSON file downloads or export modal appears"
+          },
+          {
+            "step": 3,
+            "action": "Verify exported data",
+            "expected": "JSON contains wheel data structure"
+          }
+        ],
+        "successCriteria": [
+          "Export button is visible and enabled",
+          "Export produces valid JSON",
+          "Data structure matches FlavorWheelData interface"
+        ]
+      },
+      {
+        "id": 8,
+        "name": "Test Empty States",
+        "priority": "LOW",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Login with a user that has no descriptors",
+            "expected": "User logged in"
+          },
+          {
+            "step": 2,
+            "action": "Navigate to /flavor-wheels",
+            "expected": "Page loads"
+          },
+          {
+            "step": 3,
+            "action": "Try to generate a wheel",
+            "expected": "Empty state message appears"
+          }
+        ],
+        "successCriteria": [
+          "Helpful message displayed",
+          "Suggests adding tasting notes",
+          "No errors or crashes"
+        ]
+      },
+      {
+        "id": 9,
+        "name": "Test Aroma Molecules Reference",
+        "priority": "LOW",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Check if there's a molecules reference section",
+            "expected": "Section visible or accessible"
+          },
+          {
+            "step": 2,
+            "action": "Verify molecules data",
+            "expected": "Shows chemical compounds for descriptors"
+          }
+        ],
+        "successCriteria": [
+          "8 seed molecules present (lemon, vanilla, smoke, etc.)",
+          "Each shows chemical name and CAS number",
+          "Data is accurate"
+        ]
+      },
+      {
+        "id": 10,
+        "name": "Test Responsive Design",
+        "priority": "MEDIUM",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Resize browser to mobile width (375px)",
+            "expected": "Layout adapts to mobile"
+          },
+          {
+            "step": 2,
+            "action": "Test wheel visualization on mobile",
+            "expected": "Wheel scales appropriately"
+          },
+          {
+            "step": 3,
+            "action": "Test controls on mobile",
+            "expected": "Buttons and selectors are usable"
+          },
+          {
+            "step": 4,
+            "action": "Resize to tablet width (768px)",
+            "expected": "Layout adapts to tablet"
+          },
+          {
+            "step": 5,
+            "action": "Resize to desktop width (1920px)",
+            "expected": "Layout uses available space well"
+          }
+        ],
+        "successCriteria": [
+          "No horizontal scrolling",
+          "All controls accessible",
+          "Wheel remains visible and interactive",
+          "Text is readable at all sizes"
+        ]
+      }
+    ],
+    "browserConsoleChecks": [
+      {
+        "check": "No JavaScript errors",
+        "severity": "HIGH"
+      },
+      {
+        "check": "No 404 errors for assets",
+        "severity": "MEDIUM"
+      },
+      {
+        "check": "No CORS errors",
+        "severity": "HIGH"
+      },
+      {
+        "check": "API calls return 200 status",
+        "severity": "HIGH"
+      },
+      {
+        "check": "D3.js loads successfully",
+        "severity": "HIGH"
+      }
+    ],
+    "performanceChecks": [
+      {
+        "metric": "Initial page load",
+        "target": "< 3 seconds",
+        "priority": "MEDIUM"
+      },
+      {
+        "metric": "Wheel generation time",
+        "target": "< 2 seconds",
+        "priority": "HIGH"
+      },
+      {
+        "metric": "Cached wheel load time",
+        "target": "< 500ms",
+        "priority": "MEDIUM"
+      },
+      {
+        "metric": "Hover interaction response",
+        "target": "< 100ms",
+        "priority": "HIGH"
+      }
+    ],
+    "knownIssues": [],
+    "additionalNotes": [
+      "Test data includes 16 descriptors across 6 categories",
+      "Test user: bob@bob.com (ID: 7603f919-9f47-449a-b5a4-ce1c32791a09)",
+      "Database migration has been applied successfully",
+      "All RLS policies are in place",
+      "Aroma molecules reference table is seeded with 8 common compounds"
+    ]
+  }
+}
+
