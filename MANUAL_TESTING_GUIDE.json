@@ -1,0 +1,336 @@
+{
+  "flavorWheelsManualTestingGuide": {
+    "status": "✅ READY FOR MANUAL BROWSER TESTING",
+    "serverInfo": {
+      "url": "http://localhost:3032",
+      "status": "RUNNING",
+      "port": 3032,
+      "framework": "Next.js 14.0.4"
+    },
+    "databaseInfo": {
+      "status": "✅ MIGRATION APPLIED",
+      "tables": {
+        "flavor_descriptors": {
+          "records": 16,
+          "description": "Test descriptors across 6 categories"
+        },
+        "flavor_wheels": {
+          "records": 0,
+          "description": "Will be generated during testing"
+        },
+        "aroma_molecules": {
+          "records": 8,
+          "description": "Seed data with chemical compounds"
+        }
+      }
+    },
+    "testCredentials": {
+      "email": "bob@bob.com",
+      "userId": "7603f919-9f47-449a-b5a4-ce1c32791a09",
+      "note": "This user has 16 test descriptors ready for visualization"
+    },
+    "quickStartGuide": {
+      "step1": {
+        "action": "Open browser",
+        "url": "http://localhost:3032",
+        "expected": "Landing page loads"
+      },
+      "step2": {
+        "action": "Navigate to login",
+        "url": "http://localhost:3032/auth",
+        "expected": "Auth page displays"
+      },
+      "step3": {
+        "action": "Login with bob@bob.com",
+        "expected": "Redirect to dashboard"
+      },
+      "step4": {
+        "action": "Navigate to Flavor Wheels",
+        "url": "http://localhost:3032/flavor-wheels",
+        "expected": "Flavor Wheels page loads with controls"
+      },
+      "step5": {
+        "action": "Select 'Aroma' wheel type and 'Personal' scope",
+        "expected": "Options highlighted"
+      },
+      "step6": {
+        "action": "Click 'Generate Wheel' button",
+        "expected": "D3.js visualization appears with 6 categories"
+      },
+      "step7": {
+        "action": "Hover over wheel segments",
+        "expected": "Tooltips appear with descriptor information"
+      },
+      "step8": {
+        "action": "Check statistics panel",
+        "expected": "Shows counts and percentages"
+      }
+    },
+    "detailedTestScenarios": [
+      {
+        "scenario": "Test All Wheel Types",
+        "priority": "HIGH",
+        "steps": [
+          "1. Generate 'Aroma' wheel - should show ~10 aroma descriptors",
+          "2. Generate 'Flavor' wheel - should show ~6 flavor descriptors",
+          "3. Generate 'Combined' wheel - should show all 16 descriptors",
+          "4. Generate 'Metaphor' wheel - should show empty state (no metaphor data)"
+        ],
+        "expectedResults": {
+          "aroma": "10-12 descriptors in categories: Fruity, Spicy, Sweet, Woody, Floral, Earthy",
+          "flavor": "5-6 descriptors in categories: Fruity, Spicy, Sweet, Earthy",
+          "combined": "All 16 descriptors across all categories",
+          "metaphor": "Empty state message"
+        }
+      },
+      {
+        "scenario": "Test Scope Switching",
+        "priority": "HIGH",
+        "steps": [
+          "1. Select 'Personal' scope - shows only bob@bob.com's descriptors",
+          "2. Select 'Universal' scope - shows all users' descriptors",
+          "3. Compare descriptor counts between scopes"
+        ],
+        "expectedResults": {
+          "personal": "16 descriptors (test data)",
+          "universal": "16+ descriptors (if other users have data)",
+          "note": "Universal count should be >= Personal count"
+        }
+      },
+      {
+        "scenario": "Test Interactive Features",
+        "priority": "HIGH",
+        "steps": [
+          "1. Hover over inner ring (categories) - tooltip shows category name and count",
+          "2. Hover over middle ring (subcategories) - tooltip shows subcategory details",
+          "3. Hover over outer ring (descriptors) - tooltip shows descriptor, count, intensity",
+          "4. Click on segments - verify click handlers work",
+          "5. Move mouse quickly - verify no tooltip lag"
+        ],
+        "expectedResults": {
+          "tooltips": "Appear smoothly within 100ms",
+          "information": "Accurate counts and percentages",
+          "performance": "No lag or stuttering"
+        }
+      },
+      {
+        "scenario": "Test Caching Mechanism",
+        "priority": "MEDIUM",
+        "steps": [
+          "1. Generate a wheel (any type/scope)",
+          "2. Note the generation time",
+          "3. Refresh the page (F5 or Cmd+R)",
+          "4. Generate the same wheel again",
+          "5. Check if 'Cached' indicator appears",
+          "6. Click 'Regenerate' button",
+          "7. Verify cache is invalidated"
+        ],
+        "expectedResults": {
+          "firstGeneration": "Takes 1-2 seconds",
+          "cachedLoad": "Takes < 500ms, shows 'Cached: Yes'",
+          "afterRegenerate": "Shows 'Cached: No'"
+        }
+      },
+      {
+        "scenario": "Test Responsive Design",
+        "priority": "MEDIUM",
+        "steps": [
+          "1. Resize browser to mobile width (375px)",
+          "2. Verify wheel scales appropriately",
+          "3. Test controls on mobile",
+          "4. Resize to tablet (768px)",
+          "5. Resize to desktop (1920px)",
+          "6. Verify layout at all sizes"
+        ],
+        "expectedResults": {
+          "mobile": "Wheel visible, controls accessible, no horizontal scroll",
+          "tablet": "Optimal layout for medium screens",
+          "desktop": "Full-width layout with all features visible"
+        }
+      },
+      {
+        "scenario": "Test Export Functionality",
+        "priority": "LOW",
+        "steps": [
+          "1. Generate any wheel",
+          "2. Click 'Export' button",
+          "3. Verify JSON file downloads",
+          "4. Open JSON file",
+          "5. Verify data structure"
+        ],
+        "expectedResults": {
+          "download": "JSON file downloads successfully",
+          "structure": "Contains categories, subcategories, descriptors",
+          "data": "Matches displayed wheel"
+        }
+      },
+      {
+        "scenario": "Test Error Handling",
+        "priority": "MEDIUM",
+        "steps": [
+          "1. Open browser console (F12)",
+          "2. Generate wheels and check for errors",
+          "3. Try generating with no data (if possible)",
+          "4. Test network failures (disable network briefly)",
+          "5. Verify error messages are user-friendly"
+        ],
+        "expectedResults": {
+          "console": "No JavaScript errors",
+          "emptyState": "Helpful message when no data",
+          "networkError": "Graceful error handling",
+          "userMessages": "Clear, actionable error messages"
+        }
+      }
+    ],
+    "visualChecklist": {
+      "wheelAppearance": [
+        "✓ 3 distinct rings visible (inner, middle, outer)",
+        "✓ Colors are vibrant and distinct",
+        "✓ Segments are proportional to data",
+        "✓ Labels are readable",
+        "✓ No overlapping text",
+        "✓ Smooth edges and transitions"
+      ],
+      "interactivity": [
+        "✓ Hover effects work on all segments",
+        "✓ Tooltips appear and disappear smoothly",
+        "✓ Tooltip content is accurate",
+        "✓ Click interactions respond",
+        "✓ No lag or delay"
+      ],
+      "layout": [
+        "✓ Controls are clearly visible",
+        "✓ Statistics panel is readable",
+        "✓ Legend shows all categories",
+        "✓ Buttons are accessible",
+        "✓ Bottom navigation is present"
+      ],
+      "dataAccuracy": [
+        "✓ Category counts match statistics",
+        "✓ Percentages add up to 100%",
+        "✓ Descriptor counts are correct",
+        "✓ Intensity values are accurate"
+      ]
+    },
+    "performanceMetrics": {
+      "pageLoad": {
+        "target": "< 3 seconds",
+        "measure": "Time from navigation to interactive"
+      },
+      "wheelGeneration": {
+        "target": "< 2 seconds",
+        "measure": "Time from button click to wheel display"
+      },
+      "cachedLoad": {
+        "target": "< 500ms",
+        "measure": "Time to load cached wheel"
+      },
+      "hoverResponse": {
+        "target": "< 100ms",
+        "measure": "Time from hover to tooltip display"
+      }
+    },
+    "browserConsoleChecks": [
+      "No JavaScript errors (red messages)",
+      "No 404 errors for assets",
+      "No CORS errors",
+      "API calls return 200 status",
+      "D3.js library loads successfully",
+      "No React warnings (yellow messages)"
+    ],
+    "expectedTestData": {
+      "categories": [
+        {
+          "name": "Fruity",
+          "count": 5,
+          "subcategories": ["Citrus (3)", "Berry (2)"]
+        },
+        {
+          "name": "Sweet",
+          "count": 3,
+          "subcategories": ["Vanilla (1)", "Caramel (1)", "Chocolate (1)"]
+        },
+        {
+          "name": "Spicy",
+          "count": 2,
+          "subcategories": ["Sweet Spice (1)", "Pungent (1)"]
+        },
+        {
+          "name": "Woody",
+          "count": 2,
+          "subcategories": ["Oak (1)", "Resinous (1)"]
+        },
+        {
+          "name": "Floral",
+          "count": 2,
+          "subcategories": ["Rose (1)", "White Flowers (1)"]
+        },
+        {
+          "name": "Earthy",
+          "count": 2,
+          "subcategories": ["Fungal (1)", "Mineral (1)"]
+        }
+      ],
+      "totalDescriptors": 16,
+      "uniqueDescriptors": 16,
+      "aromaDescriptors": 10,
+      "flavorDescriptors": 6
+    },
+    "troubleshooting": {
+      "pageNotLoading": {
+        "check": "Server is running on port 3032",
+        "solution": "Verify terminal shows 'Ready in X.Xs'"
+      },
+      "noWheelDisplays": {
+        "check": "Browser console for errors",
+        "solution": "Check API responses, verify database connection"
+      },
+      "emptyWheel": {
+        "check": "User has descriptors in database",
+        "solution": "Login with bob@bob.com which has test data"
+      },
+      "tooltipsNotWorking": {
+        "check": "D3.js loaded correctly",
+        "solution": "Check browser console, verify no JavaScript errors"
+      }
+    },
+    "reportingIssues": {
+      "whatToInclude": [
+        "Browser and version",
+        "Screen size/resolution",
+        "Steps to reproduce",
+        "Expected vs actual behavior",
+        "Screenshots if applicable",
+        "Browser console errors",
+        "Network tab errors"
+      ]
+    },
+    "successCriteria": {
+      "minimum": [
+        "✓ Page loads without errors",
+        "✓ Wheel generates and displays",
+        "✓ Basic interactivity works (hover)",
+        "✓ Data is accurate"
+      ],
+      "ideal": [
+        "✓ All wheel types work",
+        "✓ All scopes work",
+        "✓ Caching works correctly",
+        "✓ Export works",
+        "✓ Responsive on all screen sizes",
+        "✓ No console errors",
+        "✓ Performance meets targets"
+      ]
+    },
+    "nextSteps": {
+      "afterTesting": [
+        "1. Document any bugs or issues found",
+        "2. Provide feedback on UX/UI",
+        "3. Suggest improvements or enhancements",
+        "4. Decide if ready for production",
+        "5. Plan V2 features if needed"
+      ]
+    }
+  }
+}
+
