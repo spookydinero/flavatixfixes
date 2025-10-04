@@ -69,7 +69,7 @@ export default function SocialFeedWidget({ userId, limit = 5 }: SocialFeedWidget
 
       // Fetch stats for each tasting
       const postsWithStats = await Promise.all(
-        (tastings || []).map(async (tasting) => {
+        (tastings || []).map(async (tasting: any) => {
           const [likesResult, commentsResult, userLikeResult] = await Promise.all([
             supabase.from('tasting_likes').select('id', { count: 'exact' }).eq('tasting_id', tasting.id),
             supabase.from('tasting_comments').select('id', { count: 'exact' }).eq('tasting_id', tasting.id),
@@ -77,7 +77,7 @@ export default function SocialFeedWidget({ userId, limit = 5 }: SocialFeedWidget
           ]);
 
           // Get first photo from items
-          const { data: items } = await supabase
+          const { data: items }: { data: { photo_url: string }[] | null } = await supabase
             .from('quick_tasting_items')
             .select('photo_url')
             .eq('tasting_id', tasting.id)
@@ -122,7 +122,7 @@ export default function SocialFeedWidget({ userId, limit = 5 }: SocialFeedWidget
 
     try {
       if (post.isLiked) {
-        await supabase
+        await (supabase as any)
           .from('tasting_likes')
           .delete()
           .eq('tasting_id', postId)
@@ -134,7 +134,7 @@ export default function SocialFeedWidget({ userId, limit = 5 }: SocialFeedWidget
             : p
         ));
       } else {
-        await supabase
+        await (supabase as any)
           .from('tasting_likes')
           .insert({ tasting_id: postId, user_id: userId });
 

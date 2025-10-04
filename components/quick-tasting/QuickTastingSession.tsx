@@ -47,6 +47,8 @@ interface TastingItemData {
   updated_at: string;
   correct_answers?: any;
   include_in_ranking?: boolean;
+  aroma?: string;
+  flavor?: string;
 }
 
 interface QuickTastingSessionProps {

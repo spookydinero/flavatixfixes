@@ -44,21 +44,21 @@ export default function JoinTastingPage() {
       const { data: existing } = await supabase
         .from('tasting_participants')
         .select('id')
-        .eq('tasting_id', tasting.id)
+        .eq('tasting_id', (tasting as any).id)
         .eq('user_id', user!.id)
         .single();
 
       if (existing) {
         toast.success('You are already part of this tasting!');
-        router.push(`/tasting/${tasting.id}`);
+        router.push(`/tasting/${(tasting as any).id}`);
         return;
       }
 
       // Add user as participant
-      const { error: joinError } = await supabase
+      const { error: joinError } = await (supabase as any)
         .from('tasting_participants')
         .insert({
-          tasting_id: tasting.id,
+          tasting_id: (tasting as any).id,
           user_id: user!.id,
           role: 'participant'
         });
@@ -69,8 +69,8 @@ export default function JoinTastingPage() {
         return;
       }
 
-      toast.success(`Joined "${tasting.session_name || 'tasting'}" successfully!`);
-      router.push(`/tasting/${tasting.id}`);
+      toast.success(`Joined "${(tasting as any).session_name || 'tasting'}" successfully!`);
+      router.push(`/tasting/${(tasting as any).id}`);
 
     } catch (error) {
       console.error('Error joining tasting:', error);

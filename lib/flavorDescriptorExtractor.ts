@@ -181,7 +181,7 @@ export function extractDescriptorsKeywordBased(text: string): ExtractedDescripto
   Object.entries(FLAVOR_TAXONOMY).forEach(([type, categories]) => {
     Object.entries(categories).forEach(([category, data]) => {
       Object.entries(data.keywords).forEach(([subcategory, keywords]) => {
-        keywords.forEach((keyword: string) => {
+        (keywords as string[]).forEach((keyword: string) => {
           // Check if keyword appears in text
           const regex = new RegExp(`\\b${keyword}\\b`, 'i');
           if (regex.test(lowerText)) {
@@ -363,6 +363,6 @@ export function getSubcategories(
   type: 'aroma' | 'flavor' | 'texture' | 'metaphor',
   category: string
 ): string[] {
-  const categoryData = FLAVOR_TAXONOMY[type]?.[category];
+  const categoryData = (FLAVOR_TAXONOMY[type] as any)?.[category];
   return categoryData?.subcategories || [];
 }

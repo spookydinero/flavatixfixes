@@ -27,6 +27,8 @@ interface TastingItemData {
   photo_url?: string;
   created_at: string;
   updated_at: string;
+  aroma?: string;
+  flavor?: string;
 }
 
 interface QuickTastingSummaryProps {

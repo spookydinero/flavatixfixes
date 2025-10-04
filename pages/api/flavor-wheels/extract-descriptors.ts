@@ -114,7 +114,7 @@ export default async function handler(
     }));
 
     // Use upsert to handle duplicates
-    const { data: savedDescriptors, error: saveError } = await supabase
+    const { data: savedDescriptors, error: saveError } = await (supabase as any)
       .from('flavor_descriptors')
       .upsert(descriptorRecords, {
         onConflict: 'source_type,source_id,descriptor_text,descriptor_type',

@@ -90,7 +90,7 @@ export async function generateFlavorWheel(
   // Filter by descriptor type
   if (wheelType === 'combined') {
     query = query.in('descriptor_type', ['aroma', 'flavor']);
-  } else if (wheelType !== 'combined') {
+  } else {
     query = query.eq('descriptor_type', wheelType);
   }
 
