@@ -359,7 +359,7 @@ export async function getLatestTasting(
       .from('quick_tastings')
       .select(`
         *,
-        quick_tasting_items (
+        quick_tasting_items!inner (
           id,
           item_name,
           notes,
@@ -370,6 +370,7 @@ export async function getLatestTasting(
         )
       `)
       .eq('user_id', userId)
+      .not('completed_at', 'is', null)
       .order('created_at', { ascending: false })
       .limit(1)
       .single();

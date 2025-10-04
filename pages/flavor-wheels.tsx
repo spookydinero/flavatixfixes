@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 import dynamic from 'next/dynamic';
 import * as d3 from 'd3';
 import { FlavorWheelData } from '@/lib/flavorWheelGenerator';
@@ -50,10 +51,14 @@ export default function FlavorWheelsPage() {
     setError(null);
 
     try {
+      // Get the current session token
+      const { data: { session } } = await supabase.auth.getSession();
+
       const response = await fetch('/api/flavor-wheels/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token || ''}`,
         },
         body: JSON.stringify({
           wheelType,

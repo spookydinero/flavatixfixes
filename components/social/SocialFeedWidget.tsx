@@ -44,7 +44,7 @@ export default function SocialFeedWidget({ userId, limit = 5 }: SocialFeedWidget
 
       // Get recent completed tastings with user info
       const { data: tastings, error } = await supabase
-        .from('quick_tasting_sessions')
+        .from('quick_tastings')
         .select(`
           id,
           user_id,
@@ -55,13 +55,13 @@ export default function SocialFeedWidget({ userId, limit = 5 }: SocialFeedWidget
           completed_at,
           total_items,
           completed_items,
-          user_profiles!inner (
+          profiles!inner (
             full_name,
             username,
             avatar_url
           )
         `)
-        .eq('status', 'completed')
+        .not('completed_at', 'is', null)
         .order('completed_at', { ascending: false })
         .limit(limit);
 
@@ -80,7 +80,7 @@ export default function SocialFeedWidget({ userId, limit = 5 }: SocialFeedWidget
           const { data: items } = await supabase
             .from('quick_tasting_items')
             .select('photo_url')
-            .eq('session_id', tasting.id)
+            .eq('tasting_id', tasting.id)
             .not('photo_url', 'is', null)
             .limit(1);
 
@@ -92,9 +92,9 @@ export default function SocialFeedWidget({ userId, limit = 5 }: SocialFeedWidget
             average_score: tasting.average_score,
             created_at: tasting.created_at,
             total_items: tasting.total_items,
-            user: Array.isArray(tasting.user_profiles)
-              ? tasting.user_profiles[0]
-              : tasting.user_profiles,
+            user: Array.isArray(tasting.profiles)
+              ? tasting.profiles[0]
+              : tasting.profiles,
             stats: {
               likes: likesResult.count || 0,
               comments: commentsResult.count || 0,
