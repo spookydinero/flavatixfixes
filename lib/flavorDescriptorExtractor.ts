@@ -24,147 +24,167 @@ export interface DescriptorExtractionResult {
 const FLAVOR_TAXONOMY = {
   aroma: {
     Fruity: {
-      subcategories: ['Citrus', 'Berry', 'Stone Fruit', 'Tropical', 'Dried Fruit'],
+      subcategories: ["Citrus", "Berry", "Stone Fruit", "Tropical", "Dried Fruit", "Orchard", "Melon", "Other Fruits"],
       keywords: {
-        Citrus: ['lemon', 'lime', 'orange', 'grapefruit', 'citrus', 'bergamot', 'tangerine', 'mandarin'],
-        Berry: ['strawberry', 'raspberry', 'blackberry', 'blueberry', 'cranberry', 'cherry', 'currant'],
-        'Stone Fruit': ['peach', 'apricot', 'plum', 'nectarine', 'cherry'],
-        Tropical: ['mango', 'pineapple', 'papaya', 'passion fruit', 'guava', 'lychee', 'coconut'],
-        'Dried Fruit': ['raisin', 'prune', 'fig', 'date', 'dried apricot']
+        Citrus: ['lemon', 'lime', 'orange', 'grapefruit', 'bergamot', 'mandarin', 'pomelo', 'yuzu', 'kumquat'],
+        Berry: ['strawberry', 'raspberry', 'blackberry', 'blueberry', 'cranberry', 'boysenberry', 'gooseberry', 'currant', 'elderberry'],
+        'Stone Fruit': ['peach', 'apricot', 'nectarine', 'plum', 'cherry', 'mirabelle', 'loquat'],
+        Tropical: ['mango', 'pineapple', 'passion fruit', 'guava', 'papaya', 'lychee', 'rambutan', 'jackfruit', 'durian', 'dragon fruit', 'starfruit', 'banana', 'coconut'],
+        'Dried Fruit': ['raisin', 'fig', 'date', 'prune', 'dried apple', 'candied orange peel'],
+        Orchard: ['apple', 'pear', 'quince', 'medlar'],
+        Melon: ['cantaloupe', 'honeydew', 'watermelon'],
+        'Other Fruits': ['olive', 'tomato', 'persimmon', 'pomegranate', 'cranapple']
       }
     },
     Floral: {
-      subcategories: ['White Flowers', 'Rose', 'Violet', 'Herb Flowers'],
+      subcategories: ["White Flowers", "Rose", "Violet", "Herb Flowers", "Exotic", "Field Flowers"],
       keywords: {
-        'White Flowers': ['jasmine', 'honeysuckle', 'elderflower', 'acacia', 'white flower'],
-        Rose: ['rose', 'rose petal', 'turkish rose'],
-        Violet: ['violet', 'iris', 'lavender'],
-        'Herb Flowers': ['chamomile', 'hibiscus', 'geranium']
+        'White Flowers': ['jasmine', 'orange blossom', 'lily', 'honeysuckle', 'gardenia', 'magnolia', 'freesia', 'tuberose'],
+        Rose: ['rose', 'peony', 'damask rose', 'wild rose'],
+        Violet: ['violet', 'iris', 'lilac', 'wisteria'],
+        'Herb Flowers': ['chamomile', 'lavender', 'sage blossom', 'thyme flower', 'basil flower'],
+        Exotic: ['hibiscus', 'frangipani', 'ylang ylang', 'osmanthus'],
+        'Field Flowers': ['dandelion', 'meadow flower', 'clover', 'heather', 'wildflower honey']
       }
     },
     Spicy: {
-      subcategories: ['Pungent', 'Sweet Spice', 'Herbal Spice'],
+      subcategories: ["Pungent", "Sweet Spice", "Herbal Spice", "Exotic Spice"],
       keywords: {
-        Pungent: ['pepper', 'black pepper', 'white pepper', 'ginger', 'clove'],
-        'Sweet Spice': ['cinnamon', 'nutmeg', 'cardamom', 'anise', 'star anise', 'allspice'],
-        'Herbal Spice': ['thyme', 'oregano', 'rosemary', 'sage', 'basil', 'mint']
+        Pungent: ['black pepper', 'white pepper', 'pink peppercorn', 'green peppercorn', 'chili', 'cayenne', 'paprika', 'wasabi', 'ginger', 'galangal', 'mustard seed'],
+        'Sweet Spice': ['cinnamon', 'clove', 'nutmeg', 'allspice', 'anise', 'fennel seed', 'cardamom', 'vanilla bean', 'star anise', 'licorice'],
+        'Herbal Spice': ['thyme', 'rosemary', 'oregano', 'sage', 'coriander seed', 'cumin', 'dill seed', 'bay leaf', 'tarragon', 'savory', 'fenugreek'],
+        'Exotic Spice': ['saffron', 'sumac', 'mace', 'turmeric', 'curry leaf', 'caraway', 'za\'atar', 'grains of paradise']
       }
     },
     Earthy: {
-      subcategories: ['Forest', 'Mineral', 'Mushroom', 'Tobacco'],
+      subcategories: ["Forest", "Mineral", "Mushroom", "Tobacco", "Root", "Organic"],
       keywords: {
-        Forest: ['woody', 'forest floor', 'moss', 'damp earth', 'soil', 'cedar', 'pine'],
-        Mineral: ['mineral', 'wet stone', 'flint', 'chalk', 'slate', 'petrichor'],
-        Mushroom: ['mushroom', 'truffle', 'forest mushroom', 'porcini'],
-        Tobacco: ['tobacco', 'cigar', 'pipe tobacco', 'leather']
+        Forest: ['moss', 'forest floor', 'soil', 'humus', 'wet leaves', 'truffle', 'mushroom', 'porcini', 'morel', 'chanterelle'],
+        Mineral: ['clay', 'flint', 'limestone', 'chalk', 'wet stone', 'iron', 'graphite', 'petrichor'],
+        Mushroom: ['mushroom', 'truffle', 'porcini', 'morel', 'chanterelle'],
+        Tobacco: ['tobacco leaf', 'pipe tobacco', 'cigar box', 'snuff'],
+        Root: ['beetroot', 'carrot', 'burdock', 'ginseng', 'sweet potato'],
+        Organic: ['hay', 'straw', 'barnyard', 'compost', 'earth dust']
       }
     },
     Woody: {
-      subcategories: ['Oak', 'Cedar', 'Resinous', 'Smoky'],
+      subcategories: ["Oak", "Cedar", "Resinous", "Smoky", "Aged Wood"],
       keywords: {
-        Oak: ['oak', 'barrel', 'vanilla', 'toast', 'caramel wood'],
-        Cedar: ['cedar', 'sandalwood', 'pine', 'birch'],
-        Resinous: ['resin', 'sap', 'pine resin', 'incense'],
-        Smoky: ['smoke', 'smoked', 'peat', 'charcoal', 'burnt', 'ash']
+        Oak: ['oak', 'cedar', 'pine', 'mahogany', 'ebony', 'sandalwood', 'maple', 'cherry wood', 'walnut wood'],
+        Cedar: ['cedar', 'pine', 'sandalwood'],
+        Resinous: ['resin', 'amber', 'balsam', 'frankincense', 'myrrh'],
+        Smoky: ['smoke', 'charred wood', 'bonfire', 'campfire', 'toast', 'ash', 'tar'],
+        'Aged Wood': ['old barrel', 'sawdust', 'pencil shavings', 'dry wood']
       }
     },
     Sweet: {
-      subcategories: ['Caramel', 'Chocolate', 'Honey', 'Vanilla'],
+      subcategories: ["Caramel", "Chocolate", "Honey", "Vanilla", "Confection", "Syrup"],
       keywords: {
-        Caramel: ['caramel', 'butterscotch', 'toffee', 'dulce de leche'],
-        Chocolate: ['chocolate', 'cocoa', 'dark chocolate', 'milk chocolate', 'cacao'],
-        Honey: ['honey', 'honeyed', 'beeswax', 'mead'],
-        Vanilla: ['vanilla', 'vanillin', 'vanilla bean']
+        Caramel: ['caramel', 'toffee', 'butterscotch', 'molasses', 'maple syrup', 'agave nectar', 'brown sugar', 'demerara', 'burnt sugar'],
+        Chocolate: ['milk chocolate', 'dark chocolate', 'cocoa nib', 'white chocolate', 'ganache'],
+        Honey: ['honey', 'acacia honey', 'chestnut honey', 'bee pollen'],
+        Vanilla: ['vanilla', 'custard', 'cream soda', 'marshmallow'],
+        Confection: ['candy floss', 'nougat', 'fudge', 'praline', 'marzipan'],
+        Syrup: ['simple syrup', 'golden syrup', 'treacle']
       }
     },
     Nutty: {
-      subcategories: ['Tree Nuts', 'Roasted'],
+      subcategories: ["Tree Nuts", "Roasted", "Seed", "Nut Paste"],
       keywords: {
-        'Tree Nuts': ['almond', 'walnut', 'hazelnut', 'pecan', 'macadamia', 'pistachio'],
-        Roasted: ['roasted nuts', 'toasted', 'nutty', 'malt']
+        'Tree Nuts': ['almond', 'walnut', 'hazelnut', 'pecan', 'cashew', 'macadamia', 'pistachio', 'brazil nut'],
+        Roasted: ['toasted nuts', 'roasted peanut', 'roasted sesame', 'roasted chestnut', 'toasted coconut'],
+        Seed: ['sunflower seed', 'pumpkin seed', 'flaxseed', 'chia seed'],
+        'Nut Paste': ['peanut butter', 'almond paste', 'hazelnut cream', 'tahini']
       }
     }
   },
+
   flavor: {
     Sweet: {
-      subcategories: ['Sugary', 'Honey', 'Fruit Sweet'],
-      keywords: {
-        Sugary: ['sweet', 'sugar', 'syrup', 'molasses', 'candy'],
-        Honey: ['honey', 'honeyed', 'nectar'],
-        'Fruit Sweet': ['ripe fruit', 'fruit sweetness', 'jam', 'preserves']
-      }
+      keywords: [
+        'sucrose', 'honey', 'agave', 'maple syrup', 'brown sugar', 'molasses', 'toffee', 'vanilla cream', 'jammy', 'candied fruit',
+        'caramelized', 'marshmallow', 'malt', 'milk chocolate', 'white chocolate', 'confectionery', 'buttered toast'
+      ]
     },
     Sour: {
-      subcategories: ['Citric', 'Fermented', 'Tart'],
-      keywords: {
-        Citric: ['citric acid', 'lemon juice', 'sour citrus'],
-        Fermented: ['fermented', 'sour', 'tangy', 'acidic'],
-        Tart: ['tart', 'sharp', 'puckering']
-      }
+      keywords: [
+        'citric acid', 'malic acid', 'lactic acid', 'acetic acid', 'tartaric acid',
+        'lemony', 'vinegary', 'yogurt tang', 'sour plum', 'fermented apple', 'pickle brine', 'tamarind', 'gooseberry', 'kumquat'
+      ]
     },
     Bitter: {
-      subcategories: ['Coffee', 'Dark Chocolate', 'Herbal'],
-      keywords: {
-        Coffee: ['coffee', 'espresso', 'roasted coffee'],
-        'Dark Chocolate': ['dark chocolate', 'bitter chocolate', 'cacao'],
-        Herbal: ['bitter herbs', 'gentian', 'wormwood']
-      }
+      keywords: [
+        'coffee', 'espresso', 'dark chocolate', 'cocoa husk', 'roasted malt',
+        'quinine', 'tonic', 'wormwood', 'gentian', 'grapefruit pith', 'dandelion greens', 'chicory', 'burnt sugar', 'charcoal'
+      ]
     },
     Salty: {
-      subcategories: ['Marine', 'Mineral'],
-      keywords: {
-        Marine: ['salty', 'sea salt', 'ocean', 'brine', 'seaweed', 'oyster'],
-        Mineral: ['mineral', 'saline']
-      }
+      keywords: [
+        'sea salt', 'rock salt', 'brine', 'saline', 'soy sauce', 'miso paste', 'anchovy', 'olive brine', 'salted caramel', 'mineral salt'
+      ]
     },
     Umami: {
-      subcategories: ['Savory', 'Meaty'],
-      keywords: {
-        Savory: ['umami', 'savory', 'broth', 'soy', 'miso'],
-        Meaty: ['meaty', 'beef', 'chicken broth', 'bone broth']
-      }
+      keywords: [
+        'broth', 'stock', 'parmesan', 'aged cheese', 'mushroom umami', 'miso', 'seaweed', 'kombu', 'fish sauce', 'truffle salt',
+        'tomato paste', 'cured meat', 'prosciutto', 'beef bouillon', 'soy protein', 'fermented bean'
+      ]
+    },
+    Spicy: {
+      keywords: [
+        'pepper heat', 'chili burn', 'ginger warmth', 'clove bite', 'wasabi pungency',
+        'cinnamon heat', 'paprika warmth', 'curry spice', 'cumin sharpness', 'szechuan tingle', 'black cardamom', 'long pepper'
+      ]
     }
   },
+
   texture: {
     Mouthfeel: {
-      subcategories: ['Body', 'Smoothness', 'Astringency'],
-      keywords: {
-        Body: ['full-bodied', 'light-bodied', 'medium-bodied', 'heavy', 'thin', 'watery'],
-        Smoothness: ['smooth', 'silky', 'velvety', 'creamy', 'oily', 'rich'],
-        Astringency: ['astringent', 'drying', 'tannic', 'grippy', 'chalky']
-      }
+      keywords: [
+        'smooth', 'silky', 'velvety', 'creamy', 'buttery', 'unctuous', 'oily', 'slick', 'coating', 'waxy',
+        'powdery', 'chalky', 'gritty', 'grainy', 'sandy', 'fibrous', 'pasty', 'chewy', 'sticky', 'tacky',
+        'drying', 'astringent', 'puckering', 'rough', 'fizzy', 'effervescent', 'tingling', 'carbonated', 'crisp', 'snappy'
+      ]
     },
     Temperature: {
-      subcategories: ['Hot', 'Cooling'],
-      keywords: {
-        Hot: ['hot', 'warming', 'burn', 'heat'],
-        Cooling: ['cooling', 'menthol', 'fresh', 'crisp']
-      }
+      keywords: [
+        'icy', 'cold', 'chilled', 'cool', 'refreshing', 'menthol', 'cooling', 'room temperature', 'lukewarm', 'warm', 'toasty', 'heated', 'scorching', 'fiery', 'warming'
+      ]
+    },
+    Viscosity: {
+      keywords: [
+        'thin', 'watery', 'light-bodied', 'medium-bodied', 'thick', 'dense', 'syrupy', 'gooey', 'molten', 'gel-like', 'creamy-thick', 'elastic'
+      ]
+    },
+    Structure: {
+      keywords: [
+        'balanced', 'round', 'angular', 'linear', 'broad', 'tight', 'expansive', 'compact', 'persistent', 'long finish', 'short finish', 'layered'
+      ]
     }
   },
+
   metaphor: {
     Mood: {
-      subcategories: ['Emotional', 'Character'],
-      keywords: {
-        Emotional: ['brooding', 'joyful', 'melancholy', 'cheerful', 'contemplative', 'energetic'],
-        Character: ['elegant', 'rustic', 'refined', 'bold', 'subtle', 'delicate', 'robust']
-      }
+      keywords: [
+        'joyful', 'serene', 'brooding', 'elegant', 'bold', 'playful', 'mysterious', 'nostalgic', 'romantic', 'energetic',
+        'meditative', 'vibrant', 'warmhearted', 'turbulent', 'refined', 'luxurious', 'wild', 'comforting', 'exotic', 'sophisticated'
+      ]
     },
     Place: {
-      subcategories: ['Indoor', 'Outdoor', 'Abstract'],
-      keywords: {
-        Indoor: ['library', 'kitchen', 'cellar', 'parlor', 'study'],
-        Outdoor: ['seaside', 'forest', 'garden', 'mountain', 'countryside'],
-        Abstract: ['old world', 'new world', 'ancient', 'modern']
-      }
+      keywords: [
+        'seaside', 'forest', 'library', 'mountain', 'vineyard', 'desert', 'jungle', 'garden', 'market', 'bakery', 'temple',
+        'roastery', 'cellar', 'orchard', 'meadow', 'harbor', 'countryside', 'tropical island', 'winery', 'spice bazaar'
+      ]
     },
     Temporal: {
-      subcategories: ['Age', 'Season', 'Time of Day'],
-      keywords: {
-        Age: ['youthful', 'mature', 'aged', 'fresh', 'old', 'ancient'],
-        Season: ['spring', 'summer', 'autumn', 'winter', 'autumnal'],
-        'Time of Day': ['morning', 'evening', 'twilight', 'dawn', 'dusk']
-      }
+      keywords: [
+        'youthful', 'mature', 'aged', 'ancient', 'timeless', 'spring', 'summer', 'autumn', 'winter',
+        'dawn', 'noon', 'twilight', 'evening', 'midnight', 'harvest', 'vintage', 'seasonal', 'transient', 'eternal'
+      ]
+    },
+    Cultural: {
+      keywords: [
+        'balsamic', 'sherry-like', 'port-like', 'saké-like', 'bourbon-esque', 'espresso-toned', 'tea-like', 'cacao-rich', 'Mediterranean', 'Latin', 'Asian', 'Nordic', 'Middle Eastern', 'French patisserie', 'Mexican cocina', 'Japanese umami', 'Italian espresso', 'Caribbean rum', 'Peruvian cacao', 'Nordic berry'
+      ]
     }
   }
 };
