@@ -6,6 +6,7 @@ import ProfileService, { UserProfile } from '../lib/profileService';
 import ProfileDisplay from '../components/profile/ProfileDisplay';
 import ProfileEditForm from '../components/profile/ProfileEditForm';
 import { getUserTastingStats, getLatestTasting } from '../lib/historyService';
+import SocialFeedWidget from '../components/social/SocialFeedWidget';
 
 export default function Dashboard() {
    const { user, loading, signOut } = useAuth();
@@ -334,6 +335,9 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
+
+              {/* Social Feed Widget */}
+              {user && <SocialFeedWidget userId={user.id} limit={5} />}
             </div>
             </div>
           )}

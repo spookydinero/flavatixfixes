@@ -317,9 +317,60 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
       if (onSessionUpdate) {
         onSessionUpdate({ ...session, completed_items: newCompleted });
       }
+
+      // Extract flavor descriptors if notes, aroma, or flavor were updated
+      const shouldExtract = updates.notes || updates.aroma || updates.flavor;
+      if (shouldExtract) {
+        extractDescriptors(itemId, data);
+      }
     } catch (error) {
       console.error('Error updating item:', error);
       // Removed toast.error to prevent annoying notifications during typing
+    }
+  };
+
+  const extractDescriptors = async (itemId: string, itemData: TastingItemData) => {
+    try {
+      console.log('🔍 Extracting flavor descriptors from item:', itemId);
+
+      // Prepare extraction data
+      const extractionPayload = {
+        sourceType: 'quick_tasting',
+        sourceId: itemId,
+        structuredData: {
+          aroma_notes: itemData.notes || '', // Use notes field which contains aroma
+          flavor_notes: itemData.flavor || '',
+          other_notes: itemData.notes || ''
+        },
+        itemContext: {
+          itemName: itemData.item_name,
+          itemCategory: session.category
+        }
+      };
+
+      const response = await fetch('/api/flavor-wheels/extract-descriptors', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(extractionPayload),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.warn('⚠️ Descriptor extraction failed:', error);
+        return;
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.savedCount > 0) {
+        console.log(`✅ Extracted ${result.savedCount} flavor descriptors`);
+        // Silently extract - don't show toast for every update to avoid notification spam
+      }
+    } catch (error) {
+      console.error('Error extracting descriptors:', error);
+      // Silently fail - don't block user from continuing tasting
     }
   };
 

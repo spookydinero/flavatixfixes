@@ -312,7 +312,7 @@ const ProseReviewForm: React.FC<ProseReviewFormProps> = ({
       </div>
 
       {/* Bottom Buttons */}
-      <div className="flex flex-col sm:flex-row gap-md justify-center">
+      <div className="flex flex-col sm:flex-row gap-md justify-center pb-8">
         <button
           onClick={() => handleSubmit('done')}
           disabled={isSubmitting}

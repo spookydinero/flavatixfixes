@@ -146,6 +146,44 @@ const StructuredReviewPage: React.FC = () => {
     }
   };
 
+  const extractDescriptors = async (reviewId: string, reviewData: any) => {
+    try {
+      const extractionPayload = {
+        sourceType: 'quick_review',
+        sourceId: reviewId,
+        structuredData: {
+          aroma_notes: reviewData.aroma_notes || '',
+          flavor_notes: reviewData.flavor_notes || '',
+          salt_notes: reviewData.salt_notes || '',
+          sweetness_notes: reviewData.sweetness_notes || '',
+          acidity_notes: reviewData.acidity_notes || '',
+          umami_notes: reviewData.umami_notes || '',
+          spiciness_notes: reviewData.spiciness_notes || '',
+          other_notes: reviewData.other_notes || '',
+        },
+        itemContext: {
+          itemName: reviewData.item_name,
+          itemCategory: reviewData.category,
+          brand: reviewData.brand,
+          country: reviewData.country,
+          region: reviewData.region,
+        }
+      };
+
+      const response = await fetch('/api/flavor-wheels/extract-descriptors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(extractionPayload),
+      });
+
+      if (!response.ok) {
+        console.warn('Descriptor extraction failed, but review was saved');
+      }
+    } catch (error) {
+      console.warn('Error extracting descriptors:', error);
+    }
+  };
+
   const saveReview = async (status: 'in_progress' | 'completed') => {
     if (!user) return;
     
@@ -171,7 +209,7 @@ const StructuredReviewPage: React.FC = () => {
         region: region || null,
         vintage: vintage || null,
         batch_id: batchId || null,
-        barcode: barcode || null,
+        upc_barcode: barcode || null,
         category,
         aroma_notes: aromaNotes || null,
         aroma_intensity: aromaIntensity,
@@ -220,6 +258,11 @@ const StructuredReviewPage: React.FC = () => {
       }
 
       if (error) throw error;
+
+      // Extract flavor descriptors in the background (don't block user flow)
+      if (data?.id) {
+        extractDescriptors(data.id, reviewData);
+      }
 
       toast.success(status === 'in_progress' ? 'Review saved for later' : 'Review completed!');
 

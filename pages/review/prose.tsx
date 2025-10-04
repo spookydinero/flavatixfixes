@@ -86,6 +86,35 @@ const ProseReviewPage: React.FC = () => {
     return publicUrl;
   };
 
+  const extractDescriptors = async (reviewId: string, reviewData: any) => {
+    try {
+      const extractionPayload = {
+        sourceType: 'prose_review',
+        sourceId: reviewId,
+        freeformText: reviewData.review_content || '',
+        itemContext: {
+          itemName: reviewData.item_name,
+          itemCategory: reviewData.category,
+          brand: reviewData.brand,
+          country: reviewData.country,
+          region: reviewData.region,
+        }
+      };
+
+      const response = await fetch('/api/flavor-wheels/extract-descriptors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(extractionPayload),
+      });
+
+      if (!response.ok) {
+        console.warn('Descriptor extraction failed, but review was saved');
+      }
+    } catch (error) {
+      console.warn('Error extracting descriptors:', error);
+    }
+  };
+
   const handleSubmit = async (data: ProseReviewFormData, action: 'done' | 'save' | 'new') => {
     if (!user) return;
 
@@ -145,6 +174,11 @@ const ProseReviewPage: React.FC = () => {
 
       if (error) throw error;
 
+      // Extract flavor descriptors in the background (don't block user flow)
+      if (review?.id) {
+        extractDescriptors(review.id, reviewData);
+      }
+
       if (action === 'done') {
         toast.success('Prose review completed!');
         router.push(`/review/summary/${review.id}?type=prose`);
@@ -180,7 +214,7 @@ const ProseReviewPage: React.FC = () => {
 
   return (
     <div className="bg-background-light font-display text-zinc-900 min-h-screen">
-      <main id="main-content" className="pb-24">
+      <main id="main-content" className="pb-32">
         <div className="container mx-auto px-md py-lg max-w-4xl">
           {/* Header */}
           <div className="mb-lg">

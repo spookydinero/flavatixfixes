@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
-import { Zap, Users, ChevronLeft } from 'lucide-react';
+import { Zap, Users, ChevronLeft, UserPlus, History } from 'lucide-react';
 
 const TastePage: React.FC = () => {
   const router = useRouter();
@@ -67,7 +67,7 @@ const TastePage: React.FC = () => {
           </div>
 
           {/* Taste Options */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-lg max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-lg max-w-4xl mx-auto mb-lg">
             {tasteOptions.map((option) => {
               const Icon = option.icon;
               return (
@@ -92,6 +92,35 @@ const TastePage: React.FC = () => {
                 </button>
               );
             })}
+          </div>
+
+          {/* Quick Access Buttons */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-md max-w-4xl mx-auto">
+            <button
+              onClick={() => router.push('/join-tasting')}
+              className="flex items-center gap-3 p-4 bg-white rounded-lg border-2 border-zinc-200 hover:border-primary hover:shadow-md transition-all"
+            >
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <UserPlus size={24} className="text-primary" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-semibold text-text-primary">Join Tasting</h3>
+                <p className="text-sm text-text-secondary">Enter a code to join</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => router.push('/my-tastings')}
+              className="flex items-center gap-3 p-4 bg-white rounded-lg border-2 border-zinc-200 hover:border-primary hover:shadow-md transition-all"
+            >
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <History size={24} className="text-primary" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-semibold text-text-primary">My Tastings</h3>
+                <p className="text-sm text-text-secondary">View your sessions</p>
+              </div>
+            </button>
           </div>
         </div>
       </main>
