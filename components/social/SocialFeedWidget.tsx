@@ -73,7 +73,7 @@ export default function SocialFeedWidget({ userId, limit = 5 }: SocialFeedWidget
           const [likesResult, commentsResult, userLikeResult] = await Promise.all([
             supabase.from('tasting_likes').select('id', { count: 'exact' }).eq('tasting_id', tasting.id),
             supabase.from('tasting_comments').select('id', { count: 'exact' }).eq('tasting_id', tasting.id),
-            supabase.from('tasting_likes').select('id').eq('tasting_id', tasting.id).eq('user_id', userId).single()
+            supabase.from('tasting_likes').select('id').eq('tasting_id', tasting.id).eq('user_id', userId).maybeSingle()
           ]);
 
           // Get first photo from items
