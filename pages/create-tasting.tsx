@@ -3,8 +3,10 @@ import { useRouter } from 'next/router';
 import { getSupabaseClient } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/lib/toast';
-import { ChevronLeft, Users, Trophy, BookOpen, Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
+import { ChevronLeft, Users, Trophy, BookOpen, Eye, EyeOff, Plus, Trash2, FileText } from 'lucide-react';
 import { StudyModeSelector, StudyApproach } from '@/components/quick-tasting/StudyModeSelector';
+import { TemplateSelector } from '@/components/templates/TemplateSelector';
+import { TastingTemplate } from '@/lib/templates/tastingTemplates';
 
 type TastingMode = 'study' | 'competition' | 'quick';
 
@@ -28,6 +30,8 @@ interface CreateTastingForm {
   is_blind_attributes: boolean;
   items: TastingItem[];
   notes: string;
+  use_template: boolean;
+  template_id: string | null;
 }
 
 const CATEGORIES = ['coffee', 'tea', 'wine', 'spirits', 'beer', 'chocolate'];
@@ -49,7 +53,9 @@ const CreateTastingPage: React.FC = () => {
     is_blind_items: false,
     is_blind_attributes: false,
     items: [],
-    notes: ''
+    notes: '',
+    use_template: false,
+    template_id: null
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);

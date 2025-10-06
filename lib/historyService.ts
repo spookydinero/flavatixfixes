@@ -13,6 +13,8 @@ export type TastingHistory = {
   completed_items: number;
   average_score: number | null;
   completed_at: string | null;
+  mode: string;
+  rank_participants: boolean;
   items: TastingHistoryItem[];
 };
 

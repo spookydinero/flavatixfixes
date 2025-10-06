@@ -207,12 +207,31 @@ export default function MyTastingsPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => router.push(`/quick-tasting?session=${tasting.id}`)}
-                    className="flex-1 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
-                  >
-                    {tasting.completed_at ? 'View Details' : 'Continue'}
-                  </button>
+                  {tasting.mode === 'competition' ? (
+                    <>
+                      <button
+                        onClick={() => router.push(`/competition/${tasting.id}`)}
+                        className="flex-1 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                      >
+                        {tasting.completed_at ? 'View Results' : 'Start Competition'}
+                      </button>
+                      {tasting.rank_participants && (
+                        <button
+                          onClick={() => router.push(`/competition/${tasting.id}/leaderboard`)}
+                          className="px-4 py-2 bg-yellow-500 text-white rounded-lg font-medium hover:bg-yellow-600 transition-colors"
+                        >
+                          Leaderboard
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => router.push(`/quick-tasting?session=${tasting.id}`)}
+                      className="flex-1 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                    >
+                      {tasting.completed_at ? 'View Details' : 'Continue'}
+                    </button>
+                  )}
                   <button
                     onClick={() => handleDeleteTasting(tasting.id)}
                     className="px-4 py-2 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition-colors"
