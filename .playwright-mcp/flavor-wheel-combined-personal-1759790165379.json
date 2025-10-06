@@ -1,0 +1,183 @@
+{
+  "categories": [
+    {
+      "name": "Sweet",
+      "count": 3,
+      "percentage": 27.27272727272727,
+      "subcategories": [
+        {
+          "name": "Chocolate",
+          "count": 2,
+          "percentage": 18.181818181818183,
+          "descriptors": [
+            {
+              "text": "chocolate",
+              "count": 1,
+              "avgIntensity": 4,
+              "percentage": 9.090909090909092
+            },
+            {
+              "text": "cocoa",
+              "count": 1,
+              "avgIntensity": 4,
+              "percentage": 9.090909090909092
+            }
+          ]
+        },
+        {
+          "name": "Caramel",
+          "count": 1,
+          "percentage": 9.090909090909092,
+          "descriptors": [
+            {
+              "text": "caramel",
+              "count": 1,
+              "avgIntensity": 3,
+              "percentage": 9.090909090909092
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fruity",
+      "count": 3,
+      "percentage": 27.27272727272727,
+      "subcategories": [
+        {
+          "name": "Citrus",
+          "count": 3,
+          "percentage": 27.27272727272727,
+          "descriptors": [
+            {
+              "text": "citrus",
+              "count": 1,
+              "avgIntensity": 4,
+              "percentage": 9.090909090909092
+            },
+            {
+              "text": "orange",
+              "count": 1,
+              "avgIntensity": 3,
+              "percentage": 9.090909090909092
+            },
+            {
+              "text": "lemon",
+              "count": 1,
+              "avgIntensity": 4,
+              "percentage": 9.090909090909092
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Nutty",
+      "count": 1,
+      "percentage": 9.090909090909092,
+      "subcategories": [
+        {
+          "name": "Nutty",
+          "count": 1,
+          "percentage": 9.090909090909092,
+          "descriptors": [
+            {
+              "text": "nuts",
+              "count": 1,
+              "avgIntensity": 2,
+              "percentage": 9.090909090909092
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Floral",
+      "count": 1,
+      "percentage": 9.090909090909092,
+      "subcategories": [
+        {
+          "name": "Floral",
+          "count": 1,
+          "percentage": 9.090909090909092,
+          "descriptors": [
+            {
+              "text": "floral",
+              "count": 1,
+              "avgIntensity": 3,
+              "percentage": 9.090909090909092
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Earthy",
+      "count": 1,
+      "percentage": 9.090909090909092,
+      "subcategories": [
+        {
+          "name": "Earthy",
+          "count": 1,
+          "percentage": 9.090909090909092,
+          "descriptors": [
+            {
+              "text": "earthy",
+              "count": 1,
+              "avgIntensity": 4,
+              "percentage": 9.090909090909092
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Herbal",
+      "count": 1,
+      "percentage": 9.090909090909092,
+      "subcategories": [
+        {
+          "name": "Tobacco",
+          "count": 1,
+          "percentage": 9.090909090909092,
+          "descriptors": [
+            {
+              "text": "tobacco",
+              "count": 1,
+              "avgIntensity": 3,
+              "percentage": 9.090909090909092
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Spicy",
+      "count": 1,
+      "percentage": 9.090909090909092,
+      "subcategories": [
+        {
+          "name": "Spicy",
+          "count": 1,
+          "percentage": 9.090909090909092,
+          "descriptors": [
+            {
+              "text": "spice",
+              "count": 1,
+              "avgIntensity": 3,
+              "percentage": 9.090909090909092
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "totalDescriptors": 11,
+  "uniqueDescriptors": 11,
+  "generatedFrom": {
+    "descriptorRecords": 11
+  },
+  "generatedAt": "2025-10-06T22:36:00.931Z",
+  "wheelType": "combined",
+  "scopeType": "personal"
+}
