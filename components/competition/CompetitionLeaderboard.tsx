@@ -42,7 +42,7 @@ export const CompetitionLeaderboard: React.FC<CompetitionLeaderboardProps> = ({ 
         .single();
 
       if (sessionData) {
-        setSessionName(sessionData.session_name);
+        setSessionName((sessionData as any).session_name);
       }
 
       // Get participants with scores
@@ -61,7 +61,7 @@ export const CompetitionLeaderboard: React.FC<CompetitionLeaderboardProps> = ({ 
       if (error) throw error;
 
       // Get user profiles
-      const userIds = participants?.map(p => p.user_id) || [];
+      const userIds = participants?.map((p: any) => p.user_id) || [];
       const { data: profiles } = await supabase
         .from('profiles')
         .select('user_id, full_name')
@@ -71,9 +71,9 @@ export const CompetitionLeaderboard: React.FC<CompetitionLeaderboardProps> = ({ 
       const { data: users } = await supabase.auth.admin.listUsers();
 
       // Combine data and assign ranks
-      const entries: LeaderboardEntry[] = (participants || []).map((p, index) => {
-        const profile = profiles?.find(pr => pr.user_id === p.user_id);
-        const authUser = users?.users.find(u => u.id === p.user_id);
+      const entries: LeaderboardEntry[] = (participants || []).map((p: any, index: number) => {
+        const profile = (profiles as any)?.find((pr: any) => pr.user_id === p.user_id);
+        const authUser = users?.users.find((u: any) => u.id === p.user_id);
         
         return {
           id: p.id,

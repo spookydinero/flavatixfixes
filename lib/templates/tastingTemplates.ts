@@ -29,6 +29,26 @@ export interface TemplateField {
   category?: 'aroma' | 'flavor' | 'texture' | 'appearance' | 'overall';
 }
 
+// Study Mode specific template interfaces
+export interface StudyModeTemplateCategory {
+  name: string;
+  hasText: boolean;
+  hasScale: boolean;
+  hasBoolean: boolean;
+  scaleMax?: number;
+  rankInSummary: boolean;
+  sortOrder?: number;
+}
+
+export interface StudyModeTemplate {
+  id: string;
+  name: string;
+  description: string;
+  baseCategory: string;
+  categories: StudyModeTemplateCategory[];
+  isSystemTemplate: boolean;
+}
+
 /**
  * CMS Wine Grid Template
  * Court of Master Sommeliers Deductive Tasting Grid
@@ -442,5 +462,122 @@ export function getTemplateById(id: string): TastingTemplate | undefined {
 // Helper function to get templates by category
 export function getTemplatesByCategory(category: string): TastingTemplate[] {
   return ALL_TEMPLATES.filter(t => t.category === category);
+}
+
+// Study Mode Templates
+export const STUDY_MODE_TEMPLATES: StudyModeTemplate[] = [
+  {
+    id: 'cms-red-wine',
+    name: 'CMS Red Wine',
+    description: 'Court of Master Sommeliers approved red wine tasting template',
+    baseCategory: 'Red Wine',
+    isSystemTemplate: true,
+    categories: [
+      { name: 'Appearance', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 1 },
+      { name: 'Clarity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 2 },
+      { name: 'Brightness', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 3 },
+      { name: 'Nose - Condition', hasText: true, hasScale: false, hasBoolean: true, rankInSummary: false, sortOrder: 4 },
+      { name: 'Nose - Intensity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 5 },
+      { name: 'Nose - Fruit Character', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 6 },
+      { name: 'Palate - Acidity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 7 },
+      { name: 'Palate - Tannin', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 8 },
+      { name: 'Palate - Body', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 9 },
+      { name: 'Palate - Flavor Character', hasText: true, hasScale: false, hasBoolean: false, rankInSummary: false, sortOrder: 10 },
+      { name: 'Finish - Length', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 11 },
+      { name: 'Complexity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 12 },
+      { name: 'Overall Quality', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 13 }
+    ]
+  },
+  {
+    id: 'cms-white-wine',
+    name: 'CMS White Wine',
+    description: 'Court of Master Sommeliers approved white wine tasting template',
+    baseCategory: 'White Wine',
+    isSystemTemplate: true,
+    categories: [
+      { name: 'Appearance', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 1 },
+      { name: 'Clarity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 2 },
+      { name: 'Brightness', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 3 },
+      { name: 'Nose - Condition', hasText: true, hasScale: false, hasBoolean: true, rankInSummary: false, sortOrder: 4 },
+      { name: 'Nose - Intensity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 5 },
+      { name: 'Nose - Fruit Character', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 6 },
+      { name: 'Palate - Acidity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 7 },
+      { name: 'Palate - Body', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 8 },
+      { name: 'Palate - Flavor Character', hasText: true, hasScale: false, hasBoolean: false, rankInSummary: false, sortOrder: 9 },
+      { name: 'Finish - Length', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 10 },
+      { name: 'Complexity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 11 },
+      { name: 'Overall Quality', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 12 }
+    ]
+  },
+  {
+    id: 'bjcp-beer',
+    name: 'BJCP Beer',
+    description: 'Beer Judge Certification Program tasting template',
+    baseCategory: 'Beer',
+    isSystemTemplate: true,
+    categories: [
+      { name: 'Aroma - Malt', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 1 },
+      { name: 'Aroma - Hops', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 2 },
+      { name: 'Appearance - Clarity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 3 },
+      { name: 'Appearance - Head', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 4 },
+      { name: 'Flavor - Malt', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 5 },
+      { name: 'Flavor - Hops', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 6 },
+      { name: 'Flavor - Bitterness', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 7 },
+      { name: 'Flavor - Balance', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 8 },
+      { name: 'Mouthfeel - Body', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 9 },
+      { name: 'Mouthfeel - Carbonation', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 10 },
+      { name: 'Overall Impression', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 11 }
+    ]
+  },
+  {
+    id: 'flavatix-mezcal',
+    name: 'Flavatix Mezcal',
+    description: 'Comprehensive mezcal and agave spirits tasting template',
+    baseCategory: 'Mezcal',
+    isSystemTemplate: true,
+    categories: [
+      { name: 'Appearance - Clarity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 1 },
+      { name: 'Appearance - Pearls', hasText: true, hasScale: false, hasBoolean: true, rankInSummary: false, sortOrder: 2 },
+      { name: 'Nose - Intensity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 3 },
+      { name: 'Nose - Smoke Character', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 4 },
+      { name: 'Nose - Agave Expression', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 5 },
+      { name: 'Nose - Terroir Notes', hasText: true, hasScale: false, hasBoolean: false, rankInSummary: false, sortOrder: 6 },
+      { name: 'Palate - Texture', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 7 },
+      { name: 'Palate - Alcohol Integration', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 8 },
+      { name: 'Palate - Complexity', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 9 },
+      { name: 'Finish - Length', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 10 },
+      { name: 'Overall Quality', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 11 }
+    ]
+  },
+  {
+    id: 'sca-coffee',
+    name: 'SCA Coffee',
+    description: 'Specialty Coffee Association cupping protocol',
+    baseCategory: 'Coffee',
+    isSystemTemplate: true,
+    categories: [
+      { name: 'Fragrance/Aroma', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 1 },
+      { name: 'Flavor', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 2 },
+      { name: 'Aftertaste', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 3 },
+      { name: 'Acidity - Quality', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 4 },
+      { name: 'Body - Quality', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 5 },
+      { name: 'Balance', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 6 },
+      { name: 'Sweetness', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 7 },
+      { name: 'Clean Cup', hasText: false, hasScale: false, hasBoolean: true, rankInSummary: false, sortOrder: 8 },
+      { name: 'Uniformity', hasText: false, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: false, sortOrder: 9 },
+      { name: 'Overall', hasText: true, hasScale: true, hasBoolean: false, scaleMax: 100, rankInSummary: true, sortOrder: 10 },
+      { name: 'Defects', hasText: true, hasScale: false, hasBoolean: false, rankInSummary: false, sortOrder: 11 }
+    ]
+  }
+];
+
+export function getStudyModeTemplateById(id: string): StudyModeTemplate | undefined {
+  return STUDY_MODE_TEMPLATES.find(t => t.id === id);
+}
+
+export function getStudyModeTemplatesByCategory(category: string): StudyModeTemplate[] {
+  return STUDY_MODE_TEMPLATES.filter(t =>
+    t.baseCategory.toLowerCase().includes(category.toLowerCase())
+  );
 }
 

@@ -234,16 +234,16 @@ export const CompetitionSession: React.FC<CompetitionSessionProps> = ({ sessionI
           user_id: user!.id,
           role: 'participant',
           score: calculatedScore
-        });
+        } as any);
 
       if (participantError) throw participantError;
 
       // Save all answers to items and extract descriptors
-      for (const [itemId, answer] of answers.entries()) {
+      for (const [itemId, answer] of Array.from(answers.entries())) {
         const item = items.find(i => i.id === itemId);
 
         // Update item with answer
-        await supabase
+        await (supabase as any)
           .from('quick_tasting_items')
           .update({
             aroma: answer.aroma,

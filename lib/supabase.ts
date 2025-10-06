@@ -437,6 +437,195 @@ export type Database = {
           updated_at?: string;
         };
       };
+      study_sessions: {
+        Row: {
+          id: string;
+          name: string;
+          base_category: string;
+          host_id: string;
+          status: string;
+          session_code: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          base_category: string;
+          host_id: string;
+          status?: string;
+          session_code?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          base_category?: string;
+          host_id?: string;
+          status?: string;
+          session_code?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      study_categories: {
+        Row: {
+          id: string;
+          session_id: string;
+          name: string;
+          has_text: boolean;
+          has_scale: boolean;
+          has_boolean: boolean;
+          scale_max: number | null;
+          rank_in_summary: boolean;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          name: string;
+          has_text?: boolean;
+          has_scale?: boolean;
+          has_boolean?: boolean;
+          scale_max?: number | null;
+          rank_in_summary?: boolean;
+          sort_order?: number;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          name?: string;
+          has_text?: boolean;
+          has_scale?: boolean;
+          has_boolean?: boolean;
+          scale_max?: number | null;
+          rank_in_summary?: boolean;
+          sort_order?: number;
+        };
+      };
+      study_items: {
+        Row: {
+          id: string;
+          session_id: string;
+          label: string;
+          sort_order: number;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          label: string;
+          sort_order?: number;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          label?: string;
+          sort_order?: number;
+          created_by?: string | null;
+        };
+      };
+      study_participants: {
+        Row: {
+          id: string;
+          session_id: string;
+          user_id: string | null;
+          display_name: string | null;
+          role: string;
+          joined_at: string;
+          progress: number;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          user_id?: string | null;
+          display_name?: string | null;
+          role?: string;
+          joined_at?: string;
+          progress?: number;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          user_id?: string | null;
+          display_name?: string | null;
+          role?: string;
+          joined_at?: string;
+          progress?: number;
+        };
+      };
+      study_responses: {
+        Row: {
+          id: string;
+          session_id: string;
+          item_id: string;
+          participant_id: string;
+          category_id: string;
+          text_value: string | null;
+          scale_value: number | null;
+          bool_value: boolean | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          item_id: string;
+          participant_id: string;
+          category_id: string;
+          text_value?: string | null;
+          scale_value?: number | null;
+          bool_value?: boolean | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          item_id?: string;
+          participant_id?: string;
+          category_id?: string;
+          text_value?: string | null;
+          scale_value?: number | null;
+          bool_value?: boolean | null;
+          created_at?: string;
+        };
+      };
+      study_ai_cache: {
+        Row: {
+          id: string;
+          session_id: string;
+          participant_id: string | null;
+          item_id: string | null;
+          input_text: string;
+          input_hash: string | null;
+          extracted_descriptors: any;
+          method: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          participant_id?: string | null;
+          item_id?: string | null;
+          input_text: string;
+          input_hash?: string | null;
+          extracted_descriptors: any;
+          method?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          participant_id?: string | null;
+          item_id?: string | null;
+          input_text?: string;
+          input_hash?: string | null;
+          extracted_descriptors?: any;
+          method?: string;
+          created_at?: string;
+        };
+      };
     };
   };
 };

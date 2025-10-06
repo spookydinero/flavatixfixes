@@ -221,19 +221,13 @@ const CreateTastingPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
                 <button
                   type="button"
-                  onClick={() => handleModeChange('study')}
-                  className={`p-md rounded-lg border-2 transition-all ${
-                    form.mode === 'study'
-                      ? 'border-primary-600 bg-primary-50'
-                      : 'border-border-default hover:border-primary-400'
-                  }`}
+                  onClick={() => router.push('/taste/create/study')}
+                  className="p-md rounded-lg border-2 border-border-default hover:border-primary-400 transition-all"
                 >
-                  <BookOpen size={32} className={`mx-auto mb-sm ${
-                    form.mode === 'study' ? 'text-primary-600' : 'text-text-secondary'
-                  }`} />
+                  <BookOpen size={32} className="mx-auto mb-sm text-text-secondary" />
                   <h3 className="font-heading font-semibold mb-xs">Study Mode</h3>
                   <p className="text-small text-text-secondary">
-                    Add items dynamically during tasting. No preloading required.
+                    Structured tasting sessions with custom categories and templates.
                   </p>
                 </button>
 

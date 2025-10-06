@@ -121,6 +121,8 @@ export async function getUserTastingHistory(
       completed_items: tasting.completed_items,
       average_score: tasting.average_score,
       completed_at: tasting.completed_at,
+      mode: tasting.mode || 'quick',
+      rank_participants: tasting.rank_participants || false,
       items: (tasting.quick_tasting_items || []).map((item: any) => ({
         id: item.id,
         item_name: item.item_name,
@@ -186,6 +188,8 @@ export async function getTastingById(
       completed_items: (data as any).completed_items,
       average_score: (data as any).average_score,
       completed_at: (data as any).completed_at,
+      mode: (data as any).mode || 'quick',
+      rank_participants: (data as any).rank_participants || false,
       items: ((data as any).quick_tasting_items || []).map((item: any) => ({
         id: item.id,
         item_name: item.item_name,
@@ -402,6 +406,8 @@ export async function getLatestTasting(
       completed_items: (data as any).completed_items,
       average_score: (data as any).average_score,
       completed_at: (data as any).completed_at,
+      mode: (data as any).mode || 'quick',
+      rank_participants: (data as any).rank_participants || false,
       items: ((data as any).quick_tasting_items || []).map((item: any) => ({
         id: item.id,
         item_name: item.item_name,
