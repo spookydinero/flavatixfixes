@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
-import { getSupabaseClient, Database } from '../lib/supabase';
+import { getSupabaseClient } from '../lib/supabase';
 import { toast } from '../lib/toast';
+import CommentsModal from '../components/social/CommentsModal';
+
+type TastingItem = {
+  id: string;
+  item_name: string;
+  photo_url?: string;
+  overall_score?: number;
+  notes?: string;
+};
 
 type TastingPost = {
   id: string;
@@ -27,14 +36,27 @@ type TastingPost = {
   };
   isLiked: boolean;
   isFollowed: boolean;
+  items?: TastingItem[];
+  photos?: string[];
 };
 
 export default function SocialPage() {
   const { user, loading } = useAuth();
   const [posts, setPosts] = useState<TastingPost[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<TastingPost[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  const [activeTab, setActiveTab] = useState<'all' | 'following'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
+  const [commentsModalOpen, setCommentsModalOpen] = useState(false);
+  const [activePostId, setActivePostId] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(0);
   const router = useRouter();
+
+  const POSTS_PER_PAGE = 10;
 
   useEffect(() => {
     if (!loading && !user) {
@@ -43,24 +65,48 @@ export default function SocialPage() {
     }
 
     if (user) {
-      loadSocialFeed();
+      setPage(0);
+      setHasMore(true);
+      loadSocialFeed(0, false);
     }
   }, [user, loading, router]);
 
-  const loadSocialFeed = async () => {
+  // Filter posts based on active tab and category
+  useEffect(() => {
+    let filtered = [...posts];
+
+    // Filter by tab (all or following)
+    if (activeTab === 'following') {
+      filtered = filtered.filter(post => post.isFollowed);
+    }
+
+    // Filter by category
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter(post => post.category.toLowerCase() === categoryFilter.toLowerCase());
+    }
+
+    setFilteredPosts(filtered);
+  }, [posts, activeTab, categoryFilter]);
+
+  const loadSocialFeed = async (pageNum: number = 0, append: boolean = false) => {
     if (!user?.id) return;
 
     try {
-      setLoadingPosts(true);
+      if (!append) {
+        setLoadingPosts(true);
+      } else {
+        setLoadingMore(true);
+      }
       const supabase = getSupabaseClient();
 
       // First, let's just get completed tastings without joins to debug
+      const offset = pageNum * POSTS_PER_PAGE;
       const { data: tastingsData, error: tastingsError } = await supabase
         .from('quick_tastings')
         .select('*')
         .not('completed_at', 'is', null) // Only completed tastings
         .order('completed_at', { ascending: false })
-        .limit(20);
+        .range(offset, offset + POSTS_PER_PAGE - 1);
 
       if (tastingsError) {
         console.error('Error fetching tastings:', tastingsError);
@@ -80,6 +126,13 @@ export default function SocialPage() {
 
       // Get social stats for each tasting (likes, comments, shares)
       const tastingIds = (tastingsData as any[])?.map((t: any) => t.id) || [];
+
+      // Fetch tasting items with photos
+      const { data: itemsData } = await supabase
+        .from('quick_tasting_items')
+        .select('id, tasting_id, item_name, photo_url, overall_score, notes')
+        .in('tasting_id', tastingIds)
+        .order('overall_score', { ascending: false });
 
       let likesData: any[] = [];
       let commentsData: any[] = [];
@@ -155,6 +208,14 @@ export default function SocialPage() {
         const comments = commentsData?.filter(c => c.tasting_id === post.id) || [];
         const shares = sharesData?.filter(s => s.tasting_id === post.id) || [];
 
+        // Get items for this tasting
+        const postItems = (itemsData as any[])?.filter(item => item.tasting_id === post.id) || [];
+
+        // Extract photos
+        const photos = postItems
+          .map(item => item.photo_url)
+          .filter(url => url != null) as string[];
+
         return {
           id: post.id,
           user_id: post.user_id,
@@ -173,15 +234,32 @@ export default function SocialPage() {
             shares: shares.length
           },
           isLiked: userLikes.has(post.id),
-          isFollowed: userFollows.has(post.user_id)
+          isFollowed: userFollows.has(post.user_id),
+          items: postItems.map((item: any) => ({
+            id: item.id,
+            item_name: item.item_name,
+            photo_url: item.photo_url,
+            overall_score: item.overall_score,
+            notes: item.notes
+          })),
+          photos
         };
       }) || [];
 
-      setPosts(transformedPosts);
+      // Check if there are more posts
+      setHasMore(transformedPosts.length === POSTS_PER_PAGE);
+
+      // Append or replace posts
+      if (append) {
+        setPosts(prev => [...prev, ...transformedPosts]);
+      } else {
+        setPosts(transformedPosts);
+      }
     } catch (error) {
       console.error('Error loading social feed:', error);
     } finally {
       setLoadingPosts(false);
+      setLoadingMore(false);
     }
   };
 
@@ -352,9 +430,47 @@ export default function SocialPage() {
   };
 
   const handleComment = (postId: string) => {
-    // TODO: Open comment modal/input when implemented
-    toast.info('Comments feature coming soon!');
+    setActivePostId(postId);
+    setCommentsModalOpen(true);
   };
+
+  const handleCloseComments = () => {
+    setCommentsModalOpen(false);
+    setActivePostId(null);
+    // Reload feed to update comment counts
+    loadSocialFeed(0, false);
+  };
+
+  const loadMorePosts = () => {
+    if (!loadingMore && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      loadSocialFeed(nextPage, true);
+    }
+  };
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loadingPosts) {
+          loadMorePosts();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const sentinel = document.getElementById('scroll-sentinel');
+    if (sentinel) {
+      observer.observe(sentinel);
+    }
+
+    return () => {
+      if (sentinel) {
+        observer.unobserve(sentinel);
+      }
+    };
+  }, [hasMore, loadingMore, loadingPosts, page]);
 
   const handleShare = async (postId: string) => {
     if (!user?.id) {
@@ -406,44 +522,127 @@ export default function SocialPage() {
     }
   };
 
+  // Skeleton Loading Component
+  const SkeletonPost = () => (
+    <div className="bg-white p-4 animate-pulse">
+      <div className="flex items-start space-x-3 mb-3">
+        <div className="w-12 h-12 bg-zinc-200 rounded-full flex-shrink-0" />
+        <div className="flex-1">
+          <div className="h-4 bg-zinc-200 rounded w-1/3 mb-2" />
+          <div className="h-3 bg-zinc-200 rounded w-1/4" />
+        </div>
+      </div>
+      <div className="h-3 bg-zinc-200 rounded w-1/6 mb-3" />
+      <div className="h-4 bg-zinc-200 rounded w-2/3 mb-2" />
+      <div className="h-3 bg-zinc-200 rounded w-full mb-2" />
+      <div className="h-3 bg-zinc-200 rounded w-4/5 mb-3" />
+      <div className="h-48 bg-zinc-200 rounded-xl mb-3" />
+      <div className="flex gap-4 pt-2 border-t border-zinc-100">
+        <div className="h-8 bg-zinc-200 rounded flex-1" />
+        <div className="h-8 bg-zinc-200 rounded flex-1" />
+        <div className="h-8 bg-zinc-200 rounded flex-1" />
+      </div>
+    </div>
+  );
+
   if (loading || loadingPosts) {
     return (
-      <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-text-secondary">Loading social feed...</p>
+      <div className="bg-background-light font-display text-zinc-900 min-h-screen pb-20">
+        <div className="flex h-screen flex-col">
+          <header className="border-b border-zinc-200 bg-background-light p-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 bg-zinc-200 rounded-full animate-pulse" />
+              <div className="h-6 bg-zinc-200 rounded w-32 animate-pulse" />
+              <div className="w-10 h-10 bg-zinc-200 rounded-full animate-pulse" />
+            </div>
+          </header>
+          <main className="flex-1 overflow-y-auto divide-y divide-zinc-200">
+            <SkeletonPost />
+            <SkeletonPost />
+            <SkeletonPost />
+          </main>
         </div>
       </div>
     );
   }
 
+  const categories = ['all', 'coffee', 'wine', 'beer', 'spirits', 'tea', 'chocolate'];
+
   return (
     <div className="bg-background-light font-display text-zinc-900 min-h-screen pb-20">
       <div className="flex h-screen flex-col">
         {/* Header */}
-        <header className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-700 p-4 bg-background-light dark:bg-background-dark">
-          <button
-            onClick={() => router.back()}
-            className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
-          >
-            <span className="material-symbols-outlined">arrow_back</span>
-          </button>
-          <h1 className="text-xl font-bold">Social Feed</h1>
-          <button className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800">
-            <span className="material-symbols-outlined">add_circle</span>
-          </button>
+        <header className="border-b border-zinc-200 bg-background-light sticky top-0 z-40">
+          <div className="flex items-center justify-between p-4">
+            <button
+              onClick={() => router.back()}
+              className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-zinc-100"
+            >
+              <span className="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h1 className="text-xl font-bold">Social Feed</h1>
+            <button
+              onClick={() => router.push('/quick-tasting')}
+              className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-zinc-100"
+            >
+              <span className="material-symbols-outlined">add_circle</span>
+            </button>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex border-b border-zinc-200">
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`flex-1 py-3 text-sm font-medium transition-colors ${
+                activeTab === 'all'
+                  ? 'text-primary border-b-2 border-primary'
+                  : 'text-zinc-500 hover:text-zinc-700'
+              }`}
+            >
+              For You
+            </button>
+            <button
+              onClick={() => setActiveTab('following')}
+              className={`flex-1 py-3 text-sm font-medium transition-colors ${
+                activeTab === 'following'
+                  ? 'text-primary border-b-2 border-primary'
+                  : 'text-zinc-500 hover:text-zinc-700'
+              }`}
+            >
+              Following
+            </button>
+          </div>
+
+          {/* Category Filters */}
+          <div className="overflow-x-auto">
+            <div className="flex gap-2 p-3 min-w-max">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategoryFilter(cat)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors capitalize ${
+                    categoryFilter === cat
+                      ? 'bg-primary text-white'
+                      : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
         </header>
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
-            {posts.length === 0 ? (
+          <div className="divide-y divide-zinc-200">
+            {filteredPosts.length === 0 ? (
               <div className="p-8 text-center">
                 <div className="mb-4">
                   <span className="material-symbols-outlined text-6xl text-orange-500">local_bar</span>
                 </div>
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">No tastings yet</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 mb-4">
+                <h3 className="text-lg font-semibold text-zinc-900 mb-2">No tastings yet</h3>
+                <p className="text-zinc-600 mb-4">
                   Be the first to share your tasting experience!
                 </p>
                 <button
@@ -454,10 +653,10 @@ export default function SocialPage() {
                 </button>
               </div>
             ) : (
-              posts.map((post) => (
-                <div key={post.id} className="p-4">
-                  <div className="flex items-start space-x-4">
-                    {/* User Avatar */}
+              filteredPosts.map((post) => (
+                <div key={post.id} className="bg-white p-4 hover:bg-zinc-50 transition-colors">
+                  {/* User Header */}
+                  <div className="flex items-start space-x-3 mb-3">
                     <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
                       {post.user.avatar_url ? (
                         <img
@@ -471,100 +670,188 @@ export default function SocialPage() {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      {/* User Info */}
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-baseline space-x-2 flex-1 min-w-0">
-                          <p className="font-bold text-zinc-900 dark:text-white truncate">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-bold text-zinc-900 truncate">
                             {post.user.full_name || 'Anonymous User'}
                           </p>
-                          <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate">
-                            @{post.user.username || post.user.full_name?.toLowerCase().replace(' ', '') || 'user'}
-                          </p>
-                          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                            · {formatTimeAgo(post.completed_at || post.created_at)}
+                          <p className="text-sm text-zinc-500">
+                            {formatTimeAgo(post.completed_at || post.created_at)}
                           </p>
                         </div>
-                        {/* Follow Button */}
                         {user?.id !== post.user_id && (
                           <button
                             onClick={() => handleFollow(post.user_id, post.user.full_name || 'User')}
-                            className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
+                            className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors ${
                               post.isFollowed
-                                ? 'bg-primary text-white hover:bg-primary/80'
-                                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                                ? 'bg-primary text-white hover:bg-primary/90'
+                                : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'
                             }`}
                           >
                             {post.isFollowed ? 'Following' : 'Follow'}
                           </button>
                         )}
                       </div>
-
-                      {/* Category Badge */}
-                      <p className={`text-sm font-medium mb-2 capitalize ${getCategoryColor(post.category)}`}>
-                        {post.category}
-                      </p>
-
-                      {/* Session Name */}
-                      {post.session_name && (
-                        <p className="font-semibold text-zinc-900 dark:text-white mb-1">
-                          {post.session_name}
-                        </p>
-                      )}
-
-                      {/* Notes */}
-                      {post.notes && (
-                        <p className="text-zinc-700 dark:text-zinc-300 mb-3 leading-relaxed">
-                          {post.notes}
-                        </p>
-                      )}
-
-                      {/* Stats */}
-                      <div className="flex items-center space-x-4 text-sm text-zinc-600 dark:text-zinc-400 mb-3">
-                        <span>{post.total_items} items tasted</span>
-                        {post.average_score && (
-                          <>
-                            <span>•</span>
-                            <span>Avg score: {post.average_score.toFixed(1)}/100</span>
-                          </>
-                        )}
-                      </div>
-
-                      {/* Engagement Buttons */}
-                      <div className="flex justify-between text-zinc-500 dark:text-zinc-400">
-                        <button
-                          onClick={() => handleComment(post.id)}
-                          className="flex items-center space-x-2 hover:text-primary group transition-colors"
-                        >
-                          <span className="material-symbols-outlined group-hover:text-primary text-lg">mode_comment</span>
-                          <span className="text-sm">{post.stats.comments}</span>
-                        </button>
-                        <button
-                          onClick={() => handleLike(post.id)}
-                          className={`flex items-center space-x-2 group transition-colors ${
-                            post.isLiked
-                              ? 'text-red-500'
-                              : 'hover:text-red-500'
-                          }`}
-                        >
-                          <span className={`material-symbols-outlined text-lg ${
-                            post.isLiked ? 'text-red-500' : 'group-hover:text-red-500'
-                          }`}>
-                            {post.isLiked ? 'favorite' : 'favorite_border'}
-                          </span>
-                          <span className="text-sm">{post.stats.likes}</span>
-                        </button>
-                        <button
-                          onClick={() => handleShare(post.id)}
-                          className="flex items-center space-x-2 hover:text-primary group transition-colors"
-                        >
-                          <span className="material-symbols-outlined group-hover:text-primary text-lg">share</span>
-                          <span className="text-sm">{post.stats.shares}</span>
-                        </button>
-                      </div>
                     </div>
+                  </div>
+
+                  {/* Category Badge */}
+                  <div className="mb-2">
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold capitalize ${getCategoryColor(post.category)} bg-opacity-10`}
+                      style={{ backgroundColor: `${getCategoryColor(post.category).replace('text-', '')}15` }}
+                    >
+                      {post.category}
+                    </span>
+                  </div>
+
+                  {/* Session Name */}
+                  {post.session_name && (
+                    <h3 className="font-bold text-lg text-zinc-900 mb-2">
+                      {post.session_name}
+                    </h3>
+                  )}
+
+                  {/* Notes */}
+                  {post.notes && (
+                    <p className="text-zinc-700 mb-3 leading-relaxed">
+                      {post.notes}
+                    </p>
+                  )}
+
+                  {/* Photo Grid */}
+                  {post.photos && post.photos.length > 0 && (
+                    <div className={`mb-3 rounded-xl overflow-hidden ${
+                      post.photos.length === 1 ? '' :
+                      post.photos.length === 2 ? 'grid grid-cols-2 gap-1' :
+                      post.photos.length === 3 ? 'grid grid-cols-3 gap-1' :
+                      'grid grid-cols-2 gap-1'
+                    }`}>
+                      {post.photos.slice(0, 4).map((photo, idx) => (
+                        <div key={idx} className="relative aspect-square bg-zinc-100">
+                          <img
+                            src={photo}
+                            alt={`Tasting photo ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          {idx === 3 && post.photos && post.photos.length > 4 && (
+                            <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+                              <span className="text-white text-2xl font-bold">
+                                +{post.photos.length - 4}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Items Preview */}
+                  {post.items && post.items.length > 0 && (
+                    <div className="mb-3">
+                      <button
+                        onClick={() => {
+                          const newExpanded = new Set(expandedPosts);
+                          if (newExpanded.has(post.id)) {
+                            newExpanded.delete(post.id);
+                          } else {
+                            newExpanded.add(post.id);
+                          }
+                          setExpandedPosts(newExpanded);
+                        }}
+                        className="flex items-center gap-2 text-sm font-semibold text-zinc-700 hover:text-primary transition-colors mb-2"
+                      >
+                        <span className="material-symbols-outlined text-base">
+                          {expandedPosts.has(post.id) ? 'expand_less' : 'expand_more'}
+                        </span>
+                        {post.total_items} items tasted
+                        {post.average_score && (
+                          <span className="text-zinc-500 font-normal">
+                            • Avg: {post.average_score.toFixed(0)}/100
+                          </span>
+                        )}
+                      </button>
+
+                      {expandedPosts.has(post.id) && (
+                        <div className="space-y-2 pl-6">
+                          {post.items.slice(0, 5).map((item, idx) => (
+                            <div key={item.id} className="flex items-center justify-between text-sm">
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <span className="text-zinc-400">{idx + 1}.</span>
+                                <span className="text-zinc-900 truncate">{item.item_name}</span>
+                              </div>
+                              {item.overall_score && (
+                                <span className={`font-semibold ml-2 ${
+                                  item.overall_score >= 80 ? 'text-green-600' :
+                                  item.overall_score >= 60 ? 'text-yellow-600' :
+                                  'text-orange-600'
+                                }`}>
+                                  {item.overall_score}/100
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                          {post.items.length > 5 && (
+                            <p className="text-xs text-zinc-500 pl-5">
+                              +{post.items.length - 5} more items
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Stats Bar */}
+                  <div className="flex items-center gap-4 text-sm text-zinc-500 py-2 border-t border-zinc-100">
+                    <span>{post.stats.likes} likes</span>
+                    <span>•</span>
+                    <span>{post.stats.comments} comments</span>
+                  </div>
+
+                  {/* Engagement Buttons */}
+                  <div className="flex justify-around border-t border-zinc-100 pt-2">
+                    <button
+                      onClick={() => handleLike(post.id)}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg hover:bg-zinc-50 transition-colors ${
+                        post.isLiked ? 'text-red-500' : 'text-zinc-600'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-xl">
+                        {post.isLiked ? 'favorite' : 'favorite_border'}
+                      </span>
+                      <span className="text-sm font-medium">Like</span>
+                    </button>
+                    <button
+                      onClick={() => handleComment(post.id)}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg hover:bg-zinc-50 transition-colors text-zinc-600"
+                    >
+                      <span className="material-symbols-outlined text-xl">mode_comment</span>
+                      <span className="text-sm font-medium">Comment</span>
+                    </button>
+                    <button
+                      onClick={() => handleShare(post.id)}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg hover:bg-zinc-50 transition-colors text-zinc-600"
+                    >
+                      <span className="material-symbols-outlined text-xl">share</span>
+                      <span className="text-sm font-medium">Share</span>
+                    </button>
                   </div>
                 </div>
               ))
+            )}
+
+            {/* Infinite Scroll Sentinel */}
+            {!loadingPosts && filteredPosts.length > 0 && (
+              <div id="scroll-sentinel" className="h-20 flex items-center justify-center">
+                {loadingMore && (
+                  <div className="flex items-center gap-2 text-zinc-500">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    <span className="text-sm">Loading more...</span>
+                  </div>
+                )}
+                {!hasMore && !loadingMore && (
+                  <p className="text-sm text-zinc-400">You've reached the end!</p>
+                )}
+              </div>
             )}
           </div>
         </main>
@@ -576,21 +863,31 @@ export default function SocialPage() {
               <span className="material-symbols-outlined">home</span>
               <span className="text-xs font-medium">Home</span>
             </a>
-            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/create-tasting">
-              <span className="material-symbols-outlined">add_circle</span>
-              <span className="text-xs font-medium">Create</span>
+            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/taste">
+              <span className="material-symbols-outlined">restaurant</span>
+              <span className="text-xs font-medium">Taste</span>
             </a>
-            <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/social">
+            <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/review">
               <span className="material-symbols-outlined">reviews</span>
-              <span className="text-xs font-bold">Review</span>
+              <span className="text-xs font-medium">Review</span>
             </a>
             <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/flavor-wheels">
-              <span className="material-symbols-outlined">donut_large</span>
-              <span className="text-xs font-medium">Flavor Wheels</span>
+              <span className="material-symbols-outlined">donut_small</span>
+              <span className="text-xs font-medium">Wheels</span>
             </a>
           </nav>
         </footer>
       </div>
+
+      {/* Comments Modal */}
+      {activePostId && (
+        <CommentsModal
+          tastingId={activePostId}
+          isOpen={commentsModalOpen}
+          onClose={handleCloseComments}
+          initialCommentCount={posts.find(p => p.id === activePostId)?.stats.comments || 0}
+        />
+      )}
     </div>
   );
 }

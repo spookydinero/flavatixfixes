@@ -1,0 +1,140 @@
+{
+  "feature_specification": {
+    "title": "Fix Category Inconsistencies and Enhance Item Name Editability",
+    "description": "Address UI inconsistencies where 'Coffee' is displayed despite 'Beer' being the selected category, and improve the clarity and functionality of item name editing, especially for mobile users.",
+    "problem_statement": "The application's UI displays conflicting category information (e.g., 'Tasting Coffee 1' when 'Beer' is selected). Additionally, when attempting to edit an item name (e.g., 'Beer 1'), the input field incorrectly defaults to 'Coffee 1'. The current item name edit affordance (hover-only edit icon) is not suitable for mobile.",
+    "business_context": "Inaccurate category display and confusing editing experiences lead to user frustration and reduce the reliability of tasting sessions. A clear and consistent UI is crucial for a positive user experience, especially for a mobile-first application.",
+    "user_story": "As a taster, I want the displayed category and item names to consistently reflect my selected session category, and I want to easily edit item names on any device, so that I can accurately record my tasting notes without confusion.",
+    "functional_requirements": [
+      "The main title of the tasting session (e.g., 'Tasting Coffee 1') must dynamically update to reflect the currently selected category (e.g., 'Tasting Beer 1').",
+      "The instructional text (e.g., 'Rate the flavors and overall impression of Coffee 1') must dynamically update to reflect the currently selected category and item number (e.g., 'Rate the flavors and overall impression of Beer 1').",
+      "The item name displayed next to the category icon (e.g., 'Coffee 1' next to 🍷) must dynamically update to reflect the currently selected category and item number (e.g., 'Beer 1').",
+      "When the user initiates editing of an item name (e.g., 'Beer 1'), the input field must correctly pre-populate with the current display name (e.g., 'Beer 1'), not a hardcoded or incorrect value ('Coffee 1').",
+      "The editability of the item name must be clearly indicated without requiring a hover action, making it accessible and intuitive for mobile users. This could involve an always-visible edit icon or a button.",
+      "The item name should be dynamically generated based on the session's category and the item's index (e.g., 'Beer 1', 'Beer 2', 'Beer 3'), unless a custom name has been explicitly set by the user."
+    ],
+    "non_functional_requirements": [
+      "The UI updates must be performant and not introduce noticeable lag.",
+      "The solution must be responsive and work seamlessly across different screen sizes (desktop and mobile).",
+      "The changes should maintain the existing visual design language of the application."
+    ],
+    "success_criteria": [
+      "All 'Coffee' references in the UI (main title, instructional text, item name next to icon) correctly display 'Beer' when 'Beer' is the selected category.",
+      "Editing an item name pre-fills the input field with the correct, dynamically generated item name.",
+      "The item name's edit functionality is clearly discoverable and usable on mobile devices.",
+      "No new bugs or regressions are introduced."
+    ],
+    "acceptance_criteria": [
+      "Given I am on a quick tasting session page, when I select 'Beer' as the category, then the main title displays 'Tasting Beer 1', the instructional text displays 'Rate the flavors and overall impression of Beer 1', and the item name next to the icon displays 'Beer 1'.",
+      "Given I am viewing a tasting item, when I click to edit its name, then the input field shows 'Beer 1' (or the appropriate dynamic name) and not 'Coffee 1'.",
+      "Given I am on a mobile device, when I view a tasting item, then I can clearly see how to edit the item's name without needing to hover."
+    ],
+    "technical_constraints": [
+      "Must integrate with the existing React/Next.js component structure.",
+      "Must use Supabase for data persistence.",
+      "Changes should be localized to relevant components (e.g., `QuickTastingSession.tsx`, `TastingItem.tsx`)."
+    ],
+    "dependencies": [
+      "Existing `QuickTastingSession` and `TastingItem` components.",
+      "Supabase client for data updates."
+    ]
+  },
+  "current_state_analysis": {
+    "identified_issues": {
+      "category_inconsistency": {
+        "main_title": "Shows 'Tasting Coffee 1' instead of 'Tasting Beer 1'",
+        "instructional_text": "Shows 'Rate the flavors and overall impression of Coffee 1' instead of 'Rate the flavors and overall impression of Beer 1'",
+        "item_name_display": "Shows 'Coffee 1' next to category icon instead of 'Beer 1'",
+        "edit_input_prefill": "When editing item name, input field shows 'Coffee 1' instead of 'Beer 1'"
+      },
+      "mobile_editability": {
+        "edit_icon_visibility": "Edit icon only appears on hover, not suitable for mobile",
+        "edit_affordance": "No clear visual indication that item name is editable on mobile",
+        "touch_interaction": "Mobile users cannot easily discover edit functionality"
+      }
+    },
+    "root_causes": {
+      "static_text_references": "Hardcoded 'Coffee' text in UI components",
+      "category_propagation": "Category changes not properly propagated to all UI elements",
+      "edit_state_management": "Edit input not using current display name as default value",
+      "mobile_ux_design": "Edit functionality designed for desktop hover interactions"
+    },
+    "affected_components": [
+      "QuickTastingSession.tsx - main title and instructional text",
+      "TastingItem.tsx - item name display and edit functionality",
+      "Category change handlers - not updating all dependent UI elements"
+    ]
+  },
+  "solution_design": {
+    "architecture_approach": "Dynamic text generation based on current session category and item index",
+    "key_changes": {
+      "dynamic_title_generation": "Replace hardcoded 'Coffee' with dynamic category-based text",
+      "category_propagation": "Ensure category changes update all dependent UI elements",
+      "edit_input_correction": "Use current display name as edit input default value",
+      "mobile_edit_affordance": "Make edit functionality clearly visible on mobile devices"
+    },
+    "implementation_phases": [
+      {
+        "phase": "Phase 1 - Dynamic Text Generation",
+        "tasks": [
+          "Create helper functions for dynamic text generation based on category and item index",
+          "Update main title to use dynamic text instead of hardcoded 'Coffee'",
+          "Update instructional text to use dynamic text",
+          "Update item name display to use dynamic text"
+        ]
+      },
+      {
+        "phase": "Phase 2 - Edit Functionality Enhancement",
+        "tasks": [
+          "Fix edit input to pre-populate with current display name",
+          "Add always-visible edit indicator for mobile users",
+          "Improve touch interaction for edit functionality",
+          "Test edit functionality across different devices"
+        ]
+      },
+      {
+        "phase": "Phase 3 - Category Change Propagation",
+        "tasks": [
+          "Ensure category changes trigger updates to all dependent UI elements",
+          "Add proper state management for category-dependent text",
+          "Test category switching scenarios",
+          "Validate consistency across all UI elements"
+        ]
+      }
+    ],
+    "code_patterns": {
+      "dynamic_text": "const displayName = `${category.charAt(0).toUpperCase() + category.slice(1)} ${itemIndex}`",
+      "category_propagation": "useEffect(() => { updateDisplayTexts(category) }, [category])",
+      "edit_input_default": "value={editingName || getDisplayName()}",
+      "mobile_edit_indicator": "always-visible edit icon or button"
+    }
+  },
+  "implementation_plan": {
+    "priority_order": [
+      "Phase 1: Dynamic Text Generation - Core functionality",
+      "Phase 2: Edit Functionality Enhancement - User experience",
+      "Phase 3: Category Change Propagation - Consistency"
+    ],
+    "estimated_effort": "6-8 hours",
+    "risk_assessment": "Low - Changes are primarily UI updates with existing functionality",
+    "testing_strategy": [
+      "Unit tests for dynamic text generation functions",
+      "Integration tests for category change propagation",
+      "E2E tests for complete editing workflow",
+      "Mobile device testing for edit affordance visibility"
+    ],
+    "rollback_plan": "Can revert to hardcoded text if dynamic generation causes issues"
+  },
+  "success_metrics": {
+    "primary": "All UI text consistently reflects selected category",
+    "secondary": "Edit functionality clearly discoverable on mobile",
+    "validation": "No hardcoded 'Coffee' references remain in UI",
+    "user_experience": "Smooth editing experience across all devices"
+  },
+  "future_considerations": {
+    "scalability": "Dynamic text generation can be extended to other categories",
+    "maintainability": "Centralized text generation logic reduces hardcoded references",
+    "extensibility": "Easy to add new categories without UI updates",
+    "accessibility": "Clear edit affordances improve accessibility for all users"
+  }
+}

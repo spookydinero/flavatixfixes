@@ -266,14 +266,23 @@ ALTER TABLE "public"."profiles" OWNER TO "postgres";
 CREATE TABLE IF NOT EXISTS "public"."prose_reviews" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "user_id" "uuid" NOT NULL,
+    "review_id" character varying(100),
     "item_name" character varying(255) NOT NULL,
     "picture_url" "text",
-    "batch_lot_barcode" character varying(255),
+    "brand" character varying(255),
+    "country" character varying(100),
+    "state" character varying(100),
+    "region" character varying(255),
+    "vintage" character varying(4),
+    "batch_id" character varying(255),
+    "upc_barcode" character varying(255),
     "category" character varying(100) NOT NULL,
     "production_date" "date",
     "review_content" "text" NOT NULL,
+    "status" character varying(20) DEFAULT 'in_progress' NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"(),
-    "updated_at" timestamp with time zone DEFAULT "now"()
+    "updated_at" timestamp with time zone DEFAULT "now"(),
+    CONSTRAINT "prose_reviews_status_check" CHECK (("status" IN ('in_progress', 'completed', 'published')))
 );
 
 
@@ -291,9 +300,16 @@ COMMENT ON COLUMN "public"."prose_reviews"."review_content" IS 'Contenido comple
 CREATE TABLE IF NOT EXISTS "public"."quick_reviews" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "user_id" "uuid" NOT NULL,
+    "review_id" character varying(100),
     "item_name" character varying(255) NOT NULL,
     "picture_url" "text",
-    "batch_lot_barcode" character varying(255),
+    "brand" character varying(255),
+    "country" character varying(100),
+    "state" character varying(100),
+    "region" character varying(255),
+    "vintage" character varying(4),
+    "batch_id" character varying(255),
+    "upc_barcode" character varying(255),
     "category" character varying(100) NOT NULL,
     "production_date" "date",
     "aroma_notes" "text",
@@ -315,6 +331,7 @@ CREATE TABLE IF NOT EXISTS "public"."quick_reviews" (
     "complexity_score" integer,
     "other_notes" "text",
     "overall_score" integer,
+    "status" character varying(20) DEFAULT 'in_progress' NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"(),
     "updated_at" timestamp with time zone DEFAULT "now"(),
     CONSTRAINT "quick_reviews_acidity_score_check" CHECK ((("acidity_score" >= 1) AND ("acidity_score" <= 100))),
@@ -326,7 +343,8 @@ CREATE TABLE IF NOT EXISTS "public"."quick_reviews" (
     CONSTRAINT "quick_reviews_spiciness_score_check" CHECK ((("spiciness_score" >= 1) AND ("spiciness_score" <= 100))),
     CONSTRAINT "quick_reviews_sweetness_score_check" CHECK ((("sweetness_score" >= 1) AND ("sweetness_score" <= 100))),
     CONSTRAINT "quick_reviews_typicity_score_check" CHECK ((("typicity_score" >= 1) AND ("typicity_score" <= 100))),
-    CONSTRAINT "quick_reviews_umami_score_check" CHECK ((("umami_score" >= 1) AND ("umami_score" <= 100)))
+    CONSTRAINT "quick_reviews_umami_score_check" CHECK ((("umami_score" >= 1) AND ("umami_score" <= 100))),
+    CONSTRAINT "quick_reviews_status_check" CHECK (("status" IN ('in_progress', 'completed', 'published')))
 );
 
 

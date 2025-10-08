@@ -11,10 +11,10 @@ const crimsonText = Crimson_Text({
 
 export default function Home() {
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200">
+    <div className="bg-background-light font-display text-zinc-900">
       <Head>
-        <title>Flavatix - Taste the World, One Sip at a Time</title>
-        <meta name="description" content="The world's most pivotal tasting app for coffee and drinks. Discover, analyze, and share your tasting experiences with our user-friendly platform." />
+        <title>Flavatix - The one place for all your tasting needs</title>
+        <meta name="description" content="The world's most pivotal tasting app for anything with flavor or aroma. Discover, analyze, and share your tasting experiences with our user-friendly platform." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="https://kobuclkvlacdwvxmakvq.supabase.co/storage/v1/object/public/images/flavicon.png" />
         <link rel="apple-touch-icon" href="https://kobuclkvlacdwvxmakvq.supabase.co/storage/v1/object/public/images/flavicon.png" />
@@ -41,13 +41,13 @@ export default function Home() {
               
               {/* Tagline */}
               <p className="text-h3 text-text-secondary font-medium mb-xs">
-                Taste the World, One Sip at a Time
+                The one place for all your tasting needs
               </p>
-              
+
               {/* Subtitle */}
               <p className="text-body text-text-muted max-w-2xl mx-auto leading-body">
-                The world's most pivotal tasting app for coffee and drinks. 
-                Discover, analyze, and share your tasting experiences with our intuitive platform 
+                The world's most pivotal tasting app for anything with flavor or aroma.
+                Discover, analyze, and share your tasting experiences with our intuitive platform
                 designed for everyone from casual enthusiasts to industry professionals.
               </p>
             </div>
@@ -62,10 +62,10 @@ export default function Home() {
                   </svg>
                 </div>
                 <h3 className="font-heading font-semibold text-h3 text-text-primary mb-xs">
-                  Quick Tasting
+                  Tasting Notes
                 </h3>
                 <p className="text-small text-text-secondary">
-                  On-the-fly solo tastings with simple, subjective inputs
+                  On-the-fly tasting note storage and analysis
                 </p>
               </div>
               
@@ -179,7 +179,7 @@ export default function Home() {
             
             <div className="mt-xl pt-lg border-t border-white/20">
               <p className="text-small opacity-70">
-                © 2025 Flavatix. Taste the World, One Sip at a Time.
+                © 2025 Flavatix. The one place for all your tasting needs.
               </p>
             </div>
           </div>

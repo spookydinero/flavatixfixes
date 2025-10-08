@@ -30,6 +30,7 @@ interface TastingItemProps {
   showEditControls?: boolean;
   showPhotoControls?: boolean;
   showNotesFields?: boolean;
+  itemIndex?: number; // 1-based index for dynamic naming
 }
 
 const TastingItem: React.FC<TastingItemProps> = ({
@@ -44,12 +45,22 @@ const TastingItem: React.FC<TastingItemProps> = ({
   showEditControls = true,
   showPhotoControls = true,
   showNotesFields = true,
+  itemIndex,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [localNotes, setLocalNotes] = useState(item.notes || '');
   const [localAroma, setLocalAroma] = useState(item.aroma || '');
   const [localFlavor, setLocalFlavor] = useState(item.flavor || '');
   const [localScore, setLocalScore] = useState(item.overall_score || 0);
+
+  // Generate dynamic display name based on current category and item index
+  const getDisplayName = () => {
+    if (isBlindItems) {
+      return `Item ${item.id.slice(-4)}`;
+    }
+    // Always use the stored item name
+    return item.item_name;
+  };
   const [isEditingName, setIsEditingName] = useState(false);
   const [editingName, setEditingName] = useState(item.item_name);
 
@@ -61,7 +72,7 @@ const TastingItem: React.FC<TastingItemProps> = ({
     setLocalScore(item.overall_score || 0);
     setEditingName(item.item_name);
     setIsEditingName(false);
-  }, [item.id, item.item_name]);
+  }, [item.id]);
 
   const getScoreLabel = (score: number): string => {
     if (score >= 90) return '(Exceptional)';
@@ -134,18 +145,14 @@ const TastingItem: React.FC<TastingItemProps> = ({
 
   const handleAromaChange = (aroma: string) => {
     setLocalAroma(aroma);
-    // Debounce the update
-    setTimeout(() => {
-      onUpdate({ aroma });
-    }, 500);
+    // Immediate update for critical data like aroma/flavor
+    onUpdate({ aroma });
   };
 
   const handleFlavorChange = (flavor: string) => {
     setLocalFlavor(flavor);
-    // Debounce the update
-    setTimeout(() => {
-      onUpdate({ flavor });
-    }, 500);
+    // Immediate update for critical data like aroma/flavor
+    onUpdate({ flavor });
   };
 
   const handleScoreChange = (score: number) => {
@@ -159,8 +166,10 @@ const TastingItem: React.FC<TastingItemProps> = ({
   };
 
   const saveName = () => {
-    if (editingName.trim() && editingName.trim() !== item.item_name) {
-      onUpdate({ item_name: editingName.trim() });
+    const trimmedName = editingName.trim();
+    if (trimmedName && trimmedName !== item.item_name) {
+      // Update immediately to prevent reverting
+      onUpdate({ item_name: trimmedName });
     }
     setIsEditingName(false);
   };
@@ -238,10 +247,10 @@ const TastingItem: React.FC<TastingItemProps> = ({
             ) : (
               <div className={`flex items-center space-x-2 ${showEditControls ? 'group cursor-pointer' : ''}`} onClick={showEditControls ? startEditingName : undefined}>
                 <h3 className="text-lg tablet:text-h4 font-heading font-semibold text-text-primary truncate">
-                  {isBlindItems ? `Item ${item.id.slice(-4)}` : item.item_name}
+                  {getDisplayName()}
                 </h3>
                 {!isBlindItems && showEditControls && (
-                  <Edit size={16} className="text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                  <Edit size={16} className="text-text-secondary opacity-80 transition-opacity flex-shrink-0" />
                 )}
               </div>
             )}
@@ -337,28 +346,19 @@ const TastingItem: React.FC<TastingItemProps> = ({
                   <div className="relative w-48 mobile:w-52 tablet:w-64">
                     <input
                       type="range"
-                      min="1"
+                      min="0"
                       max="100"
                       value={localScore}
                       onChange={(e) => handleScoreChange(parseInt(e.target.value))}
-                      className="w-full h-px bg-neutral-200 rounded-full appearance-none cursor-pointer slider-ultra-thin shadow-none border-0"
+                      className="w-full bg-neutral-200 rounded-full appearance-none cursor-pointer slider-ultra-thin shadow-none border-0"
                       style={{
                         background: `linear-gradient(to right,
-                          var(--color-neutral-200) 0%,
-                          var(--color-primary-500) ${localScore}%,
-                          var(--color-neutral-200) ${localScore}%,
-                          var(--color-neutral-200) 100%)`
+                          #ec7813 0%,
+                          #ec7813 ${localScore}%,
+                          #e5e5e5 ${localScore}%,
+                          #e5e5e5 100%)`
                       }}
                     />
-                    <div className="absolute -top-1.5 left-0 w-full h-4 pointer-events-none flex items-center">
-                      <div
-                        className="absolute w-2 h-2 bg-white rounded-full shadow-sm border border-neutral-300 transition-all duration-200 ease-out"
-                        style={{
-                          left: `calc(${((localScore - 1) / 99) * 100}% - 4px)`,
-                          borderColor: localScore > 80 ? '#737373' : localScore > 60 ? '#a3a3a3' : localScore > 40 ? '#d4d4d4' : '#e5e5e5'
-                        }}
-                      />
-                    </div>
                   </div>
                   <div className="text-center space-y-2">
                     <div className="text-4xl mobile:text-5xl tablet:text-6xl font-thin text-neutral-600 tracking-tight leading-none">

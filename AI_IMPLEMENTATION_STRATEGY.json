@@ -1,0 +1,408 @@
+{
+  "title": "Flavatix AI Implementation Strategy",
+  "version": "1.0",
+  "created": "2025-10-05",
+  "overview": {
+    "currentState": "Keyword-based flavor descriptor extraction with ~500+ term taxonomy",
+    "proposedState": "AI-powered natural language understanding with embeddings, LLMs, and specialized models",
+    "expectedImprovements": {
+      "accuracy": "85% → 95%+ descriptor extraction accuracy",
+      "coverage": "500 terms → unlimited natural language understanding",
+      "userExperience": "Manual categorization → automatic intelligent categorization",
+      "insights": "Basic aggregation → deep pattern recognition and recommendations"
+    }
+  },
+  "phaseRollout": {
+    "phase1": {
+      "name": "Foundation - Embedding-Based Similarity",
+      "duration": "2-3 weeks",
+      "priority": "HIGH",
+      "description": "Replace keyword matching with semantic embeddings for better descriptor extraction",
+      "components": [
+        {
+          "component": "Embedding Service",
+          "technology": "OpenAI text-embedding-3-small or Cohere embed-english-v3.0",
+          "purpose": "Convert tasting notes to vector embeddings for semantic similarity",
+          "implementation": "lib/ai/embeddingService.ts",
+          "cost": "$0.02 per 1M tokens (OpenAI) or $0.10 per 1M tokens (Cohere)"
+        },
+        {
+          "component": "Vector Database",
+          "technology": "Supabase pgvector extension",
+          "purpose": "Store and query flavor descriptor embeddings",
+          "implementation": "migrations/add_vector_embeddings.sql",
+          "cost": "Included in Supabase plan"
+        },
+        {
+          "component": "Descriptor Matching",
+          "technology": "Cosine similarity search",
+          "purpose": "Find similar descriptors using vector similarity instead of exact keyword matching",
+          "implementation": "lib/ai/semanticMatcher.ts",
+          "cost": "Compute only"
+        }
+      ],
+      "benefits": [
+        "Understand synonyms and related terms (e.g., 'citrusy' → 'citrus', 'lemony' → 'lemon')",
+        "Handle typos and variations gracefully",
+        "Discover new descriptors not in the taxonomy",
+        "Multilingual support potential"
+      ],
+      "implementation": {
+        "step1": "Add pgvector extension to Supabase",
+        "step2": "Create embeddings table with vector column",
+        "step3": "Pre-compute embeddings for all taxonomy terms",
+        "step4": "Build semantic matching service",
+        "step5": "Update flavorDescriptorExtractor to use embeddings",
+        "step6": "A/B test against keyword matching"
+      }
+    },
+    "phase2": {
+      "name": "LLM-Powered Extraction",
+      "duration": "3-4 weeks",
+      "priority": "HIGH",
+      "description": "Use LLMs to extract and categorize descriptors from unstructured tasting notes",
+      "components": [
+        {
+          "component": "LLM Service",
+          "technology": "OpenAI GPT-4o-mini or Anthropic Claude 3.5 Haiku",
+          "purpose": "Intelligent extraction and categorization of flavor descriptors from prose",
+          "implementation": "lib/ai/llmExtractor.ts",
+          "cost": "$0.15 per 1M input tokens, $0.60 per 1M output tokens (GPT-4o-mini)"
+        },
+        {
+          "component": "Structured Output Parser",
+          "technology": "JSON schema validation with Zod",
+          "purpose": "Ensure LLM outputs match expected descriptor format",
+          "implementation": "lib/ai/outputParser.ts",
+          "cost": "Compute only"
+        },
+        {
+          "component": "Prompt Engineering",
+          "technology": "Few-shot learning with examples",
+          "purpose": "Guide LLM to extract descriptors in Flavatix format",
+          "implementation": "lib/ai/prompts/descriptorExtraction.ts",
+          "cost": "Development time"
+        }
+      ],
+      "benefits": [
+        "Extract descriptors from complex, unstructured prose",
+        "Understand context and nuance (e.g., 'hints of chocolate' vs 'overwhelming chocolate')",
+        "Automatically determine intensity and confidence",
+        "Handle metaphors and creative descriptions",
+        "Multi-language support"
+      ],
+      "implementation": {
+        "step1": "Design prompt template with examples",
+        "step2": "Create JSON schema for structured output",
+        "step3": "Build LLM service with retry logic and error handling",
+        "step4": "Implement output validation and parsing",
+        "step5": "Create hybrid system (embeddings + LLM)",
+        "step6": "Test with real user notes and iterate"
+      },
+      "promptExample": {
+        "system": "You are a professional flavor analyst. Extract flavor and aroma descriptors from tasting notes. Return a JSON array of descriptors with: text, type (aroma/flavor/texture/metaphor), category, subcategory, confidence (0-1), intensity (1-5).",
+        "fewShot": [
+          {
+            "input": "This coffee has bright citrus notes with hints of lemon and orange peel. The aroma is floral with jasmine undertones. Smooth, velvety mouthfeel.",
+            "output": "[{\"text\":\"citrus\",\"type\":\"aroma\",\"category\":\"Fruity\",\"subcategory\":\"Citrus\",\"confidence\":0.95,\"intensity\":4},{\"text\":\"lemon\",\"type\":\"aroma\",\"category\":\"Fruity\",\"subcategory\":\"Citrus\",\"confidence\":0.90,\"intensity\":3}...]"
+          }
+        ],
+        "userInput": "{user's tasting notes}"
+      }
+    },
+    "phase3": {
+      "name": "Intelligent Recommendations",
+      "duration": "4-5 weeks",
+      "priority": "MEDIUM",
+      "description": "Use AI to provide personalized recommendations and insights",
+      "components": [
+        {
+          "component": "Recommendation Engine",
+          "technology": "Collaborative filtering + content-based filtering with embeddings",
+          "purpose": "Suggest products/tastings based on user preferences",
+          "implementation": "lib/ai/recommendationEngine.ts",
+          "cost": "Compute + embedding costs"
+        },
+        {
+          "component": "Pattern Recognition",
+          "technology": "Clustering algorithms (K-means, DBSCAN) on descriptor embeddings",
+          "purpose": "Identify user flavor preferences and patterns",
+          "implementation": "lib/ai/patternAnalyzer.ts",
+          "cost": "Compute only"
+        },
+        {
+          "component": "Insight Generation",
+          "technology": "GPT-4o for natural language insights",
+          "purpose": "Generate human-readable insights about user preferences",
+          "implementation": "lib/ai/insightGenerator.ts",
+          "cost": "$0.15-0.60 per 1M tokens"
+        }
+      ],
+      "benefits": [
+        "Personalized product recommendations",
+        "Discover flavor preference patterns",
+        "Suggest new categories to explore",
+        "Compare taste profiles with similar users",
+        "Generate shareable flavor profiles"
+      ]
+    },
+    "phase4": {
+      "name": "Advanced Features",
+      "duration": "6-8 weeks",
+      "priority": "LOW",
+      "description": "Cutting-edge AI features for power users and professionals",
+      "components": [
+        {
+          "component": "Fine-Tuned Model",
+          "technology": "Fine-tuned GPT-4o-mini or Claude on Flavatix data",
+          "purpose": "Domain-specific model trained on tasting notes",
+          "implementation": "External training pipeline",
+          "cost": "$3-10 per 1M training tokens + hosting"
+        },
+        {
+          "component": "Image Recognition",
+          "technology": "GPT-4o Vision or specialized food recognition model",
+          "purpose": "Extract descriptors from product photos",
+          "implementation": "lib/ai/visionAnalyzer.ts",
+          "cost": "$2.50 per 1M tokens (GPT-4o)"
+        },
+        {
+          "component": "Voice Input",
+          "technology": "OpenAI Whisper for speech-to-text",
+          "purpose": "Transcribe verbal tasting notes",
+          "implementation": "lib/ai/voiceTranscriber.ts",
+          "cost": "$0.006 per minute"
+        },
+        {
+          "component": "Comparative Analysis",
+          "technology": "LLM-powered comparison with RAG",
+          "purpose": "Compare products and generate detailed reports",
+          "implementation": "lib/ai/comparativeAnalyzer.ts",
+          "cost": "Variable based on usage"
+        }
+      ]
+    }
+  },
+  "technicalArchitecture": {
+    "dataFlow": [
+      "User writes tasting note → Frontend",
+      "Frontend sends to API endpoint → /api/ai/extract-descriptors",
+      "API validates input and checks cache",
+      "Hybrid extraction: Embeddings (fast) + LLM (accurate)",
+      "Results validated and stored in database",
+      "Flavor wheel regenerated with new data",
+      "User sees updated visualization"
+    ],
+    "services": {
+      "embeddingService": {
+        "file": "lib/ai/embeddingService.ts",
+        "responsibilities": [
+          "Generate embeddings for text",
+          "Cache embeddings to reduce API calls",
+          "Batch processing for efficiency"
+        ],
+        "dependencies": ["OpenAI SDK", "Supabase client"]
+      },
+      "llmExtractor": {
+        "file": "lib/ai/llmExtractor.ts",
+        "responsibilities": [
+          "Extract descriptors using LLM",
+          "Handle retries and rate limiting",
+          "Parse and validate LLM output"
+        ],
+        "dependencies": ["OpenAI SDK", "Zod", "Prompt templates"]
+      },
+      "hybridExtractor": {
+        "file": "lib/ai/hybridExtractor.ts",
+        "responsibilities": [
+          "Combine embedding and LLM approaches",
+          "Fallback logic if one method fails",
+          "Confidence scoring and merging"
+        ],
+        "dependencies": ["embeddingService", "llmExtractor"]
+      }
+    },
+    "database": {
+      "newTables": [
+        {
+          "name": "descriptor_embeddings",
+          "columns": [
+            "id UUID PRIMARY KEY",
+            "descriptor_text TEXT",
+            "embedding VECTOR(1536)",
+            "category TEXT",
+            "subcategory TEXT",
+            "created_at TIMESTAMP"
+          ],
+          "indexes": ["CREATE INDEX ON descriptor_embeddings USING ivfflat (embedding vector_cosine_ops)"]
+        },
+        {
+          "name": "ai_extraction_cache",
+          "columns": [
+            "id UUID PRIMARY KEY",
+            "input_text TEXT",
+            "input_hash TEXT UNIQUE",
+            "extracted_descriptors JSONB",
+            "method TEXT",
+            "created_at TIMESTAMP"
+          ],
+          "purpose": "Cache AI extraction results to reduce API costs"
+        }
+      ]
+    }
+  },
+  "costEstimation": {
+    "phase1": {
+      "development": "$5,000 - $8,000",
+      "monthlyOperational": "$50 - $200 (embeddings)",
+      "perUser": "$0.01 - $0.05 per tasting note"
+    },
+    "phase2": {
+      "development": "$8,000 - $12,000",
+      "monthlyOperational": "$200 - $800 (LLM calls)",
+      "perUser": "$0.05 - $0.15 per tasting note"
+    },
+    "phase3": {
+      "development": "$10,000 - $15,000",
+      "monthlyOperational": "$300 - $1,000",
+      "perUser": "$0.10 - $0.25 per session"
+    },
+    "phase4": {
+      "development": "$15,000 - $25,000",
+      "monthlyOperational": "$500 - $2,000+",
+      "perUser": "Variable"
+    },
+    "optimizations": [
+      "Cache embeddings and LLM results aggressively",
+      "Use cheaper models for simple tasks",
+      "Batch API requests",
+      "Implement rate limiting",
+      "Use streaming for real-time feedback"
+    ]
+  },
+  "codeExamples": {
+    "embeddingService": {
+      "file": "lib/ai/embeddingService.ts",
+      "code": "import OpenAI from 'openai';\nimport { createClient } from '@supabase/supabase-js';\n\nconst openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\nconst supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);\n\nexport async function getEmbedding(text: string): Promise<number[]> {\n  const response = await openai.embeddings.create({\n    model: 'text-embedding-3-small',\n    input: text,\n  });\n  return response.data[0].embedding;\n}\n\nexport async function findSimilarDescriptors(text: string, limit = 10) {\n  const embedding = await getEmbedding(text);\n  const { data } = await supabase.rpc('match_descriptors', {\n    query_embedding: embedding,\n    match_threshold: 0.7,\n    match_count: limit\n  });\n  return data;\n}"
+    },
+    "llmExtractor": {
+      "file": "lib/ai/llmExtractor.ts",
+      "code": "import OpenAI from 'openai';\nimport { z } from 'zod';\n\nconst openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });\n\nconst DescriptorSchema = z.object({\n  text: z.string(),\n  type: z.enum(['aroma', 'flavor', 'texture', 'metaphor']),\n  category: z.string(),\n  subcategory: z.string().optional(),\n  confidence: z.number().min(0).max(1),\n  intensity: z.number().min(1).max(5)\n});\n\nexport async function extractDescriptors(tastingNote: string) {\n  const completion = await openai.chat.completions.create({\n    model: 'gpt-4o-mini',\n    messages: [\n      {\n        role: 'system',\n        content: 'You are a professional flavor analyst. Extract flavor descriptors from tasting notes and return them as JSON.'\n      },\n      {\n        role: 'user',\n        content: `Extract all flavor and aroma descriptors from this tasting note: \"${tastingNote}\"`\n      }\n    ],\n    response_format: { type: 'json_object' }\n  });\n  \n  const result = JSON.parse(completion.choices[0].message.content!);\n  return z.array(DescriptorSchema).parse(result.descriptors);\n}"
+    },
+    "supabaseFunction": {
+      "file": "migrations/add_vector_search.sql",
+      "code": "-- Enable pgvector extension\nCREATE EXTENSION IF NOT EXISTS vector;\n\n-- Create embeddings table\nCREATE TABLE descriptor_embeddings (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  descriptor_text TEXT NOT NULL,\n  embedding VECTOR(1536),\n  category TEXT,\n  subcategory TEXT,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\n-- Create vector similarity search function\nCREATE OR REPLACE FUNCTION match_descriptors(\n  query_embedding VECTOR(1536),\n  match_threshold FLOAT,\n  match_count INT\n)\nRETURNS TABLE (\n  id UUID,\n  descriptor_text TEXT,\n  category TEXT,\n  subcategory TEXT,\n  similarity FLOAT\n)\nLANGUAGE plpgsql\nAS $$\nBEGIN\n  RETURN QUERY\n  SELECT\n    descriptor_embeddings.id,\n    descriptor_embeddings.descriptor_text,\n    descriptor_embeddings.category,\n    descriptor_embeddings.subcategory,\n    1 - (descriptor_embeddings.embedding <=> query_embedding) AS similarity\n  FROM descriptor_embeddings\n  WHERE 1 - (descriptor_embeddings.embedding <=> query_embedding) > match_threshold\n  ORDER BY descriptor_embeddings.embedding <=> query_embedding\n  LIMIT match_count;\nEND;\n$$;\n\n-- Create index for fast similarity search\nCREATE INDEX ON descriptor_embeddings USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);"
+    }
+  },
+  "integrationPoints": {
+    "currentFile": "lib/flavorDescriptorExtractor.ts",
+    "modifications": [
+      {
+        "location": "extractFlavorDescriptors function",
+        "change": "Add AI extraction as primary method, fallback to keyword matching",
+        "code": "export async function extractFlavorDescriptors(text: string, useAI = true) {\n  if (useAI && process.env.OPENAI_API_KEY) {\n    try {\n      // Try AI extraction first\n      const aiDescriptors = await extractWithAI(text);\n      if (aiDescriptors.length > 0) return aiDescriptors;\n    } catch (error) {\n      console.error('AI extraction failed, falling back to keyword matching:', error);\n    }\n  }\n  // Fallback to existing keyword matching\n  return extractWithKeywords(text);\n}"
+      },
+      {
+        "location": "New API endpoint",
+        "file": "pages/api/ai/extract-descriptors.ts",
+        "purpose": "Dedicated endpoint for AI-powered extraction",
+        "code": "import { NextApiRequest, NextApiResponse } from 'next';\nimport { extractDescriptors } from '../../../lib/ai/llmExtractor';\nimport { getSupabaseClient } from '../../../lib/supabase';\n\nexport default async function handler(req: NextApiRequest, res: NextApiResponse) {\n  if (req.method !== 'POST') {\n    return res.status(405).json({ error: 'Method not allowed' });\n  }\n\n  const { tastingNote, userId } = req.body;\n  \n  try {\n    const descriptors = await extractDescriptors(tastingNote);\n    \n    // Store in database\n    const supabase = getSupabaseClient(req, res);\n    await supabase.from('flavor_descriptors').insert(\n      descriptors.map(d => ({ ...d, user_id: userId }))\n    );\n    \n    return res.status(200).json({ descriptors });\n  } catch (error) {\n    return res.status(500).json({ error: 'Extraction failed' });\n  }\n}"
+      }
+    ]
+  },
+  "performanceMetrics": {
+    "current": {
+      "extractionTime": "50-100ms (keyword matching)",
+      "accuracy": "70-85% (depends on exact keyword matches)",
+      "coverage": "~500 predefined terms",
+      "userSatisfaction": "Moderate (requires manual categorization)"
+    },
+    "withAI": {
+      "extractionTime": "500-1500ms (LLM) or 100-300ms (embeddings only)",
+      "accuracy": "90-98% (understands context and synonyms)",
+      "coverage": "Unlimited (natural language understanding)",
+      "userSatisfaction": "High (automatic, intelligent categorization)"
+    }
+  },
+  "riskMitigation": {
+    "apiCosts": {
+      "risk": "HIGH - LLM costs can escalate with usage",
+      "mitigation": [
+        "Aggressive caching of results",
+        "Rate limiting per user",
+        "Use cheaper models for simple tasks",
+        "Batch processing",
+        "Implement usage quotas"
+      ]
+    },
+    "accuracy": {
+      "risk": "MEDIUM - AI may hallucinate or misclassify",
+      "mitigation": [
+        "Validate outputs against taxonomy",
+        "Confidence scoring",
+        "Human review for low-confidence results",
+        "A/B testing against keyword matching",
+        "User feedback loop"
+      ]
+    },
+    "latency": {
+      "risk": "MEDIUM - LLM calls add latency",
+      "mitigation": [
+        "Async processing with loading states",
+        "Optimistic UI updates",
+        "Hybrid approach (fast embeddings + slower LLM)",
+        "Background processing for non-critical tasks"
+      ]
+    },
+    "vendor_lock_in": {
+      "risk": "LOW - Dependency on OpenAI/Anthropic",
+      "mitigation": [
+        "Abstract AI services behind interfaces",
+        "Support multiple providers",
+        "Keep keyword matching as fallback",
+        "Consider open-source models for future"
+      ]
+    }
+  },
+  "successMetrics": {
+    "phase1": [
+      "95%+ descriptor match accuracy vs keyword matching",
+      "Handle 50+ synonym variations per descriptor",
+      "Sub-500ms extraction time",
+      "Zero false positives on test dataset"
+    ],
+    "phase2": [
+      "Extract descriptors from 90%+ of unstructured notes",
+      "User satisfaction score 4.5+/5",
+      "Reduce manual categorization by 80%",
+      "Support 3+ languages"
+    ],
+    "phase3": [
+      "Recommendation click-through rate 25%+",
+      "User engagement increase 40%+",
+      "Discover 3+ new preference patterns per user",
+      "Generate 100+ personalized insights daily"
+    ]
+  },
+  "nextSteps": {
+    "immediate": [
+      "Set up OpenAI API account and get API key",
+      "Enable pgvector extension in Supabase",
+      "Create proof-of-concept with 10 test notes",
+      "Measure baseline accuracy of current system"
+    ],
+    "shortTerm": [
+      "Implement Phase 1 (embeddings)",
+      "Build caching layer",
+      "Create admin dashboard for monitoring",
+      "A/B test with 100 users"
+    ],
+    "longTerm": [
+      "Roll out Phase 2 (LLM extraction)",
+      "Implement recommendation engine",
+      "Explore fine-tuning custom model",
+      "Build analytics dashboard"
+    ]
+  }
+}
+

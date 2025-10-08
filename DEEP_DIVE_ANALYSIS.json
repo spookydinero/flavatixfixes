@@ -1,0 +1,340 @@
+{
+  "analysis_date": "2025-01-03",
+  "status": "CRITICAL ISSUES IDENTIFIED",
+  "summary": "Deep dive reveals multiple critical gaps preventing flavor wheel functionality and missing features from feedback",
+
+  "critical_issues": {
+    "issue_1_no_descriptor_extraction": {
+      "severity": "CRITICAL",
+      "description": "Flavor descriptors are NEVER extracted from Quick Tastings",
+      "impact": "Users create tastings but NO data flows into flavor_descriptors table, so wheels show empty",
+      "root_cause": "Missing integration between TastingItem component save and descriptor extraction API",
+      "evidence": [
+        "TastingItem.tsx has aroma/flavor/notes fields",
+        "onUpdate callback saves to quick_tasting_items table",
+        "NO call to /api/flavor-wheels/extract-descriptors after save",
+        "Test data manually inserted works, but real user flow broken"
+      ],
+      "fix_required": "Add automatic descriptor extraction hook in QuickTastingSession.tsx after item update"
+    },
+
+    "issue_2_review_save_failing": {
+      "severity": "CRITICAL",
+      "description": "Review pages show 'Failed to save Review' error",
+      "impact": "Users cannot create reviews, blocking another data source for flavor wheels",
+      "reported_in_feedback": "Point E - Review section producing errors",
+      "investigation_needed": [
+        "Check /pages/review/structured.tsx save handler",
+        "Check /pages/review/prose.tsx save handler",
+        "Verify RLS policies on quick_reviews and prose_reviews tables",
+        "Check for schema mismatches"
+      ]
+    },
+
+    "issue_3_missing_test_data_scenarios": {
+      "severity": "HIGH",
+      "description": "Test data only covers 2 of 4 scenarios mentioned in summary",
+      "reported_discrepancy": "Summary says 4 test scenarios but only shows lemon/vanilla",
+      "missing_scenarios": [
+        "Scenario 2: Unknown",
+        "Scenario 3: Unknown"
+      ],
+      "impact": "Incomplete test coverage, misleading documentation"
+    },
+
+    "issue_4_no_social_feed": {
+      "severity": "HIGH",
+      "description": "Dashboard missing social feed at bottom",
+      "reported_in_feedback": "Point C - 'unsure if there is a feed there at the bottom'",
+      "current_state": "Dashboard exists but no feed component",
+      "files_to_check": [
+        "/pages/dashboard.tsx",
+        "/components/social/* (may not exist)"
+      ]
+    },
+
+    "issue_5_quick_tasting_disconnected": {
+      "severity": "HIGH",
+      "description": "Quick Tasting work from 9/28 disconnected from current version",
+      "reported_in_feedback": "Point D(1) - 'We had this section 99% working on 9/28 but this work is no longer connected'",
+      "implications": [
+        "Flavor wheel integration may have been removed",
+        "Previous descriptor extraction may have been lost",
+        "Need to review git history for 9/28 changes"
+      ]
+    },
+
+    "issue_6_missing_navigation_buttons": {
+      "severity": "MEDIUM",
+      "description": "Taste page missing Join Tasting and My Tastings buttons",
+      "reported_in_feedback": "Point D(1) - Add buttons for more intuitive flow",
+      "current_state": "Only shows Quick Tasting and Create Tasting",
+      "fix_required": "Add 2 more buttons to /pages/taste.tsx"
+    },
+
+    "issue_7_review_scroll_issue": {
+      "severity": "MEDIUM",
+      "description": "Prose Review page - cannot scroll to bottom buttons",
+      "reported_in_feedback": "Point E - 'wont allow me to scroll all the way to the bottom'",
+      "likely_cause": "Fixed positioning or overflow CSS issue",
+      "file_to_fix": "/pages/review/prose.tsx"
+    }
+  },
+
+  "architectural_problems": {
+    "problem_1_missing_data_flow": {
+      "description": "No automatic pipeline from user input to flavor wheels",
+      "current_flow": "User saves tasting → Data in quick_tasting_items → STOPS",
+      "required_flow": "User saves tasting → Data in quick_tasting_items → Extract descriptors → flavor_descriptors → Generate wheel",
+      "missing_links": [
+        "Automatic extraction trigger",
+        "Background job or save hook",
+        "User feedback that descriptors extracted"
+      ]
+    },
+
+    "problem_2_database_schema_mismatch": {
+      "description": "quick_tasting_items has aroma/flavor fields but may not match extraction expectations",
+      "fields_in_table": ["notes", "aroma", "flavor", "flavor_scores"],
+      "extraction_expects": "Structured review format with aroma_notes, flavor_notes, etc.",
+      "resolution_needed": "Adapt extraction to work with both schemas OR standardize"
+    },
+
+    "problem_3_no_user_guidance": {
+      "description": "Users not guided through flow to get flavor wheels",
+      "issues": [
+        "No onboarding explaining data needed",
+        "No prompt to add flavor notes when creating tastings",
+        "No progress indicator (X tastings needed for wheel)",
+        "Error message 'No data found' not helpful enough"
+      ]
+    }
+  },
+
+  "fixes_required": {
+    "fix_1_auto_extract_descriptors": {
+      "priority": "P0 - CRITICAL",
+      "files_to_modify": [
+        "/components/quick-tasting/QuickTastingSession.tsx"
+      ],
+      "implementation": {
+        "step_1": "Add handleItemUpdate function that calls both update AND extract APIs",
+        "step_2": "Modify TastingItem onUpdate to call new handler",
+        "step_3": "Extract from aroma, flavor, and notes fields",
+        "step_4": "Show toast confirmation when descriptors extracted",
+        "code_location": "Around line 400-500 where item updates are handled"
+      },
+      "testing": "Create tasting → Add notes → Save → Verify descriptors in DB → Generate wheel"
+    },
+
+    "fix_2_review_save_errors": {
+      "priority": "P0 - CRITICAL",
+      "investigation_steps": [
+        "Read /pages/review/structured.tsx handleSave function",
+        "Read /pages/review/prose.tsx handleSave function",
+        "Check console for detailed error messages",
+        "Verify RLS policies allow INSERT",
+        "Check for missing required fields"
+      ],
+      "likely_fixes": [
+        "Add missing fields to insert statement",
+        "Fix RLS policy for authenticated users",
+        "Handle null values correctly"
+      ]
+    },
+
+    "fix_3_add_social_feed": {
+      "priority": "P1 - HIGH",
+      "implementation": {
+        "step_1": "Create /components/social/SocialFeed.tsx",
+        "step_2": "Query recent tastings/reviews from all users",
+        "step_3": "Add to /pages/dashboard.tsx at bottom",
+        "step_4": "Style to match Flavatix design",
+        "features": [
+          "Show recent activity from all users",
+          "Like/comment functionality (if tables exist)",
+          "Filter by category",
+          "Load more pagination"
+        ]
+      }
+    },
+
+    "fix_4_add_taste_navigation": {
+      "priority": "P1 - HIGH",
+      "file": "/pages/taste.tsx",
+      "changes": {
+        "add_buttons": [
+          {
+            "title": "Join Tasting",
+            "description": "Enter a code to join someone's tasting",
+            "path": "/join-tasting",
+            "icon": "Users"
+          },
+          {
+            "title": "My Tastings",
+            "description": "View your tasting history and in-progress sessions",
+            "path": "/my-tastings",
+            "icon": "History"
+          }
+        ]
+      }
+    },
+
+    "fix_5_review_scroll_fix": {
+      "priority": "P2 - MEDIUM",
+      "file": "/pages/review/prose.tsx",
+      "investigation": "Look for fixed positioning, check bottom padding vs fixed footer",
+      "likely_fix": "Add pb-24 or pb-32 to content container to clear fixed bottom nav"
+    },
+
+    "fix_6_user_guidance": {
+      "priority": "P2 - MEDIUM",
+      "improvements": [
+        {
+          "location": "/pages/flavor-wheels.tsx",
+          "change": "Better empty state messaging",
+          "new_message": "You need at least 5 tastings with flavor notes to generate a wheel. Get started by creating your first tasting!",
+          "cta": "Go to Quick Tasting"
+        },
+        {
+          "location": "/components/quick-tasting/TastingItem.tsx",
+          "change": "Add helper text",
+          "new_text": "💡 Tip: Describe aromas and flavors to build your Flavor Wheel"
+        }
+      ]
+    }
+  },
+
+  "data_flow_architecture": {
+    "current_state": {
+      "quick_tasting_flow": "User creates tasting → Adds items → Fills notes/aroma/flavor → Saves to quick_tasting_items → ENDS",
+      "review_flow": "BROKEN - Cannot save reviews",
+      "flavor_wheel_flow": "API exists but receives no data → Shows empty state"
+    },
+
+    "required_state": {
+      "quick_tasting_flow": "User creates tasting → Adds items → Fills notes/aroma/flavor → Saves to quick_tasting_items → AUTO extract to flavor_descriptors → Builds wheel data",
+      "review_flow": "User creates review → Fills all fields → Saves to quick_reviews/prose_reviews → AUTO extract to flavor_descriptors → Builds wheel data",
+      "flavor_wheel_flow": "User requests wheel → Aggregates from flavor_descriptors → Caches in flavor_wheels → Displays D3 viz"
+    },
+
+    "integration_points": {
+      "point_1": {
+        "trigger": "quick_tasting_items INSERT/UPDATE",
+        "action": "Call /api/flavor-wheels/extract-descriptors",
+        "data": "{ sourceType: 'quick_tasting', sourceId: item.id, text: notes, structuredData: { aroma_notes: aroma, flavor_notes: flavor } }"
+      },
+      "point_2": {
+        "trigger": "quick_reviews INSERT/UPDATE",
+        "action": "Call /api/flavor-wheels/extract-descriptors",
+        "data": "{ sourceType: 'quick_review', sourceId: review.id, structuredData: { aroma_notes, flavor_notes, etc } }"
+      },
+      "point_3": {
+        "trigger": "prose_reviews INSERT/UPDATE",
+        "action": "Call /api/flavor-wheels/extract-descriptors",
+        "data": "{ sourceType: 'prose_review', sourceId: review.id, text: review_content }"
+      }
+    }
+  },
+
+  "database_investigation": {
+    "tables_to_verify": [
+      {
+        "table": "flavor_descriptors",
+        "check": "SELECT COUNT(*) - Should be 16 test records",
+        "columns_verify": ["user_id", "source_type", "source_id", "descriptor_text", "descriptor_type", "category", "subcategory"]
+      },
+      {
+        "table": "quick_tasting_items",
+        "check": "SELECT id, aroma, flavor, notes FROM quick_tasting_items WHERE user_id = 'test_user' LIMIT 5",
+        "verify": "Do records exist? Are aroma/flavor/notes populated?"
+      },
+      {
+        "table": "quick_reviews",
+        "check": "SELECT COUNT(*) - Any records exist?",
+        "verify": "Can user insert? Check RLS policies"
+      }
+    ]
+  },
+
+  "testing_plan": {
+    "phase_1_fix_extraction": {
+      "steps": [
+        "1. Modify QuickTastingSession to auto-extract",
+        "2. Create new Quick Tasting",
+        "3. Add item with aroma/flavor notes",
+        "4. Save and verify descriptor extraction",
+        "5. Check flavor_descriptors table has new records",
+        "6. Generate wheel and verify data appears"
+      ],
+      "success_criteria": "User sees populated wheel after creating 1-2 tastings with notes"
+    },
+
+    "phase_2_fix_reviews": {
+      "steps": [
+        "1. Identify exact error in review save",
+        "2. Fix RLS/validation/schema issues",
+        "3. Test structured review save",
+        "4. Test prose review save",
+        "5. Verify descriptor extraction from reviews",
+        "6. Verify wheels include review data"
+      ],
+      "success_criteria": "Reviews save successfully and contribute to flavor wheels"
+    },
+
+    "phase_3_add_features": {
+      "steps": [
+        "1. Add social feed to dashboard",
+        "2. Add Join/My Tastings buttons",
+        "3. Fix scroll issue in prose review",
+        "4. Improve user guidance messaging",
+        "5. Test complete user journey end-to-end"
+      ],
+      "success_criteria": "All feedback items addressed"
+    }
+  },
+
+  "immediate_action_items": [
+    {
+      "task": "Add descriptor extraction to Quick Tasting save flow",
+      "file": "/components/quick-tasting/QuickTastingSession.tsx",
+      "priority": "P0",
+      "estimated_lines": "30-50 lines of code",
+      "blocking": "Flavor wheels completely non-functional without this"
+    },
+    {
+      "task": "Debug review save errors",
+      "files": [
+        "/pages/review/structured.tsx",
+        "/pages/review/prose.tsx"
+      ],
+      "priority": "P0",
+      "investigation": "Read handleSave, check console errors, verify DB schema"
+    },
+    {
+      "task": "Create diagnostic script",
+      "file": "check_flavor_wheel_data.js",
+      "priority": "P1",
+      "purpose": "Check if user has ANY data that could generate wheels"
+    }
+  ],
+
+  "recommended_fixes_order": [
+    "1. Fix Quick Tasting descriptor extraction (2-3 hours)",
+    "2. Fix Review save errors (1-2 hours)",
+    "3. Test end-to-end with real data (1 hour)",
+    "4. Add social feed to dashboard (2-3 hours)",
+    "5. Add Join/My Tastings navigation (1 hour)",
+    "6. Fix prose review scroll (30 min)",
+    "7. Improve user guidance messaging (1 hour)",
+    "8. Full regression testing (2 hours)"
+  ],
+
+  "root_cause_summary": "The flavor wheel feature is architecturally sound but missing the critical integration layer that connects user input (tastings/reviews) to the descriptor extraction pipeline. The database schema is correct, the extraction logic works, the visualization works, but NO automatic trigger extracts descriptors when users save their notes. This is why wheels show empty even though users have created tastings.",
+
+  "success_definition": {
+    "minimum_viable": "User creates 2-3 Quick Tastings with flavor notes → Descriptors auto-extracted → Personal wheel shows data",
+    "full_feature": "User creates tastings AND reviews → All data extracted → Personal/Universal wheels work → Social feed shows activity → Navigation complete",
+    "production_ready": "Above + error handling + user guidance + comprehensive testing + documentation updated"
+  }
+}

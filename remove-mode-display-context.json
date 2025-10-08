@@ -1,0 +1,147 @@
+{
+  "feature_description": "Remove 'Mode: Quick' Display and Add Category Dropdown to Quick Tasting Session Interface",
+  "problem_statement": "Based on user feedback from the mobile app screenshots, the user wants two changes: 1) Remove the 'Mode: Quick' part from the session display (annotated as 'can just remove this'), and 2) Add a category dropdown where the category is currently displayed (annotated as 'can add that category dropdown there'). Currently, the interface shows 'Category: Coffee • Mode: Quick' and the user wants to remove the mode part and make the category editable via dropdown.",
+  "current_state_analysis": {
+    "mode_display_issue": {
+      "what_user_sees": "Category: Coffee • Mode: Quick",
+      "user_feedback": "'can just remove this' - specifically referring to the 'Mode: Quick' part",
+      "code_location": "QuickTastingSession.tsx lines 511-518",
+      "current_code": "Mode: {session.mode.charAt(0).toUpperCase() + session.mode.slice(1)}",
+      "issue": "The mode display is redundant since users are already in a quick tasting session and know the mode"
+    },
+    "category_dropdown_issue": {
+      "what_user_sees": "Category: Coffee" (static text display)",
+      "user_feedback": "'can add that category dropdown there' - referring to the category area",
+      "code_location": "QuickTastingSession.tsx lines 511-518",
+      "current_code": "Category: {getDisplayCategoryName(session.category, session.custom_category_name)}",
+      "issue": "Category is displayed as static text but user wants it to be editable via dropdown"
+    },
+    "context": {
+      "where_displayed": "Session header card showing session details",
+      "current_format": "Category: {category} • Mode: {mode} • [other options]",
+      "user_experience": "Mode is redundant, category should be editable"
+    }
+  },
+  "proposed_solution": {
+    "remove_mode_display": {
+      "description": "Remove the 'Mode: Quick' portion from the session display",
+      "changes": [
+        "Remove the mode display from the session header",
+        "Keep category and other relevant information",
+        "Simplify the display to show only essential information"
+      ]
+    },
+    "add_category_dropdown": {
+      "description": "Replace static category display with editable dropdown",
+      "changes": [
+        "Replace 'Category: Coffee' text with dropdown selector",
+        "Allow users to change category during the session",
+        "Use existing category change functionality",
+        "Make category selection more prominent and accessible"
+      ],
+      "new_format": "[Category Dropdown] • [other relevant options only]"
+    }
+  },
+  "technical_requirements": {
+    "database_changes": {
+      "none_required": "This is purely a UI change"
+    },
+    "modified_components": [
+      "QuickTastingSession.tsx - Remove mode display and add category dropdown to session header"
+    ],
+    "code_changes": {
+      "file": "components/quick-tasting/QuickTastingSession.tsx",
+      "lines": "511-518",
+      "current_code": "Category: {category} • Mode: {mode} • [other options]",
+      "actions": [
+        "Remove mode display line and bullet separator",
+        "Replace static category text with dropdown selector",
+        "Use existing handleCategoryChange function"
+      ]
+    },
+    "existing_functionality": {
+      "category_change": "handleCategoryChange function already exists in QuickTastingSession.tsx",
+      "categories_list": "Categories are already defined and available",
+      "dropdown_ui": "Can reuse existing dropdown pattern from setup phase"
+    }
+  },
+  "user_stories": [
+    {
+      "id": "remove-mode-display",
+      "title": "Remove Mode Display",
+      "description": "As a user in a quick tasting session, I don't want to see 'Mode: Quick' displayed since I already know I'm in quick mode",
+      "acceptance_criteria": [
+        "Mode display is removed from session header",
+        "Category and other relevant information remains",
+        "Display is cleaner and less cluttered"
+      ]
+    },
+    {
+      "id": "add-category-dropdown",
+      "title": "Add Category Dropdown",
+      "description": "As a user, I want to be able to change the category of my tasting session directly from the session header",
+      "acceptance_criteria": [
+        "Category is displayed as a dropdown instead of static text",
+        "I can change the category during the session",
+        "Category change updates the session and any existing items",
+        "Dropdown shows all available categories"
+      ]
+    }
+  ],
+  "implementation_details": {
+    "ui_improvements": {
+      "description": "Two UI improvements: remove mode display and add category dropdown",
+      "steps": [
+        "Remove the mode display line from QuickTastingSession.tsx",
+        "Remove the bullet separator before mode",
+        "Replace static category text with dropdown selector",
+        "Use existing handleCategoryChange function",
+        "Test category changes work correctly",
+        "Test that other mode-specific displays still work correctly"
+      ],
+      "estimated_time": "30-45 minutes"
+    },
+    "code_changes": {
+      "before": "Category: {category} • Mode: {mode} • [other options]",
+      "after": "[Category Dropdown] • [other options]"
+    },
+    "reuse_existing": {
+      "category_dropdown": "Can reuse the dropdown pattern from the setup phase (lines 494-510)",
+      "category_change_handler": "handleCategoryChange function already exists (lines 272-292)",
+      "categories_list": "Categories array is already defined"
+    }
+  },
+  "success_criteria": [
+    "Mode display is removed from quick tasting session header",
+    "Category is displayed as an editable dropdown",
+    "Users can change category during the session",
+    "Category changes update the session and items correctly",
+    "No regression in other functionality",
+    "Cleaner, more functional interface"
+  ],
+  "risk_assessment": {
+    "low_risk": [
+      "Simple UI changes with existing functionality",
+      "Mode information is still available in session data if needed",
+      "Category change functionality already exists and is tested"
+    ],
+    "medium_risk": [
+      "Need to ensure category changes don't break existing items",
+      "Should test category change with items that have photos/notes"
+    ],
+    "mitigation": [
+      "Use existing handleCategoryChange function which is already tested",
+      "Test category changes with various item states",
+      "Ensure proper error handling for category changes"
+    ]
+  },
+  "related_files": [
+    "components/quick-tasting/QuickTastingSession.tsx"
+  ],
+  "design_impact": {
+    "cleaner_interface": "Removes redundant mode information from the display",
+    "better_ux": "Users don't see information they already know, and can easily change category",
+    "more_functional": "Category becomes editable instead of just informational",
+    "consistent": "Aligns with user feedback for cleaner, more functional interface"
+  }
+}

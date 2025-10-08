@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
@@ -36,8 +37,41 @@ export const supabase = SupabaseClientSingleton.getInstance();
 // Export the class for advanced usage
 export { SupabaseClientSingleton };
 
-// Helper function to get a fresh client instance
-export const getSupabaseClient = () => SupabaseClientSingleton.getInstance();
+// Helper function to get a Supabase client for server-side API routes
+export const getSupabaseClient = (req?: NextApiRequest, res?: NextApiResponse) => {
+  if (req && res) {
+    // Server-side: Create client with cookies for auth context
+    const authHeader = req.headers.authorization;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.replace('Bearer ', '');
+      return createClient<Database>(supabaseUrl, supabaseAnonKey, {
+        global: {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      });
+    }
+
+    // Try to get token from cookies
+    const cookies = req.cookies;
+    const accessToken = cookies['sb-access-token'] || cookies['supabase-auth-token'];
+
+    if (accessToken) {
+      return createClient<Database>(supabaseUrl, supabaseAnonKey, {
+        global: {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      });
+    }
+  }
+
+  // Client-side or no auth context
+  return SupabaseClientSingleton.getInstance();
+};
 
 export type Database = {
   public: {
@@ -166,6 +200,8 @@ export type Database = {
           tasting_id: string;
           item_name: string;
           notes: string | null;
+          aroma: string | null;
+          flavor: string | null;
           flavor_scores: any | null;
           overall_score: number | null;
           photo_url: string | null;
@@ -179,6 +215,8 @@ export type Database = {
           tasting_id: string;
           item_name: string;
           notes?: string | null;
+          aroma?: string | null;
+          flavor?: string | null;
           flavor_scores?: any | null;
           overall_score?: number | null;
           photo_url?: string | null;
@@ -192,6 +230,8 @@ export type Database = {
           tasting_id?: string;
           item_name?: string;
           notes?: string | null;
+          aroma?: string | null;
+          flavor?: string | null;
           flavor_scores?: any | null;
           overall_score?: number | null;
           photo_url?: string | null;
@@ -262,6 +302,327 @@ export type Database = {
           status?: string;
           moderated_by?: string | null;
           moderated_at?: string | null;
+          created_at?: string;
+        };
+      };
+      flavor_descriptors: {
+        Row: {
+          id: string;
+          user_id: string;
+          source_type: string;
+          source_id: string;
+          descriptor_text: string;
+          descriptor_type: string;
+          category: string | null;
+          subcategory: string | null;
+          confidence_score: number | null;
+          intensity: number | null;
+          item_name: string | null;
+          item_category: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          source_type: string;
+          source_id: string;
+          descriptor_text: string;
+          descriptor_type: string;
+          category?: string | null;
+          subcategory?: string | null;
+          confidence_score?: number | null;
+          intensity?: number | null;
+          item_name?: string | null;
+          item_category?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          source_type?: string;
+          source_id?: string;
+          descriptor_text?: string;
+          descriptor_type?: string;
+          category?: string | null;
+          subcategory?: string | null;
+          confidence_score?: number | null;
+          intensity?: number | null;
+          item_name?: string | null;
+          item_category?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      flavor_wheels: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          wheel_type: string;
+          scope_type: string;
+          scope_filter: any;
+          wheel_data: any;
+          total_descriptors: number;
+          unique_descriptors: number;
+          data_sources_count: number;
+          generated_at: string;
+          expires_at: string | null;
+          version: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          wheel_type: string;
+          scope_type: string;
+          scope_filter?: any;
+          wheel_data: any;
+          total_descriptors?: number;
+          unique_descriptors?: number;
+          data_sources_count?: number;
+          generated_at?: string;
+          expires_at?: string | null;
+          version?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          wheel_type?: string;
+          scope_type?: string;
+          scope_filter?: any;
+          wheel_data?: any;
+          total_descriptors?: number;
+          unique_descriptors?: number;
+          data_sources_count?: number;
+          generated_at?: string;
+          expires_at?: string | null;
+          version?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      aroma_molecules: {
+        Row: {
+          id: string;
+          descriptor: string;
+          descriptor_normalized: string;
+          molecules: any;
+          source: string | null;
+          verified: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          descriptor: string;
+          descriptor_normalized: string;
+          molecules: any;
+          source?: string | null;
+          verified?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          descriptor?: string;
+          descriptor_normalized?: string;
+          molecules?: any;
+          source?: string | null;
+          verified?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      study_sessions: {
+        Row: {
+          id: string;
+          name: string;
+          base_category: string;
+          host_id: string;
+          status: string;
+          session_code: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          base_category: string;
+          host_id: string;
+          status?: string;
+          session_code?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          base_category?: string;
+          host_id?: string;
+          status?: string;
+          session_code?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      study_categories: {
+        Row: {
+          id: string;
+          session_id: string;
+          name: string;
+          has_text: boolean;
+          has_scale: boolean;
+          has_boolean: boolean;
+          scale_max: number | null;
+          rank_in_summary: boolean;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          name: string;
+          has_text?: boolean;
+          has_scale?: boolean;
+          has_boolean?: boolean;
+          scale_max?: number | null;
+          rank_in_summary?: boolean;
+          sort_order?: number;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          name?: string;
+          has_text?: boolean;
+          has_scale?: boolean;
+          has_boolean?: boolean;
+          scale_max?: number | null;
+          rank_in_summary?: boolean;
+          sort_order?: number;
+        };
+      };
+      study_items: {
+        Row: {
+          id: string;
+          session_id: string;
+          label: string;
+          sort_order: number;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          label: string;
+          sort_order?: number;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          label?: string;
+          sort_order?: number;
+          created_by?: string | null;
+        };
+      };
+      study_participants: {
+        Row: {
+          id: string;
+          session_id: string;
+          user_id: string | null;
+          display_name: string | null;
+          role: string;
+          joined_at: string;
+          progress: number;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          user_id?: string | null;
+          display_name?: string | null;
+          role?: string;
+          joined_at?: string;
+          progress?: number;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          user_id?: string | null;
+          display_name?: string | null;
+          role?: string;
+          joined_at?: string;
+          progress?: number;
+        };
+      };
+      study_responses: {
+        Row: {
+          id: string;
+          session_id: string;
+          item_id: string;
+          participant_id: string;
+          category_id: string;
+          text_value: string | null;
+          scale_value: number | null;
+          bool_value: boolean | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          item_id: string;
+          participant_id: string;
+          category_id: string;
+          text_value?: string | null;
+          scale_value?: number | null;
+          bool_value?: boolean | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          item_id?: string;
+          participant_id?: string;
+          category_id?: string;
+          text_value?: string | null;
+          scale_value?: number | null;
+          bool_value?: boolean | null;
+          created_at?: string;
+        };
+      };
+      study_ai_cache: {
+        Row: {
+          id: string;
+          session_id: string;
+          participant_id: string | null;
+          item_id: string | null;
+          input_text: string;
+          input_hash: string | null;
+          extracted_descriptors: any;
+          method: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          participant_id?: string | null;
+          item_id?: string | null;
+          input_text: string;
+          input_hash?: string | null;
+          extracted_descriptors: any;
+          method?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          participant_id?: string | null;
+          item_id?: string | null;
+          input_text?: string;
+          input_hash?: string | null;
+          extracted_descriptors?: any;
+          method?: string;
           created_at?: string;
         };
       };

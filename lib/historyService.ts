@@ -13,6 +13,8 @@ export type TastingHistory = {
   completed_items: number;
   average_score: number | null;
   completed_at: string | null;
+  mode: string;
+  rank_participants: boolean;
   items: TastingHistoryItem[];
 };
 
@@ -119,6 +121,8 @@ export async function getUserTastingHistory(
       completed_items: tasting.completed_items,
       average_score: tasting.average_score,
       completed_at: tasting.completed_at,
+      mode: tasting.mode || 'quick',
+      rank_participants: tasting.rank_participants || false,
       items: (tasting.quick_tasting_items || []).map((item: any) => ({
         id: item.id,
         item_name: item.item_name,
@@ -184,6 +188,8 @@ export async function getTastingById(
       completed_items: (data as any).completed_items,
       average_score: (data as any).average_score,
       completed_at: (data as any).completed_at,
+      mode: (data as any).mode || 'quick',
+      rank_participants: (data as any).rank_participants || false,
       items: ((data as any).quick_tasting_items || []).map((item: any) => ({
         id: item.id,
         item_name: item.item_name,
@@ -359,7 +365,7 @@ export async function getLatestTasting(
       .from('quick_tastings')
       .select(`
         *,
-        quick_tasting_items (
+        quick_tasting_items!inner (
           id,
           item_name,
           notes,
@@ -370,6 +376,7 @@ export async function getLatestTasting(
         )
       `)
       .eq('user_id', userId)
+      .not('completed_at', 'is', null)
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
@@ -399,6 +406,8 @@ export async function getLatestTasting(
       completed_items: (data as any).completed_items,
       average_score: (data as any).average_score,
       completed_at: (data as any).completed_at,
+      mode: (data as any).mode || 'quick',
+      rank_participants: (data as any).rank_participants || false,
       items: ((data as any).quick_tasting_items || []).map((item: any) => ({
         id: item.id,
         item_name: item.item_name,

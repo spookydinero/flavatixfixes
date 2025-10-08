@@ -8,18 +8,10 @@ import CompetitionRanking from './CompetitionRanking';
 import { RoleIndicator } from './RoleIndicator';
 import { EditTastingDashboard } from './EditTastingDashboard';
 import { ItemSuggestions } from './ItemSuggestions';
+import { CategoryDropdown, CATEGORIES } from './CategoryDropdown';
+import { ItemNavigationDropdown } from './ItemNavigationDropdown';
 import { toast } from '../../lib/toast';
 import { Utensils, Settings, Play, Edit } from 'lucide-react';
-
-const categories = [
-  { id: 'coffee', name: 'Coffee' },
-  { id: 'tea', name: 'Tea' },
-  { id: 'wine', name: 'Wine' },
-  { id: 'spirits', name: 'Spirits' },
-  { id: 'beer', name: 'Beer' },
-  { id: 'chocolate', name: 'Chocolate' },
-  { id: 'other', name: 'Other' },
-];
 
 interface QuickTasting {
   id: string;
@@ -55,6 +47,8 @@ interface TastingItemData {
   updated_at: string;
   correct_answers?: any;
   include_in_ranking?: boolean;
+  aroma?: string;
+  flavor?: string;
 }
 
 interface QuickTastingSessionProps {
@@ -72,6 +66,22 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   onSessionUpdate,
   onSessionCreate,
 }) => {
+  // All hooks must be declared before any conditional returns
+  const [items, setItems] = useState<TastingItemData[]>([]);
+  const [currentItemIndex, setCurrentItemIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sessionNotes, setSessionNotes] = useState(session?.notes || '');
+  const [userRole, setUserRole] = useState<'host' | 'participant' | 'both' | null>(null);
+  const [userPermissions, setUserPermissions] = useState<any>({});
+  const [showEditTastingDashboard, setShowEditTastingDashboard] = useState(false);
+  const [showItemSuggestions, setShowItemSuggestions] = useState(false);
+  const [showItemNavigation, setShowItemNavigation] = useState(false);
+  const [phase, setPhase] = useState<'setup' | 'tasting'>(session?.mode === 'quick' ? 'tasting' : 'setup');
+  const [isEditingSessionName, setIsEditingSessionName] = useState(false);
+  const [editingSessionName, setEditingSessionName] = useState(session?.session_name || '');
+  const [isChangingCategory, setIsChangingCategory] = useState(false);
+  const supabase = getSupabaseClient() as any;
+
   // Helper function to get the display category name
   const getDisplayCategoryName = (category: string, customName?: string | null): string => {
     if (category === 'other' && customName) {
@@ -79,85 +89,25 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     }
     return category.charAt(0).toUpperCase() + category.slice(1);
   };
-  if (!session) {
-    return (
-      <div className="max-w-4xl mx-auto">
-        <div className="card p-md mb-lg">
-          <div className="text-center mb-md">
-            <h2 className="text-h2 font-heading font-bold text-text-primary mb-sm">
-              Start Quick Tasting
-            </h2>
-            <p className="text-text-secondary">
-              Select a category to begin your tasting session
-            </p>
-          </div>
-          <div className="flex justify-center">
-            <div className="flex items-center space-x-2">
-              <label className="text-text-secondary font-medium">Category:</label>
-              <select
-                value=""
-                onChange={async (e) => {
-                  const category = e.target.value;
-                  if (!category || !onSessionCreate) return;
-                  const supabase = getSupabaseClient() as any;
-                  try {
-                    const { data, error } = await supabase
-                      .from('quick_tastings')
-                      .insert({
-                        user_id: userId,
-                        category,
-                        session_name: 'Quick Tasting',
-                        mode: 'quick'
-                      })
-                      .select()
-                      .single();
-
-                    if (error) throw error;
-                    onSessionCreate(data);
-                  } catch (error) {
-                    console.error('Error creating session:', error);
-                    toast.error('Failed to create session');
-                  }
-                }}
-                className="form-input"
-              >
-                <option value="">Select a category</option>
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const [items, setItems] = useState<TastingItemData[]>([]);
-  const [currentItemIndex, setCurrentItemIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [sessionNotes, setSessionNotes] = useState(session.notes || '');
-  const [userRole, setUserRole] = useState<'host' | 'participant' | 'both' | null>(null);
-  const [userPermissions, setUserPermissions] = useState<any>({});
-  const [showEditTastingDashboard, setShowEditTastingDashboard] = useState(false);
-  const [showItemSuggestions, setShowItemSuggestions] = useState(false);
-  const [phase, setPhase] = useState<'setup' | 'tasting'>('setup');
-  const [isEditingSessionName, setIsEditingSessionName] = useState(false);
-  const [editingSessionName, setEditingSessionName] = useState(session.session_name || '');
-  const supabase = getSupabaseClient() as any;
-
-  useEffect(() => {
-    loadTastingItems();
-    loadUserRole();
-  }, [session.id, userId]);
-
-  useEffect(() => {
-    setEditingSessionName(session.session_name || '');
-  }, [session.session_name]);
 
   const loadUserRole = async () => {
+    if (!session) return;
+
+    // Quick tasting doesn't use roles - set default permissions
+    if (session.mode === 'quick') {
+      setUserPermissions({
+        role: 'host', // Creator has full access to quick tasting
+        canModerate: true,
+        canAddItems: true,
+        canManageSession: true,
+        canViewAllSuggestions: true,
+        canParticipateInTasting: true,
+      });
+      setUserRole('host');
+      return;
+    }
+
+    // Study mode: load participant roles
     try {
       const permissions = await roleService.getUserPermissions(session.id, userId);
       setUserPermissions(permissions);
@@ -167,17 +117,37 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
       // User might not be a participant yet, try to add them
       try {
         await roleService.addParticipant(session.id, userId);
-        const permissions = await roleService.getUserPermissions(session.id, userId);
-        setUserPermissions(permissions);
-        setUserRole(permissions.role);
+        // Wait a moment for the participant record to be created
+        setTimeout(async () => {
+          try {
+            const permissions = await roleService.getUserPermissions(session.id, userId);
+            setUserPermissions(permissions);
+            setUserRole(permissions.role);
+          } catch (retryError) {
+            console.error('Error loading permissions after adding participant:', retryError);
+          }
+        }, 500);
       } catch (addError) {
         console.error('Error adding user as participant:', addError);
+        // Set default participant permissions if we can't determine role
+        setUserPermissions({
+          role: 'participant',
+          canModerate: false,
+          canAddItems: true,
+          canManageSession: false,
+          canViewAllSuggestions: false,
+          canParticipateInTasting: true,
+        });
+        setUserRole('participant');
       }
     }
   };
 
   const loadTastingItems = async () => {
+    if (!session) return;
+
     try {
+      console.log('🔄 QuickTastingSession: Loading items for session:', session.id, 'mode:', session.mode, 'phase:', phase, 'isLoading:', isLoading);
       const { data, error } = await supabase
         .from('quick_tasting_items')
         .select('*')
@@ -185,7 +155,15 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         .order('created_at', { ascending: true });
 
       if (error) throw error;
+
+      console.log('✅ QuickTastingSession: Loaded', (data || []).length, 'items');
       setItems(data || []);
+
+      // After loading items, check if we need to create the first item for quick tasting
+      if ((data || []).length === 0 && session.mode === 'quick' && phase === 'tasting' && !isLoading) {
+        console.log('🔄 QuickTastingSession: No items found, auto-adding first item...');
+        setTimeout(() => addNewItem(), 100); // Small delay to ensure state is updated
+      }
     } catch (error) {
       console.error('Error loading tasting items:', error);
       toast.error('Failed to load tasting items');
@@ -193,24 +171,39 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   };
 
   const addNewItem = async () => {
+    if (!session) return;
+
+    console.log('➕ QuickTastingSession: addNewItem called for session:', session.id);
+
+    // Wait for permissions to load for study mode
+    if (session.mode === 'study' && (!userPermissions || !userRole)) {
+      console.log('⏳ QuickTastingSession: Waiting for permissions to load...');
+      return;
+    }
+
     // Check permissions based on mode
     if (session.mode === 'competition') {
+      console.log('❌ QuickTastingSession: Cannot add items in competition mode');
       toast.error('Cannot add items in competition mode');
       return;
     }
 
     if (session.mode === 'study' && session.study_approach === 'collaborative') {
+      console.log('❌ QuickTastingSession: Collaborative mode - showing suggestions');
       toast.error('In collaborative mode, suggest items instead of adding them directly');
       setShowItemSuggestions(true);
       return;
     }
 
     if (session.mode === 'study' && !userPermissions.canAddItems) {
+      console.log('❌ QuickTastingSession: No permission to add items');
       toast.error('You do not have permission to add items');
       return;
     }
 
-    const itemName = `${getDisplayCategoryName(session.category, session.custom_category_name)} ${items.length + 1}`;
+    const newIndex = items.length;
+    const itemName = `${getDisplayCategoryName(session.category, session.custom_category_name)} ${newIndex + 1}`;
+    console.log('📝 QuickTastingSession: Creating item:', itemName, 'at index:', newIndex, 'for session:', session.id);
 
     try {
       const { data, error } = await supabase
@@ -222,18 +215,26 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ QuickTastingSession: Error inserting item:', error);
+        throw error;
+      }
 
+      console.log('✅ QuickTastingSession: Item created successfully:', data.id);
       setItems(prev => [...prev, data]);
-      setCurrentItemIndex(items.length);
+      setCurrentItemIndex(newIndex);
       toast.success('New item added!');
     } catch (error) {
-      console.error('Error adding new item:', error);
+      console.error('❌ QuickTastingSession: Error adding new item:', error);
       toast.error('Failed to add new item');
     }
   };
 
   const updateItem = async (itemId: string, updates: Partial<TastingItemData>) => {
+    if (!session) return;
+
+    console.log('🔄 QuickTastingSession: Updating item:', itemId, 'with:', updates);
+
     try {
       const { data, error } = await supabase
         .from('quick_tasting_items')
@@ -242,7 +243,12 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ QuickTastingSession: Error updating item:', error);
+        throw error;
+      }
+
+      console.log('✅ QuickTastingSession: Item updated successfully:', data.id);
 
       const updatedItems = items.map(item =>
         item.id === itemId ? { ...item, ...data } : item
@@ -250,8 +256,14 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
       setItems(updatedItems);
 
       const newCompleted = updatedItems.filter(item => item.overall_score !== null).length;
-      if (onSessionUpdate) {
+      if (onSessionUpdate && session) {
         onSessionUpdate({ ...session, completed_items: newCompleted });
+      }
+
+      // Extract flavor descriptors if notes, aroma, or flavor were updated
+      const shouldExtract = updates.notes || updates.aroma || updates.flavor;
+      if (shouldExtract) {
+        extractDescriptors(itemId, data);
       }
     } catch (error) {
       console.error('Error updating item:', error);
@@ -259,8 +271,58 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     }
   };
 
+  const extractDescriptors = async (itemId: string, itemData: TastingItemData) => {
+    if (!session) return;
+
+    try {
+      console.log('🔍 Extracting flavor descriptors from item:', itemId);
+
+      // Prepare extraction data
+      const extractionPayload = {
+        sourceType: 'quick_tasting',
+        sourceId: itemId,
+        structuredData: {
+          aroma_notes: itemData.notes || '', // Use notes field which contains aroma
+          flavor_notes: itemData.flavor || '',
+          other_notes: itemData.notes || ''
+        },
+        itemContext: {
+          itemName: itemData.item_name,
+          itemCategory: session.category
+        }
+      };
+
+      const response = await fetch('/api/flavor-wheels/extract-descriptors', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(extractionPayload),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.warn('⚠️ Descriptor extraction failed:', error);
+        return;
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.savedCount > 0) {
+        console.log(`✅ Extracted ${result.savedCount} flavor descriptors`);
+        // Silently extract - don't show toast for every update to avoid notification spam
+      }
+    } catch (error) {
+      console.error('Error extracting descriptors:', error);
+      // Silently fail - don't block user from continuing tasting
+    }
+  };
+
 
   const handleCategoryChange = async (newCategory: string) => {
+    if (!session || newCategory === session.category) return; // No change needed
+
+    setIsChangingCategory(true);
     try {
       const { data, error } = await supabase
         .from('quick_tastings')
@@ -279,6 +341,8 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     } catch (error) {
       console.error('Error updating category:', error);
       toast.error('Failed to update category');
+    } finally {
+      setIsChangingCategory(false);
     }
   };
 
@@ -289,11 +353,14 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   };
 
   const startEditingSessionName = () => {
+    if (!session) return;
     setIsEditingSessionName(true);
     setEditingSessionName(session.session_name || '');
   };
 
   const saveSessionName = async () => {
+    if (!session) return;
+
     if (editingSessionName.trim() && editingSessionName.trim() !== session.session_name) {
       try {
         const { data, error } = await supabase
@@ -319,6 +386,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   };
 
   const cancelEditingSessionName = () => {
+    if (!session) return;
     setEditingSessionName(session.session_name || '');
     setIsEditingSessionName(false);
   };
@@ -356,6 +424,26 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     }
   };
 
+  const handleItemNavigation = (index: number) => {
+    if (index >= 0 && index < items.length) {
+      setCurrentItemIndex(index);
+      setShowEditTastingDashboard(false);
+      setShowItemSuggestions(false);
+    }
+  };
+
+  const getNavigationItems = (): any[] => {
+    return items.map((item, index) => ({
+      id: item.id,
+      index,
+      name: item.item_name,
+      isCompleted: item.overall_score !== null && item.overall_score !== undefined,
+      hasPhoto: !!item.photo_url,
+      score: item.overall_score,
+      isCurrent: index === currentItemIndex
+    }));
+  };
+
   const handleAddNextItem = async () => {
     // Add new item and switch to tasting phase
     await addNewItem();
@@ -375,6 +463,15 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
   };
 
   const completeSession = async () => {
+    if (!session) return;
+
+    console.log('🏁 QuickTastingSession: Completing session:', session.id);
+    console.log('📊 QuickTastingSession: Current items state:', items.length, 'items');
+
+    items.forEach((item, index) => {
+      console.log(`  ${index + 1}. ${item.item_name} (ID: ${item.id}, Score: ${item.overall_score})`);
+    });
+
     setIsLoading(true);
     try {
       const { data, error } = await supabase
@@ -389,28 +486,65 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
 
       if (error) throw error;
 
+      console.log('✅ QuickTastingSession: Session completed successfully');
       toast.success('Tasting session completed!');
       onSessionComplete(data);
     } catch (error) {
-      console.error('Error completing session:', error);
+      console.error('❌ QuickTastingSession: Error completing session:', error);
       toast.error('Failed to complete session');
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Load session data and user permissions
+  useEffect(() => {
+    if (!session) return;
+
+    console.log('🔄 QuickTastingSession: Loading session:', session.id, 'mode:', session.mode);
+    loadTastingItems();
+    // Only load user roles for study mode sessions
+    if (session.mode === 'study') {
+      loadUserRole();
+    }
+  }, [session?.id, session?.mode]);
+
+  // Update local state when session name changes externally
+  useEffect(() => {
+    setEditingSessionName(session?.session_name || '');
+  }, [session?.session_name]);
+
   const currentItem = items[currentItemIndex];
   const hasItems = items.length > 0;
   const completedItems = items.filter(item => item.overall_score !== null).length;
 
+  // Generate dynamic display name for current item based on category and index
+  const getCurrentItemDisplayName = () => {
+    if (!currentItem || !session) return '';
+    if (session.is_blind_items) {
+      return `Item ${currentItem.id.slice(-4)}`;
+    }
+    return `${getDisplayCategoryName(session.category, session.custom_category_name).charAt(0).toUpperCase() + getDisplayCategoryName(session.category, session.custom_category_name).slice(1)} ${currentItemIndex + 1}`;
+  };
+
+  // Early return if no session
+  if (!session) {
+    return null;
+  }
+
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto" data-testid="quick-tasting-session">
       {/* Session Header */}
       <div className="card p-md mb-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             {isEditingSessionName ? (
-              <div className="flex items-center space-x-2 mb-2">
+              <div className="mb-2">
+                <div className="p-2 rounded-lg bg-background-app border-2 border-primary-300">
+                  <div className="text-xs font-medium text-text-secondary uppercase tracking-wider mb-1">
+                    Editing Session Name
+                  </div>
+                  <div className="flex items-center space-x-2">
                 <input
                   type="text"
                   value={editingSessionName}
@@ -420,16 +554,40 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                     if (e.key === 'Enter') saveSessionName();
                     if (e.key === 'Escape') cancelEditingSessionName();
                   }}
-                  className="text-h2 font-heading font-bold text-text-primary bg-transparent border-b border-primary-500 focus:outline-none flex-1"
+                      className="text-h2 font-heading font-bold text-text-primary bg-transparent border-none outline-none focus:ring-0 flex-1 placeholder-text-secondary/50"
+                      placeholder="Enter session name..."
                   autoFocus
                 />
+                    <div className="flex items-center space-x-1 text-text-secondary text-xs">
+                      <span>Press Enter to save</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
-              <div className="flex items-center space-x-2 mb-2 group cursor-pointer" onClick={startEditingSessionName}>
-                <h2 className="text-h2 font-heading font-bold text-text-primary">
-                  {session.session_name}
+              <div className="mb-2">
+                <div
+                  className="flex items-center space-x-2 p-2 rounded-lg bg-background-app border border-border-subtle hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-200 group"
+                  onClick={startEditingSessionName}
+                  title="Click to edit session name"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wider mb-1">
+                      Session Name
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <h2 className="text-h2 font-heading font-bold text-text-primary truncate">
+                        {session.session_name || 'Quick Tasting'}
                 </h2>
-                <Edit size={20} className="text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="flex items-center space-x-1 text-text-secondary">
+                        <Edit size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                        <span className="text-xs font-medium opacity-60 group-hover:opacity-100 transition-opacity">
+                          Edit
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
             {phase === 'setup' && (
@@ -441,7 +599,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                     onChange={(e) => handleCategoryChange(e.target.value)}
                     className="form-input text-sm"
                   >
-                    {categories.map(category => (
+                    {CATEGORIES.map(category => (
                       <option key={category.id} value={category.id}>
                         {category.name}
                       </option>
@@ -450,14 +608,20 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                 </div>
               </div>
             )}
-            <p className="text-text-secondary">
-              Category: {getDisplayCategoryName(session.category, session.custom_category_name)}
-              {' • '}
-              Mode: {session.mode.charAt(0).toUpperCase() + session.mode.slice(1)}
-              {session.mode === 'study' && session.study_approach && ` • ${session.study_approach.charAt(0).toUpperCase() + session.study_approach.slice(1)}`}
-              {session.rank_participants && ' • Ranked Competition'}
-              {(session.is_blind_participants || session.is_blind_items || session.is_blind_attributes) && ' • Blind Tasting'}
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 space-y-1 sm:space-y-0 text-text-secondary">
+              <span className="text-sm font-medium">Category:</span>
+              <CategoryDropdown
+                category={session.category}
+                onCategoryChange={handleCategoryChange}
+                className="text-sm w-full sm:w-auto"
+                isLoading={isChangingCategory}
+              />
+              <div className="flex flex-wrap items-center space-x-2 text-xs">
+                {session.mode === 'study' && session.study_approach && <span>• {session.study_approach.charAt(0).toUpperCase() + session.study_approach.slice(1)}</span>}
+                {session.rank_participants && <span>• Ranked Competition</span>}
+                {(session.is_blind_participants || session.is_blind_items || session.is_blind_attributes) && <span>• Blind Tasting</span>}
+              </div>
+            </div>
             {userRole && session.mode !== 'quick' && (
               <div className="mt-2">
                 <RoleIndicator
@@ -576,6 +740,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
               showOverallScore={true}
               showNotesFields={true}
               showFlavorWheel={false}
+              itemIndex={currentItemIndex + 1}
             />
           ) : (
             <div className="card p-lg text-center">
@@ -643,30 +808,6 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
     {/* Tasting Phase */}
     {phase === 'tasting' && currentItem && (
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="card p-md mb-lg">
-          <div className="text-center">
-            <h2 className="text-h2 font-heading font-bold text-text-primary mb-sm">
-              Tasting {currentItem.item_name}
-            </h2>
-            <p className="text-body font-body text-text-secondary mb-md">
-              Rate the flavors and overall impression of <strong>{currentItem.item_name}</strong>
-            </p>
-            <div className="flex items-center justify-center space-x-sm">
-              <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                <span className="text-primary-800 font-bold text-lg">🍷</span>
-              </div>
-              <div className="text-left">
-                <div className="text-small font-body font-medium text-text-primary">
-                  {currentItem.item_name}
-                </div>
-                <div className="text-caption font-body text-text-secondary">
-                  {getDisplayCategoryName(session.category, session.custom_category_name)} Tasting
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Unified Tasting Item */}
         <TastingItem
@@ -680,21 +821,62 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
           showFlavorWheel={false}
           showEditControls={true}
           showPhotoControls={false}
+          itemIndex={currentItemIndex + 1}
         />
 
+        {/* Item Navigation */}
+        {items.length > 1 && (
+          <div className="flex justify-center mt-md">
+            <ItemNavigationDropdown
+              items={getNavigationItems()}
+              currentIndex={currentItemIndex}
+              onItemSelect={handleItemNavigation}
+              className="w-full max-w-sm"
+            />
+          </div>
+        )}
+
         {/* Navigation */}
-        <div className="flex justify-center items-center mt-lg px-4 gap-4">
+        <div className="flex flex-col items-center mt-lg px-4 gap-4">
+          {/* Navigation Controls */}
+          <div className="flex items-center justify-center gap-4">
+            <button
+              onClick={handlePreviousItem}
+              disabled={currentItemIndex === 0}
+              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+
+            <span className="text-sm text-gray-500 px-2 min-w-20 text-center">
+              {currentItemIndex + 1} of {items.length}
+            </span>
+
           <button
             onClick={handleNextOrAdd}
             className="btn-secondary"
           >
-            Next Item
+              {currentItemIndex < items.length - 1 ? 'Next Item' : 'Add Item'}
+            </button>
+          </div>
+
+          {/* Show/Hide Navigation Toggle */}
+          {items.length > 1 && (
+            <button
+              onClick={() => setShowItemNavigation(!showItemNavigation)}
+              className="text-sm text-primary-600 hover:text-primary-700 underline"
+            >
+              {showItemNavigation ? 'Hide' : 'Show'} All Items
           </button>
+          )}
+
+          {/* Complete Tasting Button */}
           <button
             onClick={completeSession}
-            className="btn-primary"
+            disabled={isLoading}
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Complete Tasting
+            {isLoading ? 'Completing...' : 'Complete Tasting'}
           </button>
         </div>
       </div>

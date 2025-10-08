@@ -3,8 +3,10 @@ import { useRouter } from 'next/router';
 import { getSupabaseClient } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/lib/toast';
-import { ChevronLeft, Users, Trophy, BookOpen, Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
+import { ChevronLeft, Users, Trophy, BookOpen, Eye, EyeOff, Plus, Trash2, FileText } from 'lucide-react';
 import { StudyModeSelector, StudyApproach } from '@/components/quick-tasting/StudyModeSelector';
+import { TemplateSelector } from '@/components/templates/TemplateSelector';
+import { TastingTemplate } from '@/lib/templates/tastingTemplates';
 
 type TastingMode = 'study' | 'competition' | 'quick';
 
@@ -28,6 +30,8 @@ interface CreateTastingForm {
   is_blind_attributes: boolean;
   items: TastingItem[];
   notes: string;
+  use_template: boolean;
+  template_id: string | null;
 }
 
 const CATEGORIES = ['coffee', 'tea', 'wine', 'spirits', 'beer', 'chocolate'];
@@ -49,7 +53,9 @@ const CreateTastingPage: React.FC = () => {
     is_blind_items: false,
     is_blind_attributes: false,
     items: [],
-    notes: ''
+    notes: '',
+    use_template: false,
+    template_id: null
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,12 +67,6 @@ const CreateTastingPage: React.FC = () => {
   }, [user, loading, router]);
 
   const handleModeChange = (mode: TastingMode) => {
-    if (mode === 'quick') {
-      // For quick tasting, redirect directly to the quick tasting page
-      router.push('/quick-tasting');
-      return;
-    }
-
     setForm(prev => ({
       ...prev,
       mode,
@@ -194,8 +194,8 @@ const CreateTastingPage: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="bg-background-light font-display text-zinc-900 min-h-screen pb-20">
-      <main id="main-content">
+    <div className="bg-background-light font-display text-zinc-900 min-h-screen">
+      <main id="main-content" className="pb-20">
         <div className="container mx-auto px-md py-lg max-w-4xl">
           {/* Header */}
           <div className="mb-lg">
@@ -221,37 +221,13 @@ const CreateTastingPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
                 <button
                   type="button"
-                  onClick={() => handleModeChange('quick')}
-                  className={`p-md rounded-lg border-2 transition-all ${
-                    form.mode === 'quick'
-                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
-                      : 'border-border-default hover:border-primary-400'
-                  }`}
+                  onClick={() => router.push('/taste/create/study')}
+                  className="p-md rounded-lg border-2 border-border-default hover:border-primary-400 transition-all"
                 >
-                  <Users size={32} className={`mx-auto mb-sm ${
-                    form.mode === 'quick' ? 'text-primary-600' : 'text-text-secondary'
-                  }`} />
-                  <h3 className="font-heading font-semibold mb-xs">Quick Tasting</h3>
-                  <p className="text-small text-text-secondary">
-                    Standard quick tasting workflow for immediate use.
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleModeChange('study')}
-                  className={`p-md rounded-lg border-2 transition-all ${
-                    form.mode === 'study'
-                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
-                      : 'border-border-default hover:border-primary-400'
-                  }`}
-                >
-                  <BookOpen size={32} className={`mx-auto mb-sm ${
-                    form.mode === 'study' ? 'text-primary-600' : 'text-text-secondary'
-                  }`} />
+                  <BookOpen size={32} className="mx-auto mb-sm text-text-secondary" />
                   <h3 className="font-heading font-semibold mb-xs">Study Mode</h3>
                   <p className="text-small text-text-secondary">
-                    Add items dynamically during tasting. No preloading required.
+                    Structured tasting sessions with custom categories and templates.
                   </p>
                 </button>
 
@@ -260,7 +236,7 @@ const CreateTastingPage: React.FC = () => {
                   onClick={() => handleModeChange('competition')}
                   className={`p-md rounded-lg border-2 transition-all ${
                     form.mode === 'competition'
-                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20'
+                      ? 'border-primary-600 bg-primary-50'
                       : 'border-border-default hover:border-primary-400'
                   }`}
                 >
@@ -270,6 +246,24 @@ const CreateTastingPage: React.FC = () => {
                   <h3 className="font-heading font-semibold mb-xs">Competition Mode</h3>
                   <p className="text-small text-text-secondary">
                     Preload items with correct answers. Enable participant ranking.
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleModeChange('quick')}
+                  className={`p-md rounded-lg border-2 transition-all ${
+                    form.mode === 'quick'
+                      ? 'border-primary-600 bg-primary-50'
+                      : 'border-border-default hover:border-primary-400'
+                  }`}
+                >
+                  <Users size={32} className={`mx-auto mb-sm ${
+                    form.mode === 'quick' ? 'text-primary-600' : 'text-text-secondary'
+                  }`} />
+                  <h3 className="font-heading font-semibold mb-xs">Quick Tasting</h3>
+                  <p className="text-small text-text-secondary">
+                    Standard quick tasting workflow for immediate use.
                   </p>
                 </button>
               </div>
@@ -294,12 +288,16 @@ const CreateTastingPage: React.FC = () => {
                 <div>
                   <label className="block text-small font-body font-medium text-text-primary mb-xs">
                     Category *
+                    {form.items.length > 0 && (
+                      <span className="ml-2 text-xs text-text-secondary">(Locked after adding items)</span>
+                    )}
                   </label>
                   <select
                     value={form.category}
                     onChange={(e) => setForm(prev => ({ ...prev, category: e.target.value }))}
                     className="form-input w-full"
                     required
+                    disabled={form.items.length > 0}
                   >
                     <option value="">Select a category</option>
                     {CATEGORIES.map(category => (
@@ -313,6 +311,9 @@ const CreateTastingPage: React.FC = () => {
                 <div>
                   <label className="block text-small font-body font-medium text-text-primary mb-xs">
                     Session Name
+                    {form.items.length > 0 && (
+                      <span className="ml-2 text-xs text-text-secondary">(Locked after adding items)</span>
+                    )}
                   </label>
                   <input
                     type="text"
@@ -320,6 +321,7 @@ const CreateTastingPage: React.FC = () => {
                     onChange={(e) => setForm(prev => ({ ...prev, session_name: e.target.value }))}
                     placeholder={`${form.category ? form.category.charAt(0).toUpperCase() + form.category.slice(1) : 'Category'} ${form.mode === 'competition' ? 'Competition' : 'Study'}`}
                     className="form-input w-full"
+                    disabled={form.items.length > 0}
                   />
                 </div>
               </div>
@@ -524,17 +526,17 @@ const CreateTastingPage: React.FC = () => {
             <span className="material-symbols-outlined">home</span>
             <span className="text-xs font-medium">Home</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/create-tasting">
-            <span className="material-symbols-outlined">add_circle</span>
-            <span className="text-xs font-bold">Create</span>
+          <a className="flex flex-col items-center gap-1 p-2 text-primary" href="/taste">
+            <span className="material-symbols-outlined">restaurant</span>
+            <span className="text-xs font-bold">Taste</span>
           </a>
-          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/social">
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/review">
             <span className="material-symbols-outlined">reviews</span>
             <span className="text-xs font-medium">Review</span>
           </a>
           <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/flavor-wheels">
-            <span className="material-symbols-outlined">donut_large</span>
-            <span className="text-xs font-medium">Flavor Wheels</span>
+            <span className="material-symbols-outlined">donut_small</span>
+            <span className="text-xs font-medium">Wheels</span>
           </a>
         </nav>
       </footer>

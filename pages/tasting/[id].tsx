@@ -34,6 +34,7 @@ const TastingSessionPage: React.FC = () => {
   const [session, setSession] = useState<QuickTasting | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasAccess, setHasAccess] = useState(false);
   const supabase = getSupabaseClient();
 
   useEffect(() => {
@@ -80,36 +81,61 @@ const TastingSessionPage: React.FC = () => {
         return;
       }
 
-      // Check if user has access to this session (either creator or participant)
-      const { data: participantData, error: participantError } = await supabase
-        .from('tasting_participants')
-        .select('*')
-        .eq('tasting_id', id)
-        .eq('user_id', user.id)
-        .single();
+      // Check access based on tasting mode
+      const tastingMode = (sessionData as any).mode;
+      const isCreator = (sessionData as any).user_id === user.id;
 
-      if (participantError && (sessionData as any).user_id !== user.id) {
-        // If not a participant and not the creator, try to add as participant
-        try {
-          const { error: addError } = await supabase
-            .from('tasting_participants')
-            .insert({
-              tasting_id: id as string,
-              user_id: user.id,
-              role: 'participant'
-            } as any);
-
-          if (addError) {
-            throw addError;
-          }
-        } catch (addError) {
-          console.error('Error adding participant:', addError);
+      if (tastingMode === 'quick') {
+        // For quick tasting: only creator has access, no participant records needed
+        if (!isCreator) {
           setError('You do not have access to this tasting session');
           return;
+        }
+        // Quick tasting doesn't need participant records
+      } else {
+        // For study mode: use full participant logic
+        const { data: participantData, error: participantError } = await supabase
+          .from('tasting_participants')
+          .select('*')
+          .eq('tasting_id', id)
+          .eq('user_id', user.id)
+          .single();
+
+        const isParticipant = !participantError && participantData;
+
+        if (!isCreator && !isParticipant) {
+          // User has no access to this session
+          setError('You do not have access to this tasting session');
+          return;
+        }
+
+        // If user is creator but not a participant record, add them as participant
+        if (isCreator && !isParticipant) {
+          try {
+            const { error: addError } = await supabase
+              .from('tasting_participants')
+              .insert({
+                tasting_id: id as string,
+                user_id: user.id,
+                role: 'host' // Creator gets host role
+              } as any);
+
+            if (addError && !(addError as any)?.message?.includes('duplicate key')) {
+              // Only fail if it's not a duplicate key error
+              throw addError;
+            }
+          } catch (addError) {
+            if (!(addError as any)?.message?.includes('duplicate key')) {
+              console.error('Error adding creator as participant:', addError);
+              setError('Failed to initialize session access');
+              return;
+            }
+          }
         }
       }
 
       setSession(sessionData);
+      setHasAccess(true);
     } catch (error: any) {
       console.error('Error loading session:', error);
       setError(error.message || 'Failed to load tasting session');
@@ -121,11 +147,15 @@ const TastingSessionPage: React.FC = () => {
   const handleSessionComplete = (completedSession: QuickTasting) => {
     setSession(completedSession);
     toast.success('Tasting session completed!');
+    // Redirect to dashboard after completion
+    setTimeout(() => {
+      router.push('/dashboard');
+    }, 1500); // Give user time to see the success message
   };
 
   if (loading || isLoading) {
     return (
-      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+      <div className="min-h-screen bg-background-light flex items-center justify-center">
         <div className="flex flex-col items-center">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-sm"></div>
           <div className="text-text-primary text-h4 font-body font-medium">Loading tasting session...</div>
@@ -136,7 +166,7 @@ const TastingSessionPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background-light dark:bg-background-dark">
+      <div className="min-h-screen bg-background-light">
         <div className="container mx-auto px-md py-lg max-w-2xl">
           <div className="text-center">
             <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-md">
@@ -162,12 +192,12 @@ const TastingSessionPage: React.FC = () => {
     );
   }
 
-  if (!session) {
+  if (!session || !hasAccess) {
     return null;
   }
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-200 min-h-screen">
+    <div className="bg-background-light font-display text-zinc-900 min-h-screen pb-20">
       <main id="main-content">
         <div className="container mx-auto px-md py-lg">
           {/* Header */}
@@ -189,6 +219,28 @@ const TastingSessionPage: React.FC = () => {
           />
         </div>
       </main>
+
+      {/* Bottom Navigation */}
+      <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200 bg-background-light">
+        <nav className="flex justify-around p-2">
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/dashboard">
+            <span className="material-symbols-outlined">home</span>
+            <span className="text-xs font-medium">Home</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/taste">
+            <span className="material-symbols-outlined">restaurant</span>
+            <span className="text-xs font-medium">Taste</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/review">
+            <span className="material-symbols-outlined">reviews</span>
+            <span className="text-xs font-medium">Review</span>
+          </a>
+          <a className="flex flex-col items-center gap-1 p-2 text-zinc-500" href="/flavor-wheels">
+            <span className="material-symbols-outlined">donut_small</span>
+            <span className="text-xs font-medium">Wheels</span>
+          </a>
+        </nav>
+      </footer>
     </div>
   );
 };

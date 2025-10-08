@@ -7,7 +7,6 @@ interface QuickTasting {
   id: string;
   user_id: string;
   category: string;
-  custom_category_name?: string | null;
   session_name?: string;
   notes?: string;
   total_items: number;
@@ -28,6 +27,8 @@ interface TastingItemData {
   photo_url?: string;
   created_at: string;
   updated_at: string;
+  aroma?: string;
+  flavor?: string;
 }
 
 interface QuickTastingSummaryProps {
@@ -39,14 +40,6 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
   session,
   onStartNewSession,
 }) => {
-  // Helper function to get the display category name
-  const getDisplayCategoryName = (category: string, customName?: string | null): string => {
-    if (category === 'other' && customName) {
-      return customName;
-    }
-    return category.charAt(0).toUpperCase() + category.slice(1);
-  };
-
   const [items, setItems] = useState<TastingItemData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
@@ -160,7 +153,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
                 {session.session_name}
               </h2>
               <p className="text-text-secondary">
-                {getDisplayCategoryName(session.category, (session as any).custom_category_name)} Tasting Session
+                {session.category.charAt(0).toUpperCase() + session.category.slice(1)} Tasting Session
               </p>
               <p className="text-small font-body text-text-secondary">
                 Completed on {formatDate(session.completed_at || session.updated_at)}
@@ -196,7 +189,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
         </div>
         <div className="card p-md text-center">
           <div className="text-h1 font-heading font-bold text-warning text-primary mb-xs">
-            {averageScore > 0 ? `${averageScore}/5` : 'N/A'}
+            {averageScore > 0 ? `${averageScore}/100` : 'N/A'}
           </div>
           <div className="text-text-secondary">Average Score</div>
         </div>
@@ -217,7 +210,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
                 </div>
                 <div className="text-right">
                   <div className="text-small font-body font-medium text-text-primary">
-                    {flavor.avgScore}/5 avg
+                    {flavor.avgScore}/100 avg
                   </div>
                   <div className="text-caption font-body text-text-secondary">
                     {flavor.count} item{flavor.count !== 1 ? 's' : ''}
@@ -245,7 +238,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
                       <div className="flex items-center space-x-xs">
                         <Star className="w-4 h-4 text-warning fill-current" />
                         <span className="text-small font-body font-medium text-text-primary">
-                          {item.overall_score}/5
+                          {item.overall_score}/100
                         </span>
                       </div>
                     )}
@@ -295,7 +288,7 @@ const QuickTastingSummary: React.FC<QuickTastingSummaryProps> = ({
                             key={flavor}
                             className="px-sm py-xs bg-primary/10 text-primary rounded-full text-small font-body font-medium"
                           >
-                            {flavor} ({score}/5)
+                            {flavor} ({score}/100)
                           </div>
                         ))}
                       </div>
