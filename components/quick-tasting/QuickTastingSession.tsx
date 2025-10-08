@@ -567,9 +567,9 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
             ) : (
               <div className="mb-2">
                 <div
-                  className="flex items-center space-x-2 p-2 rounded-lg bg-background-app border border-border-subtle hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-200 group"
-                  onClick={startEditingSessionName}
-                  title="Click to edit session name"
+                  className={`flex items-center space-x-2 p-2 rounded-lg bg-background-app border border-border-subtle ${items.length > 1 ? 'opacity-60 cursor-not-allowed' : 'hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer'} transition-all duration-200 group`}
+                  onClick={items.length > 1 ? undefined : startEditingSessionName}
+                  title={items.length > 1 ? 'Cannot edit session name after adding items' : 'Click to edit session name'}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-medium text-text-secondary uppercase tracking-wider mb-1">
@@ -579,12 +579,14 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                       <h2 className="text-h2 font-heading font-bold text-text-primary truncate">
                         {session.session_name || 'Quick Tasting'}
                 </h2>
-                      <div className="flex items-center space-x-1 text-text-secondary">
-                        <Edit size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
-                        <span className="text-xs font-medium opacity-60 group-hover:opacity-100 transition-opacity">
-                          Edit
-                        </span>
-                      </div>
+                      {items.length <= 1 && (
+                        <div className="flex items-center space-x-1 text-text-secondary">
+                          <Edit size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                          <span className="text-xs font-medium opacity-60 group-hover:opacity-100 transition-opacity">
+                            Edit
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -615,6 +617,7 @@ const QuickTastingSession: React.FC<QuickTastingSessionProps> = ({
                 onCategoryChange={handleCategoryChange}
                 className="text-sm w-full sm:w-auto"
                 isLoading={isChangingCategory}
+                disabled={items.length > 1}
               />
               <div className="flex flex-wrap items-center space-x-2 text-xs">
                 {session.mode === 'study' && session.study_approach && <span>• {session.study_approach.charAt(0).toUpperCase() + session.study_approach.slice(1)}</span>}

@@ -386,7 +386,11 @@ const NewStudyTastingPage: React.FC = () => {
                               <input
                                 type="checkbox"
                                 checked={category.hasScale}
-                                onChange={(e) => updateCategory(category.id, { hasScale: e.target.checked })}
+                                onChange={(e) => updateCategory(category.id, {
+                                  hasScale: e.target.checked,
+                                  // Auto-enable ranking when scale input is enabled
+                                  rankInSummary: e.target.checked ? true : category.rankInSummary
+                                })}
                                 className="form-checkbox mr-sm"
                               />
                               <span className="text-body font-body">Scale Input</span>
