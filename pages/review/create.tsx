@@ -54,6 +54,7 @@ const CreateReviewPage: React.FC = () => {
       const status = action === 'done' ? 'completed' : 'in_progress';
 
       // Insert review into database
+      // Convert 0 scores to null to avoid database constraint violations
       const { data: review, error } = await supabase
         .from('quick_reviews')
         .insert({
@@ -70,24 +71,24 @@ const CreateReviewPage: React.FC = () => {
           upc_barcode: data.upc_barcode,
           category: data.category,
           aroma_notes: data.aroma_notes,
-          aroma_intensity: data.aroma_intensity,
+          aroma_intensity: data.aroma_intensity || null,
           salt_notes: data.salt_notes,
-          salt_score: data.salt_score,
+          salt_score: data.salt_score || null,
           sweetness_notes: data.sweetness_notes,
-          sweetness_score: data.sweetness_score,
+          sweetness_score: data.sweetness_score || null,
           acidity_notes: data.acidity_notes,
-          acidity_score: data.acidity_score,
+          acidity_score: data.acidity_score || null,
           umami_notes: data.umami_notes,
-          umami_score: data.umami_score,
+          umami_score: data.umami_score || null,
           spiciness_notes: data.spiciness_notes,
-          spiciness_score: data.spiciness_score,
+          spiciness_score: data.spiciness_score || null,
           flavor_notes: data.flavor_notes,
-          flavor_intensity: data.flavor_intensity,
+          flavor_intensity: data.flavor_intensity || null,
           texture_notes: data.texture_notes,
-          typicity_score: data.typicity_score,
-          complexity_score: data.complexity_score,
+          typicity_score: data.typicity_score || null,
+          complexity_score: data.complexity_score || null,
           other_notes: data.other_notes,
-          overall_score: data.overall_score,
+          overall_score: data.overall_score || null,
           status: status
         })
         .select()

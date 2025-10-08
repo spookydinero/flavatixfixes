@@ -9,6 +9,8 @@ interface CategoryDropdownProps {
   className?: string
   /** Whether the dropdown is in a loading state (disables interaction) */
   isLoading?: boolean
+  /** Whether the dropdown should be disabled */
+  disabled?: boolean
 }
 
 /**
@@ -43,6 +45,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
   onCategoryChange,
   className = '',
   isLoading = false,
+  disabled = false,
 }) => {
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onCategoryChange(event.target.value)
@@ -52,10 +55,11 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
     <select
       value={category}
       onChange={handleChange}
-      disabled={isLoading}
-      className={`form-input ${className} ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+      disabled={isLoading || disabled}
+      className={`form-input ${className} ${isLoading || disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       aria-label="Select tasting category"
       name="category"
+      title={disabled ? 'Cannot change category after adding items' : undefined}
     >
       {CATEGORIES.map((cat) => (
         <option key={cat.id} value={cat.id}>
